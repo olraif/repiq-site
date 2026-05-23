@@ -1,0 +1,17 @@
+{
+  "name": "Репетитор AI",
+  "short_name": "Репетитор AI",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef8ff",
+  "theme_color": "#2f8fce",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

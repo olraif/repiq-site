@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#2f8fce" />
+    <title>Репетитор AI</title>
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <button type="button" class="date-ai-trigger" id="dayAiBtn"><span>AI</span><strong id="todayTitle">Сегодня</strong></button>
+          <h1>Репетитор AI</h1>
+          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1as</button>
+        </div>
+        <div class="header-actions">
+          <button class="header-icon-btn header-settings-btn" id="settingsBtn" aria-label="Настройки" title="Настройки">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.7a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6Zm8.1 3.3c0-.5 0-.9-.1-1.3l2-1.5-2-3.4-2.4 1a8.8 8.8 0 0 0-2.2-1.3L15.1 3H9l-.4 2.5c-.8.3-1.5.7-2.2 1.3l-2.4-1-2 3.4 2 1.5a8.7 8.7 0 0 0 0 2.6l-2 1.5 2 3.4 2.4-1c.7.6 1.4 1 2.2 1.3L9 21h6.1l.4-2.5c.8-.3 1.5-.7 2.2-1.3l2.4 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.3Z"/></svg>
+          </button>
+          <button type="button" class="header-icon-btn" id="shareAppBtn" aria-label="Поделиться приложением" title="Поделиться приложением">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 12.5 15.5 16.5M15.5 7.5 8.5 11.5M18 5.2a2.8 2.8 0 1 1-5.6 0 2.8 2.8 0 0 1 5.6 0ZM8.8 12a2.8 2.8 0 1 1-5.6 0 2.8 2.8 0 0 1 5.6 0ZM18 18.8a2.8 2.8 0 1 1-5.6 0 2.8 2.8 0 0 1 5.6 0Z"/></svg>
+          </button>
+          <button type="button" class="header-icon-btn header-stars-btn" id="rateAppBtn" aria-label="Оценить приложение" title="Оценить приложение">
+            <span aria-hidden="true">★★★★★</span>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="view active" id="view-home">
+          <div class="metrics" id="metrics"></div>
+          <div class="mode-switch" id="modeSwitch">
+            <button class="mode active" data-mode="day">День</button>
+            <button class="mode" data-mode="week">Неделя</button>
+            <button class="mode" data-mode="month">Месяц</button>
+            <button class="mode" data-mode="year">Год</button>
+          </div>
+          <div class="section-head">
+            <h2 id="planTitle">Неделя</h2>
+          </div>
+          <div class="week-strip" id="weekStrip"></div>
+          <div class="day-summary" id="daySummary"></div>
+          <div class="timeline" id="timeline"></div>
+          <div class="slot-grid" id="slotGrid"></div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </section>
+
+        <section class="view" id="view-students">
+          <div class="section-head">
+            <h2>Ученики</h2>
+            <button class="text-btn" data-open="studentDialog">Добавить</button>
+          </div>
+          <div class="summary-grid" id="studentsSummary"></div>
+          <input class="search-input" id="studentsSearch" type="search" placeholder="Поиск ученика" />
+          <div class="list" id="studentsList"></div>
+        </section>
+
+        <section class="view" id="view-groups">
+          <div class="section-head">
+            <h2>Группы</h2>
+            <button class="text-btn" data-open="groupDialog">Добавить</button>
+          </div>
+          <div class="summary-grid" id="groupsSummary"></div>
+          <input class="search-input" id="groupsSearch" type="search" placeholder="Поиск группы" />
+          <div class="list" id="groupsList"></div>
+        </section>
+
+        <section class="view" id="view-payments">
+          <div class="section-head">
+            <h2>Оплаты</h2>
+            <button class="text-btn" data-open="paymentDialog">Добавить</button>
+          </div>
+          <div class="month-summary" id="monthSummary"></div>
+          <input class="search-input" id="paymentsSearch" type="search" placeholder="Поиск оплаты" />
+          <div class="list" id="paymentsList"></div>
+        </section>
+      </main>
+
+      <nav class="tabs" aria-label="Навигация">
+        <button class="tab active" data-view="home">Главная</button>
+        <button class="tab" data-view="students">Ученики</button>
+        <button class="tab" data-view="groups">Группы</button>
+        <button class="tab" data-view="payments">Оплаты</button>
+      </nav>
+    </div>
+
+    <dialog id="settingsDialog">
+      <form class="dialog-card" id="settingsForm">
+        <div class="settings-title-row">
+          <h2>Настройки</h2>
+        </div>
+        <label>Регион
+          <select name="timezone">
+            <option value="Europe/Kaliningrad">МСК-1</option>
+            <option value="Europe/Moscow">МСК</option>
+            <option value="Europe/Samara">МСК+1</option>
+            <option value="Asia/Yekaterinburg">МСК+2</option>
+            <option value="Asia/Omsk">МСК+3</option>
+            <option value="Asia/Krasnoyarsk">МСК+4</option>
+            <option value="Asia/Irkutsk">МСК+5</option>
+            <option value="Asia/Yakutsk">МСК+6</option>
+            <option value="Asia/Vladivostok">МСК+7</option>
+            <option value="Asia/Magadan">МСК+8</option>
+            <option value="Asia/Kamchatka">МСК+9</option>
+          </select>
+        </label>
+        <div class="regular-slot-row">
+          <label>Слоты с <input name="workStart" type="time" step="1800" required /></label>
+          <label>Слоты до <input name="workEnd" type="time" step="1800" required /></label>
+        </div>
+        <div class="settings-block">
+          <label class="toggle-line"><input name="reminderEnabled" type="checkbox" /> Напоминать перед уроком</label>
+          <div class="regular-slot-row">
+            <label>За сколько минут
+              <select name="reminderLeadMinutes">
+                <option value="5">5 минут</option>
+                <option value="10">10 минут</option>
+                <option value="15">15 минут</option>
+                <option value="30">30 минут</option>
+                <option value="60">1 час</option>
+              </select>
+            </label>
+            <label>Сигнал
+              <select name="reminderMode">
+                <option value="sound">Мелодия</option>
+                <option value="vibration">Вибро</option>
+                <option value="both">Мелодия + вибро</option>
+                <option value="silent">Тихо</option>
+              </select>
+            </label>
+          </div>
+          <label>Мелодия
+            <select name="reminderMelody">
+              <option value="soft">Мягкая</option>
+              <option value="bell">Звонок</option>
+              <option value="short">Короткая</option>
+            </select>
+          </label>
+          <p class="settings-note">Напоминание работает, когда приложение открыто.</p>
+        </div>
+        <div class="settings-block">
+          <button type="button" class="ghost" id="exportDataBtn">Сохранить резервную копию</button>
+          <button type="button" class="ghost" id="importDataBtn">Восстановить из резервной копии</button>
+          <input class="hidden" id="importDataInput" type="file" accept="application/json,.json" />
+        </div>
+        <a class="settings-link" href="https://repiq.ru/privacy.html" target="_blank" rel="noopener">Политика конфиденциальности</a>
+        <div class="dialog-actions">
+          <button value="cancel" class="ghost">Закрыть</button>
+          <button type="submit" value="save" class="primary" id="saveSettingsBtn">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+    <div class="app-toast" id="appToast" role="status" aria-live="polite"></div>
+
+    <dialog id="dayAiDialog">
+      <form method="dialog" class="dialog-card day-ai-card">
+        <div class="dialog-title-row">
+          <h2>День AI</h2>
+          <span id="dayAiDate"></span>
+        </div>
+        <div class="day-ai-output" id="dayAiOutput">неактивно</div>
+        <div class="dialog-actions">
+          <button value="cancel" class="ghost">Закрыть</button>
+          <button type="button" class="primary" id="generateDayAiBtn">Собрать день</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="reviewDialog">
+      <form method="dialog" class="dialog-card review-card">
+        <h2>Оценить Repiq</h2>
+        <p class="minor">Если Repiq оказался полезен, поставьте оценку в RuStore. Это поможет другим репетиторам найти приложение.</p>
+        <div class="dialog-actions">
+          <button type="button" class="primary" id="reviewRateBtn">Оценить</button>
+          <button type="button" class="ghost" id="reviewLaterBtn">Позже</button>
+          <button type="button" class="ghost" id="reviewNeverBtn">Не показывать</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="aiPaywallDialog">
+      <form method="dialog" class="dialog-card ai-paywall-card">
+        <div class="dialog-title-row">
+          <h2>AI Pro</h2>
+          <span id="aiPaywallFeature">AI Pro</span>
+        </div>
+        <p>AI Pro помогает готовить уроки, домашние задания, сообщения родителям и анализировать прогресс учеников.</p>
+        <div class="ai-status" id="aiPaywallStatus">AI Pro не активен</div>
+        <label>Email, указанный при оплате
+          <input id="aiEmailInput" type="email" placeholder="name@example.ru" />
+        </label>
+        <p class="minor" id="aiPaywallMessage"></p>
+        <div class="dialog-actions">
+          <button type="button" class="ghost" id="openPaymentSiteBtn">Подключить AI Pro</button>
+          <button type="button" class="primary" id="checkAiAccessBtn">Проверить доступ</button>
+          <button value="cancel" class="ghost">Закрыть</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="helpDialog">
+      <form method="dialog" class="dialog-card help-card">
+        <h2>Инструкция</h2>
+        <div class="help-content">
+          <section>
+            <h3>С чего начать</h3>
+            <p>Приложение хранит учеников, группы, расписание, оплаты, баланс и настройки. Чтобы расчеты работали правильно, заполняйте данные по порядку.</p>
+            <ol>
+              <li>Сначала создайте учеников во вкладке Ученики.</li>
+              <li>Если есть группы, создайте их во вкладке Группы и привяжите к ним учеников.</li>
+              <li>Добавьте постоянное расписание ученику или группе. После этого занятия появятся на главной в сетке.</li>
+              <li>Вносите оплаты во вкладке Оплаты. Оплата всегда записывается на конкретного ученика.</li>
+              <li>После урока откройте слот и отметьте Проведено. Только после этого сумма списывается с баланса.</li>
+            </ol>
+          </section>
+          <section>
+            <h3>Ученики и форматы</h3>
+            <p>В карточке ученика задаются статус, предмет, класс, формат, цена, длительность урока, контакты, баланс и расписание.</p>
+            <p>Формат Индивидуально означает, что расписание задается прямо в карточке ученика. Формат Группа означает, что личное расписание скрывается, а занятия строятся из карточки группы. Формат Индивидуально + группа подходит, если ученик ходит в группу и дополнительно занимается лично.</p>
+            <p>Поле Индивидуальных занятий в неделю открывает столько строк расписания, сколько нужно заполнить. В каждой строке можно указать день, время и свою длительность урока. Это поле относится только к личным занятиям ученика.</p>
+          </section>
+          <section>
+            <h3>Группы</h3>
+            <p>Группа нужна для общей сетки, расписания и посещаемости. Сначала создайте учеников, потом группу. В карточке группы укажите предмет, класс, количество занятий в неделю, расписание, длительность каждого занятия и состав группы.</p>
+            <p>Оплата все равно вносится на ученика, а не на группу. Если группу завершить, она уходит в архив и отвязывает учеников.</p>
+          </section>
+          <section>
+            <h3>Главная и сетка</h3>
+            <p>На главной видно расписание по дням, неделям, месяцу и году. Голубой слот свободен, желтый запланирован без оплаты, зеленый оплачен, сиреневый отмечен как проведенный.</p>
+            <p>Если урок длится больше 30 минут, имя показывается в первом слоте, а следующие слоты показывают только время окончания. Свободный слот можно открыть и поставить разовое занятие или личное дело.</p>
+            <p>Разовое занятие тоже проверяет баланс ученика: если деньги есть, слот становится зеленым. Личное дело занимает время в сетке, но не влияет на оплаты и баланс.</p>
+          </section>
+          <section>
+            <h3>Оплаты и баланс</h3>
+            <p>Оплата попадает на баланс ученика. Баланс уменьшается только после статуса Проведено. Если занятие проведено без оплаты, баланс становится отрицательным.</p>
+            <p>Во вкладке Оплаты ведется учет поступлений. Если родитель оплатил заранее, деньги остаются на балансе и расходуются по мере проведенных занятий. Архивные оплаты продолжают учитываться в балансе.</p>
+          </section>
+          <section>
+            <h3>Архив</h3>
+            <p>Архив работает как корзина. Из архива можно вернуть ученика, группу или оплату. Полностью удалить ученика можно только при балансе 0 ₽. При возврате ученик или группа получают статус Пауза.</p>
+          </section>
+          <section>
+            <h3>Резервная копия</h3>
+            <p>Резервная копия нужна, чтобы сохранить данные приложения, перенести их на другой телефон или вернуться к рабочему состоянию после экспериментов. Кнопка Сохранить резервную копию создает JSON-файл в папке Загрузки телефона.</p>
+            <p>Файл называется так: Репетитор-AI-резервная-копия-дата.json. Его можно отправить себе в мессенджер, сохранить на диск или перенести на другой телефон.</p>
+            <ol>
+              <li>На старом телефоне откройте Настройки и нажмите Сохранить резервную копию.</li>
+              <li>Найдите файл в Загрузках и перенесите его на новый телефон.</li>
+              <li>На новом телефоне установите приложение, откройте Настройки и нажмите Восстановить из резервной копии.</li>
+              <li>Выберите этот файл. После восстановления появятся ученики, группы, расписание, оплаты и настройки.</li>
+            </ol>
+          </section>
+          <section>
+            <h3>Настройки и AI</h3>
+            <p>В шестеренке задаются регион времени, видимое рабочее время, напоминания и резервная копия. Постоянную ссылку на онлайн-занятие можно хранить в карточке ученика или группы. Кнопка AI рядом с датой открывает День AI. Остальные AI-разделы сейчас показаны как неактивные.</p>
+          </section>
+        </div>
+        <div class="dialog-actions">
+          <button value="cancel" class="primary">Понятно</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="lessonDialog">
+      <form class="dialog-card" id="lessonForm">
+        <h2>Занятие</h2>
+        <input type="hidden" name="id" />
+        <input type="hidden" name="expectedStudentId" />
+        <input type="hidden" name="expectedDate" />
+        <input type="hidden" name="expectedTime" />
+        <div class="type-switch" id="lessonTypeSwitch">
+          <label><input type="radio" name="itemType" value="lesson" checked /> Урок</label>
+          <label><input type="radio" name="itemType" value="personal" /> Дело</label>
+        </div>
+        <label>Дата <input name="date" type="date" required /></label>
+        <label>Время <input name="time" type="time" required /></label>
+        <div class="lesson-fields">
+          <label>Ученик <select name="studentId" required></select></label>
+          <label>Предмет <input name="subject" required /></label>
+          <label>Стоимость <input name="price" type="number" min="0" step="1" required /></label>
+        </div>
+        <div class="personal-fields hidden">
+          <label>Название дела <input name="title" placeholder="Врач, дорога, подготовка" /></label>
+          <label>Длительность
+            <select name="duration">
+              <option value="30">30 минут</option>
+              <option value="60" selected>1 час</option>
+              <option value="90">1 час 30 минут</option>
+              <option value="120">2 часа</option>
+              <option value="180">3 часа</option>
+            </select>
+          </label>
+        </div>
+        <label>Комментарий <textarea name="note" rows="3"></textarea></label>
+        <div class="dialog-actions four">
+          <button type="button" class="danger subtle-danger" id="freeLessonFormBtn">Освободить</button>
+          <button type="button" class="conducted-action" id="conductedExpectedBtn">Проведен</button>
+          <button value="cancel" class="ghost">Закрыть</button>
+          <button type="submit" value="save" class="primary" id="saveLessonBtn">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="paymentDialog">
+      <form method="dialog" class="dialog-card" id="paymentForm">
+        <h2 id="paymentDialogTitle">Оплата</h2>
+        <input type="hidden" name="paymentId" />
+        <label>Дата оплаты <input name="paidAt" type="date" required /></label>
+        <input type="hidden" name="scope" value="lesson" />
+        <input type="hidden" name="lessonDate" />
+        <input type="hidden" name="month" />
+        <label>Ученик <select name="studentId" required></select></label>
+        <div class="payer-box" id="paymentPayerInfo">Плательщик: родитель не указан</div>
+        <label>Сумма <input name="amount" type="number" min="0" step="1" required /></label>
+        <label>Способ
+          <select name="method">
+            <option>Перевод</option>
+            <option>Наличные</option>
+            <option>Карта</option>
+            <option>Счет</option>
+          </select>
+        </label>
+        <input type="hidden" name="invoice" />
+        <div class="dialog-actions three">
+          <button type="button" class="danger subtle-danger" id="deletePaymentBtn" onclick="archivePayment(event)">В архив</button>
+          <button value="cancel" class="ghost">Закрыть</button>
+          <button value="save" class="primary">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="moveDialog">
+      <form method="dialog" class="dialog-card" id="moveForm">
+        <h2>Перенос</h2>
+        <input type="hidden" name="lessonId" />
+        <label>Новая дата <input name="date" type="date" required /></label>
+        <label>Новое время <input name="time" type="time" required /></label>
+        <label>Причина <textarea name="reason" rows="3"></textarea></label>
+        <div class="dialog-actions">
+          <button value="cancel" class="ghost">Закрыть</button>
+          <button value="save" class="primary">Перенести</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="editLessonDialog">
+      <form method="dialog" class="dialog-card" id="editLessonForm">
+        <h2>Занятие</h2>
+        <input type="hidden" name="lessonId" />
+        <input type="hidden" name="itemType" />
+        <label>Дата <input name="date" type="date" required /></label>
+        <label>Время <input name="time" type="time" required /></label>
+        <div class="lesson-fields">
+          <label>Ученик <select name="studentId" required></select></label>
+          <label>Предмет <input name="subject" required /></label>
+          <label>Стоимость <input name="price" type="number" min="0" step="1" required /></label>
+        </div>
+        <div class="personal-fields hidden">
+          <label>Название дела <input name="title" placeholder="Врач, дорога, подготовка" /></label>
+          <label>Длительность
+            <select name="duration">
+              <option value="30">30 минут</option>
+              <option value="60">1 час</option>
+              <option value="90">1 час 30 минут</option>
+              <option value="120">2 часа</option>
+              <option value="180">3 часа</option>
+            </select>
+          </label>
+        </div>
+        <label>Комментарий <textarea name="note" rows="3"></textarea></label>
+        <div class="dialog-actions four">
+          <button type="button" class="danger subtle-danger" id="deleteLessonBtn" onclick="deleteEditedLesson(event)">Освободить</button>
+          <button type="button" class="conducted-action" id="conductedLessonBtn">Проведен</button>
+          <button value="cancel" class="ghost">Закрыть</button>
+          <button value="save" class="primary">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="studentDialog">
+      <form method="dialog" class="dialog-card" id="studentForm">
+        <h2 id="studentDialogTitle">Ученик</h2>
+        <input type="hidden" name="studentId" />
+        <details class="student-history-box hidden" id="studentHistoryBox">
+          <summary>История занятий</summary>
+          <div class="student-schedule" id="studentSchedule"></div>
+        </details>
+        <label>Имя <input name="name" required /></label>
+        <label>Предмет <input name="subject" required /></label>
+        <label>Класс <input name="grade" placeholder="8 класс" /></label>
+        <label>Формат
+          <select name="format">
+            <option>Индивидуально</option>
+            <option>Группа</option>
+            <option>Индивидуально + группа</option>
+          </select>
+        </label>
+        <label id="studentGroupField">Группа
+          <select name="groupId"></select>
+        </label>
+        <label>Статус
+          <select name="status">
+            <option>Активен</option>
+            <option>Пауза</option>
+            <option>Завершен</option>
+          </select>
+        </label>
+        <label>Об ученике <textarea name="studentNote" rows="3" placeholder="Регион, время, особенности, договоренности"></textarea></label>
+        <label id="studentLessonsPerWeekField">Индивидуальных занятий в неделю
+          <select name="lessonsPerWeek">
+            <option value="1">1 занятие</option>
+            <option value="2">2 занятия</option>
+            <option value="3">3 занятия</option>
+            <option value="4">4 занятия</option>
+            <option value="5">5 занятий</option>
+            <option value="6">6 занятий</option>
+            <option value="7">7 занятий</option>
+          </select>
+        </label>
+        <p class="minor hidden" id="studentGroupScheduleHint">Расписание групповых занятий задаётся в карточке группы. Здесь у ученика выбирается только группа.</p>
+        <div class="regular-slots" id="studentIndividualScheduleBlock">
+          <div class="regular-slots-head">
+            <p class="minor">Постоянное индивидуальное расписание</p>
+          </div>
+          <label>Расписание с <input name="scheduleStartDate" type="date" /></label>
+          <label>Расписание до <input name="scheduleEndDate" type="date" /></label>
+          <label>Постоянная ссылка на онлайн-занятие <input name="onlineLink" type="url" placeholder="https://..." /></label>
+          <div class="regular-slot-row">
+            <select name="regularDay1"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime1" type="time" step="300" placeholder="16:00" />
+            <input name="regularDuration1" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay2"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime2" type="time" step="300" placeholder="18:00" />
+            <input name="regularDuration2" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay3"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime3" type="time" step="300" placeholder="19:00" />
+            <input name="regularDuration3" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay4"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime4" type="time" step="300" placeholder="20:00" />
+            <input name="regularDuration4" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay5"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime5" type="time" step="300" placeholder="20:30" />
+            <input name="regularDuration5" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay6"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime6" type="time" step="300" placeholder="21:00" />
+            <input name="regularDuration6" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay7"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime7" type="time" step="300" placeholder="21:30" />
+            <input name="regularDuration7" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+        </div>
+        <label>Телефон ученика <input name="phone" /></label>
+        <label>Родитель <input name="parentName" /></label>
+        <label>Телефон родителя <input name="parentPhone" /></label>
+        <label>Цена занятия <input name="price" type="number" min="0" step="1" required /></label>
+        <label>Длительность занятия, мин <input name="lessonDuration" type="number" min="30" step="5" value="60" /></label>
+        <div class="dialog-actions">
+          <button value="cancel" class="ghost">Закрыть</button>
+          <button value="save" class="primary">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="groupDialog">
+      <form method="dialog" class="dialog-card" id="groupForm">
+        <h2 id="groupDialogTitle">Группа</h2>
+        <input type="hidden" name="groupId" />
+        <label>Название <input name="name" required placeholder="ОГЭ математика" /></label>
+        <label>Предмет <input name="subject" required /></label>
+        <label>Класс <input name="grade" placeholder="9 класс" /></label>
+        <label>Статус
+          <select name="status">
+            <option>Активна</option>
+            <option>Пауза</option>
+            <option>Завершена</option>
+          </select>
+        </label>
+        <label>Занятий группы в неделю
+          <select name="lessonsPerWeek">
+            <option value="1">1 занятие</option>
+            <option value="2">2 занятия</option>
+            <option value="3">3 занятия</option>
+            <option value="4">4 занятия</option>
+            <option value="5">5 занятий</option>
+            <option value="6">6 занятий</option>
+            <option value="7">7 занятий</option>
+          </select>
+        </label>
+        <div class="regular-slots">
+          <p class="minor">Расписание группы</p>
+          <label>Расписание с <input name="scheduleStartDate" type="date" /></label>
+          <label>Расписание до <input name="scheduleEndDate" type="date" /></label>
+          <label>Постоянная ссылка на онлайн-занятие <input name="onlineLink" type="url" placeholder="https://..." /></label>
+          <div class="regular-slot-row">
+            <select name="regularDay1"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime1" type="time" step="300" placeholder="16:00" />
+            <input name="regularDuration1" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay2"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime2" type="time" step="300" placeholder="18:00" />
+            <input name="regularDuration2" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay3"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime3" type="time" step="300" placeholder="19:00" />
+            <input name="regularDuration3" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay4"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime4" type="time" step="300" placeholder="20:00" />
+            <input name="regularDuration4" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay5"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime5" type="time" step="300" placeholder="20:30" />
+            <input name="regularDuration5" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay6"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime6" type="time" step="300" placeholder="21:00" />
+            <input name="regularDuration6" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+          <div class="regular-slot-row">
+            <select name="regularDay7"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
+            <input name="regularTime7" type="time" step="300" placeholder="21:30" />
+            <input name="regularDuration7" type="number" min="15" step="5" placeholder="60 мин" />
+          </div>
+        </div>
+        <div class="dialog-actions three">
+          <button type="button" class="danger subtle-danger" id="archiveGroupBtn">В архив</button>
+          <button value="cancel" class="ghost">Закрыть</button>
+          <button value="save" class="primary">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="groupLessonDialog">
+      <form method="dialog" class="dialog-card" id="groupLessonForm">
+        <h2 id="groupLessonTitle">Групповое занятие</h2>
+        <input type="hidden" name="lessonId" />
+        <input type="hidden" name="groupId" />
+        <input type="hidden" name="date" />
+        <input type="hidden" name="time" />
+        <div class="list" id="groupLessonMembers"></div>
+        <div class="dialog-actions">
+          <button value="cancel" class="ghost">Закрыть</button>
+          <button value="save" class="primary">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
