@@ -1562,6 +1562,10 @@ button {
     max-width: 1060px;
   }
 
+  #view-home > * {
+    max-width: 1060px;
+  }
+
   .tabs {
     align-self: start;
     background: rgba(255, 255, 255, 0.72);
@@ -1599,7 +1603,6 @@ button {
     gap: 8px;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     margin-bottom: 10px;
-    max-width: 820px;
     width: 820px;
   }
 
@@ -1635,6 +1638,7 @@ button {
   .mode-switch {
     max-width: 620px;
     margin-bottom: 12px;
+    width: 620px;
   }
 
   .section-head {
@@ -1643,6 +1647,7 @@ button {
 
   .week-strip {
     grid-auto-columns: minmax(128px, 1fr);
+    width: 100%;
   }
 
   .month-strip {
