@@ -1,5 +1,5 @@
-const CACHE = "tutor-app-v28";
-const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.json", "./icon.svg", "./icon-32.png", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
+const CACHE = "tutor-app-v29";
+const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.json", "./icon-32.png", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
