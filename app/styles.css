@@ -337,7 +337,14 @@ h2 {
   text-decoration-color: rgba(155, 172, 184, 0.35);
 }
 
-.online-lesson-link {
+.online-link-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(105px, 0.65fr);
+}
+
+.online-lesson-link,
+.online-copy-btn {
   align-items: center;
   background: #e8f4fd;
   border: 1px solid var(--line);
@@ -352,8 +359,18 @@ h2 {
   text-decoration: none;
 }
 
+.online-copy-btn {
+  cursor: pointer;
+}
+
 .online-lesson-link::before {
   content: "↗";
+  font-size: 13px;
+  margin-right: 6px;
+}
+
+.online-copy-btn::before {
+  content: "⧉";
   font-size: 13px;
   margin-right: 6px;
 }
@@ -467,10 +484,13 @@ h2 {
 
 .ai-metric {
   cursor: pointer;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   min-height: 74px;
-  padding: 10px;
+  padding: 30px 10px 10px;
   position: relative;
+  text-align: left;
 }
 
 .ai-metric.ai-active em {
@@ -484,6 +504,7 @@ h2 {
   font-weight: 700;
   position: absolute;
   right: 8px;
+  text-align: right;
   top: 7px;
 }
 
@@ -491,6 +512,7 @@ h2 {
   color: var(--accent);
   font-size: 11px;
   font-weight: 800;
+  line-height: 1.15;
 }
 
 .ai-metric strong {

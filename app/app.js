@@ -55,9 +55,25 @@ function setOnlineLink(id, value) {
   const link = el(id);
   if (!link) return;
   const url = safeOnlineUrl(value);
-  link.classList.toggle("hidden", !url);
+  const actions = link.closest(".online-link-actions");
+  actions?.classList.toggle("hidden", !url);
   if (url) link.href = url;
   else link.removeAttribute("href");
+}
+
+async function copyOnlineLink(linkId) {
+  const href = el(linkId)?.getAttribute("href");
+  const url = safeOnlineUrl(href);
+  if (!url) {
+    showToast("Ссылка не заполнена");
+    return;
+  }
+  try {
+    await copyText(url);
+    showToast("Ссылка скопирована");
+  } catch (error) {
+    showToast("Не удалось скопировать");
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -594,6 +610,9 @@ function bindDialogs() {
   el("groupForm").lessonsPerWeek.addEventListener("change", () => updateVisibleRegularRows(el("groupForm")));
   el("lessonForm").studentId.addEventListener("change", (event) => setOnlineLink("lessonOnlineLink", student(event.target.value)?.onlineLink || ""));
   el("editLessonForm").studentId.addEventListener("change", (event) => setOnlineLink("editLessonOnlineLink", student(event.target.value)?.onlineLink || ""));
+  document.querySelectorAll("[data-copy-online]").forEach((button) => {
+    button.addEventListener("click", () => copyOnlineLink(button.dataset.copyOnline));
+  });
   el("freeLessonFormBtn").addEventListener("click", freeLessonFromForm);
   el("conductedExpectedBtn").addEventListener("click", markExpectedConductedFromForm);
   el("conductedLessonBtn").addEventListener("click", toggleConductedFromEditForm);
