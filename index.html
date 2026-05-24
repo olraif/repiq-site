@@ -85,6 +85,14 @@
         font-size: 14px;
       }
 
+      .header-links {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        justify-content: flex-end;
+      }
+
       .hero {
         align-items: center;
         background: linear-gradient(135deg, #ffffff 0%, #f6fcff 100%);
@@ -299,6 +307,10 @@
           align-items: flex-start;
           flex-direction: column;
         }
+
+        .header-links {
+          justify-content: flex-start;
+        }
       }
 
       @media (max-width: 520px) {
@@ -327,7 +339,10 @@
             <span>CRM и помощник для репетитора</span>
           </div>
         </div>
-        <a href="https://www.rustore.ru/catalog/app/com.olesya.tutor">Скачать в RuStore</a>
+        <nav class="header-links" aria-label="Быстрые ссылки">
+          <a href="https://www.rustore.ru/catalog/app/com.olesya.tutor">Скачать в RuStore</a>
+          <a href="./app/">Открыть веб-версию</a>
+        </nav>
       </header>
 
       <main>
@@ -339,7 +354,8 @@
               контролируйте баланс, переносы, личные дела и резервные копии.
             </p>
             <div class="actions">
-              <a class="button" href="https://www.rustore.ru/catalog/app/com.olesya.tutor">Установить бесплатно</a>
+              <a class="button" href="https://www.rustore.ru/catalog/app/com.olesya.tutor">Скачать в RuStore</a>
+              <a class="button secondary" href="./app/">Открыть веб-версию</a>
               <a class="button secondary" href="#features">Что внутри</a>
             </div>
           </div>
