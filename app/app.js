@@ -1040,11 +1040,15 @@ function importDataBackup(event) {
 
 function clearLocalData() {
   const hasData = [state.students, state.groups, state.lessons, state.payments].some((items) => items?.length);
+  if (hasData) {
+    const backupFirst = window.confirm("Перед очисткой лучше сделать резервную копию. Нажмите ОК, чтобы сохранить копию и продолжить очистку. Отмена — вернуться в настройки.");
+    if (!backupFirst) return;
+    exportDataBackup();
+  }
   const message = hasData
-    ? "Очистить всех учеников, группы, оплаты и расписание только на этом устройстве? Если нужно сохранить данные, сначала сделайте резервную копию."
+    ? "Резервная копия сохранена или уже готовится. Очистить всех учеников, группы, оплаты и расписание только на этом устройстве?"
     : "База уже пустая. Сбросить настройки на этом устройстве?";
   if (!window.confirm(message)) return;
-  if (!window.confirm("Точно очистить локальную базу? Это действие нельзя отменить без резервной копии.")) return;
   localStorage.removeItem(storeKey);
   localStorage.removeItem(oldStoreKey);
   state = load();
