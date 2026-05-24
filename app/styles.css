@@ -1536,6 +1536,9 @@ button {
     grid-template-areas:
       "topbar topbar"
       "tabs content";
+    grid-template-rows: auto 1fr;
+    align-content: start;
+    align-items: start;
     margin: 0 auto;
     max-width: 1320px;
     min-height: 100vh;
