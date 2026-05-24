@@ -284,6 +284,7 @@
           <label>Ученик <select name="studentId" required></select></label>
           <label>Предмет <input name="subject" required /></label>
           <label>Стоимость <input name="price" type="number" min="0" step="1" required /></label>
+          <a class="online-lesson-link hidden" id="lessonOnlineLink" href="#" target="_blank" rel="noopener">Открыть онлайн-занятие</a>
         </div>
         <div class="personal-fields hidden">
           <label>Название дела <input name="title" placeholder="Врач, дорога, подготовка" /></label>
@@ -360,6 +361,7 @@
           <label>Ученик <select name="studentId" required></select></label>
           <label>Предмет <input name="subject" required /></label>
           <label>Стоимость <input name="price" type="number" min="0" step="1" required /></label>
+          <a class="online-lesson-link hidden" id="editLessonOnlineLink" href="#" target="_blank" rel="noopener">Открыть онлайн-занятие</a>
         </div>
         <div class="personal-fields hidden">
           <label>Название дела <input name="title" placeholder="Врач, дорога, подготовка" /></label>
@@ -431,6 +433,7 @@
           <label>Расписание с <input name="scheduleStartDate" type="date" /></label>
           <label>Расписание до <input name="scheduleEndDate" type="date" /></label>
           <label>Постоянная ссылка на онлайн-занятие <input name="onlineLink" type="url" placeholder="https://..." /></label>
+          <a class="online-lesson-link hidden" id="studentOnlineLinkOpen" href="#" target="_blank" rel="noopener">Открыть онлайн-занятие</a>
           <div class="regular-slot-row">
             <select name="regularDay1"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
             <input name="regularTime1" type="time" step="300" placeholder="16:00" />
@@ -509,6 +512,7 @@
           <label>Расписание с <input name="scheduleStartDate" type="date" /></label>
           <label>Расписание до <input name="scheduleEndDate" type="date" /></label>
           <label>Постоянная ссылка на онлайн-занятие <input name="onlineLink" type="url" placeholder="https://..." /></label>
+          <a class="online-lesson-link hidden" id="groupOnlineLinkOpen" href="#" target="_blank" rel="noopener">Открыть онлайн-занятие</a>
           <div class="regular-slot-row">
             <select name="regularDay1"><option value="">-</option><option value="1">Пн</option><option value="2">Вт</option><option value="3">Ср</option><option value="4">Чт</option><option value="5">Пт</option><option value="6">Сб</option><option value="0">Вс</option></select>
             <input name="regularTime1" type="time" step="300" placeholder="16:00" />

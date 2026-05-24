@@ -40,6 +40,26 @@ const appConfig = {
 const el = (id) => document.getElementById(id);
 const views = ["home", "students", "groups", "payments"];
 
+function safeOnlineUrl(value = "") {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  try {
+    const url = new URL(text);
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+function setOnlineLink(id, value) {
+  const link = el(id);
+  if (!link) return;
+  const url = safeOnlineUrl(value);
+  link.classList.toggle("hidden", !url);
+  if (url) link.href = url;
+  else link.removeAttribute("href");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   bindNavigation();
   bindDialogs();
@@ -568,8 +588,12 @@ function bindDialogs() {
   });
   el("paymentForm").studentId.addEventListener("change", updatePaymentPayerInfo);
   el("studentForm").format.addEventListener("change", updateStudentFormatFields);
+  el("studentForm").onlineLink.addEventListener("input", (event) => setOnlineLink("studentOnlineLinkOpen", event.target.value));
   el("studentForm").lessonsPerWeek.addEventListener("change", () => updateVisibleRegularRows(el("studentForm")));
+  el("groupForm").onlineLink.addEventListener("input", (event) => setOnlineLink("groupOnlineLinkOpen", event.target.value));
   el("groupForm").lessonsPerWeek.addEventListener("change", () => updateVisibleRegularRows(el("groupForm")));
+  el("lessonForm").studentId.addEventListener("change", (event) => setOnlineLink("lessonOnlineLink", student(event.target.value)?.onlineLink || ""));
+  el("editLessonForm").studentId.addEventListener("change", (event) => setOnlineLink("editLessonOnlineLink", student(event.target.value)?.onlineLink || ""));
   el("freeLessonFormBtn").addEventListener("click", freeLessonFromForm);
   el("conductedExpectedBtn").addEventListener("click", markExpectedConductedFromForm);
   el("conductedLessonBtn").addEventListener("click", toggleConductedFromEditForm);
@@ -1947,6 +1971,7 @@ function openLessonDialog(time = "16:00", options = {}) {
     form.subject.value = first.subject;
     form.price.value = first.price;
   }
+  setOnlineLink("lessonOnlineLink", first?.onlineLink || "");
   updateLessonFormType(form);
   el("lessonDialog").showModal();
 }
@@ -1975,6 +2000,7 @@ function openExpectedSlotDialog(studentId, date, time) {
   form.subject.value = foundStudent.subject;
   form.price.value = foundStudent.price;
   form.itemType.value = "lesson";
+  setOnlineLink("lessonOnlineLink", foundStudent.onlineLink || "");
   updateLessonFormType(form);
   el("freeLessonFormBtn").style.display = "";
   const expectedLesson = {
@@ -2162,6 +2188,7 @@ function openEditLessonDialog(id) {
   form.studentId.value = lesson.studentId || "";
   form.subject.value = lesson.subject || "";
   form.price.value = isPersonalEvent(lesson) ? 0 : lessonPrice(lesson);
+  setOnlineLink("editLessonOnlineLink", lesson.onlineLink || student(lesson.studentId)?.onlineLink || "");
   form.title.value = lesson.title || "";
   form.duration.value = String(lessonDurationMinutes(lesson));
   form.note.value = lesson.note || "";
@@ -2212,6 +2239,7 @@ function saveEditedLesson(event) {
       lesson.subject = data.subject || foundStudent.subject;
       lesson.price = Number(data.price);
       lesson.duration = Number(foundStudent.lessonDuration || lesson.duration || 60);
+      lesson.onlineLink = foundStudent.onlineLink || "";
     }
     state.selectedDate = data.date;
   }
@@ -2247,6 +2275,7 @@ function prepareStudentForm(studentId = "") {
   form.scheduleEndDate.value = item?.scheduleEndDate || "";
   setRegularSlotsForm(form, item?.regularSlots || normalizeRegularSlots(item || {}));
   form.onlineLink.value = item?.onlineLink || "";
+  setOnlineLink("studentOnlineLinkOpen", item?.onlineLink || "");
   form.phone.value = item?.phone || "";
   form.parentName.value = item?.parentName || "";
   form.parentPhone.value = item?.parentPhone || "";
@@ -2274,6 +2303,7 @@ function prepareGroupForm(groupId = "") {
   form.scheduleEndDate.value = item?.scheduleEndDate || "";
   setRegularSlotsForm(form, item?.regularSlots || normalizeRegularSlots(item || {}));
   form.onlineLink.value = item?.onlineLink || "";
+  setOnlineLink("groupOnlineLinkOpen", item?.onlineLink || "");
   updateVisibleRegularRows(form);
   el("archiveGroupBtn").style.visibility = item && !item.archived ? "visible" : "hidden";
 }
