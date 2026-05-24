@@ -337,6 +337,23 @@ h2 {
   text-decoration-color: rgba(155, 172, 184, 0.35);
 }
 
+.clear-data-btn {
+  background: transparent;
+  border: 1px solid #f1c8d0;
+  border-radius: 8px;
+  color: #bd6675;
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 34px;
+  opacity: 0.72;
+  padding: 8px 10px;
+}
+
+.clear-data-btn:active {
+  background: #fff4f6;
+  opacity: 1;
+}
+
 .online-link-actions {
   display: grid;
   gap: 8px;

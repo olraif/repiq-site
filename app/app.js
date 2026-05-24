@@ -628,6 +628,7 @@ function bindDialogs() {
   el("groupLessonForm").addEventListener("submit", saveGroupLessonAttendance);
   el("moveForm").addEventListener("submit", moveLesson);
   el("settingsForm").addEventListener("submit", saveSettings);
+  el("clearLocalDataBtn").addEventListener("click", clearLocalData);
   el("dayAiBtn").addEventListener("click", openDayAiDialog);
   el("generateDayAiBtn").addEventListener("click", generateDayAi);
   el("checkAiAccessBtn").addEventListener("click", checkAiAccessFromPaywall);
@@ -1035,6 +1036,22 @@ function importDataBackup(event) {
     event.target.value = "";
   };
   reader.readAsText(file);
+}
+
+function clearLocalData() {
+  const hasData = [state.students, state.groups, state.lessons, state.payments].some((items) => items?.length);
+  const message = hasData
+    ? "Очистить всех учеников, группы, оплаты и расписание только на этом устройстве? Если нужно сохранить данные, сначала сделайте резервную копию."
+    : "База уже пустая. Сбросить настройки на этом устройстве?";
+  if (!window.confirm(message)) return;
+  if (!window.confirm("Точно очистить локальную базу? Это действие нельзя отменить без резервной копии.")) return;
+  localStorage.removeItem(storeKey);
+  localStorage.removeItem(oldStoreKey);
+  state = load();
+  save();
+  prepareSettingsForm();
+  render();
+  showToast("База очищена");
 }
 
 function demoDayAiText() {
