@@ -1558,6 +1558,10 @@ button {
     min-width: 0;
   }
 
+  #view-home {
+    max-width: 1060px;
+  }
+
   .tabs {
     align-self: start;
     background: rgba(255, 255, 255, 0.72);
@@ -1592,11 +1596,47 @@ button {
   }
 
   .metrics {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    margin-bottom: 10px;
+  }
+
+  .ai-metric {
+    border-color: #cfe4f3;
+    border-radius: 9px;
+    min-height: 64px;
+    padding: 9px 10px;
+  }
+
+  .ai-metric em {
+    font-size: 8px;
+    right: 7px;
+    top: 6px;
+  }
+
+  .ai-metric span {
+    font-size: 10px;
+  }
+
+  .ai-metric strong {
+    font-size: 12px;
+    line-height: 1.15;
+    margin-top: 3px;
+  }
+
+  .ai-metric small {
+    font-size: 9px;
+    line-height: 1.15;
+    margin-top: 3px;
   }
 
   .mode-switch {
     max-width: 620px;
+    margin-bottom: 12px;
+  }
+
+  .section-head {
+    margin: 10px 0 8px;
   }
 
   .week-strip {
@@ -1614,6 +1654,7 @@ button {
   .slot-grid {
     grid-template-columns: 64px repeat(7, minmax(118px, 1fr));
     max-width: calc(100vw - 260px);
+    gap: 4px;
   }
 
   .slot-cell {
@@ -1625,6 +1666,11 @@ button {
   .slot-cell {
     min-height: 50px;
     padding: 7px;
+  }
+
+  .slot-cell {
+    border-color: #c5e0f3;
+    color: #7890a2;
   }
 
   .calendar-grid {
