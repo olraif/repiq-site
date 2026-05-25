@@ -689,8 +689,9 @@ function saveSettings(event) {
 }
 
 function openDayAiDialog() {
-  el("dayAiDate").textContent = selectedDateLabel();
-  el("dayAiOutput").textContent = state.lastDayAiDate === state.selectedDate && state.lastDayAiText
+  const date = dayAiDate();
+  el("dayAiDate").textContent = dayAiDateLabel(date);
+  el("dayAiOutput").textContent = state.lastDayAiDate === date && state.lastDayAiText
     ? state.lastDayAiText
     : "Нажмите «Собрать день», чтобы получить сводку по занятиям, оплатам, свободным окнам и задачам.";
   el("dayAiDialog").showModal();
@@ -699,8 +700,9 @@ function openDayAiDialog() {
 async function generateDayAi() {
   const box = el("dayAiOutput");
   box.textContent = "Собираю день...";
-  const text = buildDayAiSummary();
-  state.lastDayAiDate = state.selectedDate;
+  const date = dayAiDate();
+  const text = buildDayAiSummary(date);
+  state.lastDayAiDate = date;
   state.lastDayAiText = text;
   save();
   box.textContent = text;
@@ -964,9 +966,17 @@ function responseText(data) {
     .trim();
 }
 
-function buildDayAiSummary() {
+function dayAiDate() {
+  return todayIso();
+}
+
+function dayAiDateLabel(date = dayAiDate()) {
+  return asDate(date).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function buildDayAiSummary(date = dayAiDate()) {
   const lessons = plannedLessons()
-    .filter((lesson) => lesson.date === state.selectedDate)
+    .filter((lesson) => lesson.date === date)
     .sort(sortByDateTime);
   const studyLessons = lessons.filter((lesson) => !isPersonalEvent(lesson));
   const personalEvents = lessons.filter(isPersonalEvent);
@@ -974,9 +984,9 @@ function buildDayAiSummary() {
   const unpaidRows = dayUnpaidRows(studyLessons);
   const missingLinks = dayMissingOnlineLinks(studyLessons);
   const needsConducted = studyLessons.filter((lesson) => !lessonConductedForSummary(lesson) && isPastLesson(lesson));
-  const freeWindows = dayFreeWindows(lessons).slice(0, 4);
+  const freeWindows = dayFreeWindows(lessons, date).slice(0, 4);
   const lines = [
-    `День AI · ${selectedDateLabel()}`,
+    `День AI · ${dayAiDateLabel(date)}`,
     "",
     `Сегодня: ${studyLessons.length} зан. · ${money.format(totals.paid)} оплачено · ${money.format(totals.unpaid)} не оплачено`
   ];
@@ -1007,7 +1017,7 @@ function buildDayAiSummary() {
   lines.push("", "Проверить:");
   const actions = [];
   if (needsConducted.length) actions.push(`отметить проведение: ${needsConducted.map(lessonOwnerName).slice(0, 3).join(", ")}`);
-  if (missingLinks.length) actions.push(`добавить ссылку: ${missingLinks.slice(0, 3).join(", ")}`);
+  if (missingLinks.length) actions.push(`добавить ссылку на онлайн-урок в карточке: ${missingLinks.slice(0, 3).join(", ")}`);
   if (unpaidRows.length) actions.push("посмотреть неоплаченные занятия");
   if (!actions.length) actions.push("критичных задач нет");
   actions.forEach((action) => lines.push(`• ${action}`));
@@ -1046,13 +1056,13 @@ function dayMissingOnlineLinks(lessons) {
     .filter(Boolean))];
 }
 
-function dayFreeWindows(dayLessons) {
+function dayFreeWindows(dayLessons, date = dayAiDate()) {
   const slots = timeSlots(state.workStart || "09:00", state.workEnd || "22:00", 30);
   const windows = [];
   let start = "";
   let last = "";
   slots.forEach((time) => {
-    const free = !lessonAtSlot(dayLessons, state.selectedDate, time);
+    const free = !lessonAtSlot(dayLessons, date, time);
     if (free && !start) start = time;
     if (free) last = time;
     if (!free && start) {

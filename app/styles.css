@@ -434,10 +434,18 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--ink);
+  font-size: 13px;
   line-height: 1.45;
-  min-height: 180px;
-  padding: 14px;
+  max-height: min(52dvh, 430px);
+  min-height: 96px;
+  overflow: auto;
+  padding: 12px;
   white-space: pre-wrap;
+}
+
+.day-ai-card {
+  gap: 10px;
+  padding: 14px;
 }
 
 .help-card {
@@ -1402,6 +1410,11 @@ dialog {
 
 dialog::backdrop {
   background: rgba(23, 37, 38, 0.35);
+}
+
+#dayAiDialog {
+  max-width: 360px;
+  width: calc(100vw - 44px);
 }
 
 .dialog-card {
