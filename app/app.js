@@ -2228,6 +2228,9 @@ function createLessonFromForm(form, conducted = false) {
   }
   const foundStudent = student(data.studentId);
   const regularEntry = regularEntryForDateTime(foundStudent, data.date, data.time);
+  const expectedMoved = form.expectedStudentId.value
+    && (form.expectedDate.value !== data.date || form.expectedTime.value !== data.time);
+  if (expectedMoved) addExclusion(form.expectedStudentId.value, form.expectedDate.value, form.expectedTime.value);
   removeExclusion(data.studentId, data.date, data.time);
     state.lessons.push({
       id: uuid(),
