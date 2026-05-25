@@ -25,6 +25,7 @@ const seed = {
 let state = load();
 let calcCache = null;
 let reminderTimer = null;
+let undoSnapshot = null;
 const maxRegularSlots = 7;
 const appVersion = "2026.05.18-1555.1as";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
@@ -135,6 +136,22 @@ function load() {
 function save() {
   calcCache = null;
   localStorage.setItem(storeKey, JSON.stringify(state));
+}
+
+function rememberUndo() {
+  undoSnapshot = JSON.stringify(state);
+}
+
+function undoLastAction() {
+  if (!undoSnapshot) {
+    showToast("Нечего отменять");
+    return;
+  }
+  state = JSON.parse(undoSnapshot);
+  undoSnapshot = null;
+  save();
+  render();
+  showToast("Действие отменено");
 }
 
 function normalizeAiEntitlement(entitlement = {}) {
@@ -514,11 +531,13 @@ function transferLessonPayments(lesson, nextLesson) {
 function freeLessonById(lessonId) {
   const lesson = state.lessons.find((item) => item.id === lessonId);
   if (!lesson) return;
+  rememberUndo();
   excludeRegularSlotForLesson(lesson, lesson.date, lesson.time);
   state.lessons = state.lessons.filter((item) => item.id !== lesson.id);
   state.selectedDate = lesson.date;
   save();
   render();
+  showUndoToast("Слот освобожден");
 }
 
 function addExclusion(studentId, date, time) {
@@ -877,11 +896,24 @@ function showToast(message) {
   const toast = el("appToast");
   if (!toast) return;
   toast.textContent = message;
+  toast.classList.remove("with-action");
   toast.classList.add("visible");
   clearTimeout(showToast.timer);
   showToast.timer = setTimeout(() => {
     toast.classList.remove("visible");
   }, 2200);
+}
+
+function showUndoToast(message) {
+  const toast = el("appToast");
+  if (!toast) return;
+  toast.innerHTML = `<span>${message}</span><button type="button">Отменить</button>`;
+  toast.classList.add("visible", "with-action");
+  toast.querySelector("button")?.addEventListener("click", undoLastAction, { once: true });
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => {
+    toast.classList.remove("visible", "with-action");
+  }, 5200);
 }
 
 function trackMarketingEvent(event) {
@@ -1526,6 +1558,7 @@ function moveLesson(event) {
   const data = Object.fromEntries(new FormData(event.currentTarget));
   const lesson = state.lessons.find((item) => item.id === data.lessonId) || plannedLessons().find((item) => item.id === data.lessonId);
   if (lesson) {
+    rememberUndo();
     const oldDate = lesson.date;
     const oldTime = lesson.time;
     excludeRegularSlotForLesson(lesson, oldDate, oldTime);
@@ -1542,6 +1575,7 @@ function moveLesson(event) {
   save();
   el("moveDialog").close();
   render();
+  showUndoToast("Урок перенесен");
 }
 
 function render() {
@@ -2167,6 +2201,7 @@ function markExpectedConductedFromForm(event) {
 
 function createLessonFromForm(form, conducted = false) {
   const data = Object.fromEntries(new FormData(form));
+  rememberUndo();
   if (data.itemType === "personal") {
     state.lessons.push({
       id: uuid(),
@@ -2366,6 +2401,9 @@ function saveEditedLesson(event) {
   const data = Object.fromEntries(new FormData(event.currentTarget));
   const lesson = state.lessons.find((item) => item.id === data.lessonId);
   if (lesson) {
+    rememberUndo();
+    const oldDate = lesson.date;
+    const oldTime = lesson.time;
     lesson.date = data.date;
     lesson.time = data.time;
     lesson.note = data.note;
@@ -2384,11 +2422,16 @@ function saveEditedLesson(event) {
       lesson.duration = Number(foundStudent.lessonDuration || lesson.duration || 60);
       lesson.onlineLink = foundStudent.onlineLink || "";
     }
+    if (!isPersonalEvent(lesson) && (oldDate !== lesson.date || oldTime !== lesson.time)) {
+      excludeRegularSlotForLesson({ ...lesson, date: oldDate, time: oldTime }, oldDate, oldTime);
+      lesson.movedFrom ||= `${oldDate} ${oldTime}`;
+    }
     state.selectedDate = data.date;
   }
   save();
   el("editLessonDialog").close();
   render();
+  showUndoToast("Изменения сохранены");
 }
 
 function deleteEditedLesson(event) {
