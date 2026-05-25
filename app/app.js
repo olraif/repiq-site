@@ -547,6 +547,11 @@ function addExclusion(studentId, date, time) {
   if (!exists) state.exclusions.push({ studentId, date, time });
 }
 
+function removeExclusion(studentId, date, time) {
+  if (!studentId || !date || !time) return;
+  state.exclusions = (state.exclusions || []).filter((item) => !(item.studentId === studentId && item.date === date && item.time === time));
+}
+
 function lessonBelongsToRegularSchedule(lesson) {
   if (!lesson.studentId || isPersonalEvent(lesson)) return false;
   return Boolean(regularEntryForDateTime(student(lesson.studentId), lesson.date, lesson.time));
@@ -1569,6 +1574,7 @@ function moveLesson(event) {
     movedLesson.date = data.date;
     movedLesson.time = data.time;
     movedLesson.note = data.reason ? `${movedLesson.note || ""} Перенос: ${data.reason}`.trim() : movedLesson.note;
+    removeExclusion(movedLesson.studentId, movedLesson.date, movedLesson.time);
     if (lesson.expected) state.lessons.push(movedLesson);
     state.selectedDate = data.date;
   }
@@ -1915,6 +1921,7 @@ function cleanupHiddenStoredLessons() {
   state.lessons = state.lessons.filter((lesson) => {
     if (isExcludedLesson(lesson)) return false;
     if (lesson.conducted || groupLessonConducted(lesson)) return true;
+    if (lesson.movedFrom || lesson.source === "manual") return true;
     return visibleIds.has(lesson.id);
   });
   const changed = state.lessons.length !== originalLength;
@@ -2221,6 +2228,7 @@ function createLessonFromForm(form, conducted = false) {
   }
   const foundStudent = student(data.studentId);
   const regularEntry = regularEntryForDateTime(foundStudent, data.date, data.time);
+  removeExclusion(data.studentId, data.date, data.time);
     state.lessons.push({
       id: uuid(),
       date: data.date,
@@ -2426,6 +2434,7 @@ function saveEditedLesson(event) {
       excludeRegularSlotForLesson({ ...lesson, date: oldDate, time: oldTime }, oldDate, oldTime);
       lesson.movedFrom ||= `${oldDate} ${oldTime}`;
     }
+    if (!isPersonalEvent(lesson)) removeExclusion(lesson.studentId, lesson.date, lesson.time);
     state.selectedDate = data.date;
   }
   save();
