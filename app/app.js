@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "2026.05.18-1555.1as";
+const appVersion = "2026.05.18-1555.1aw";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const reviewStateKey = "repiq-review-request-v1";
@@ -547,9 +547,21 @@ function addExclusion(studentId, date, time) {
   if (!exists) state.exclusions.push({ studentId, date, time });
 }
 
+function addGroupExclusion(groupId, date, time) {
+  if (!groupId || !date || !time) return;
+  state.exclusions ||= [];
+  const exists = state.exclusions.some((item) => item.groupId === groupId && item.date === date && item.time === time);
+  if (!exists) state.exclusions.push({ groupId, date, time });
+}
+
 function removeExclusion(studentId, date, time) {
   if (!studentId || !date || !time) return;
   state.exclusions = (state.exclusions || []).filter((item) => !(item.studentId === studentId && item.date === date && item.time === time));
+}
+
+function removeGroupExclusion(groupId, date, time) {
+  if (!groupId || !date || !time) return;
+  state.exclusions = (state.exclusions || []).filter((item) => !(item.groupId === groupId && item.date === date && item.time === time));
 }
 
 function lessonBelongsToRegularSchedule(lesson) {
@@ -558,6 +570,10 @@ function lessonBelongsToRegularSchedule(lesson) {
 }
 
 function excludeRegularSlotForLesson(lesson, date, time) {
+  if (lesson?.groupId) {
+    addGroupExclusion(lesson.groupId, date, time);
+    return;
+  }
   if (!lesson?.studentId || isPersonalEvent(lesson)) return;
   const regularCandidate = { ...lesson, date, time };
   if (lesson.expected || lesson.source === "regular" || lessonBelongsToRegularSchedule(regularCandidate)) {
@@ -658,6 +674,7 @@ function bindDialogs() {
   el("groupForm").addEventListener("submit", saveGroup);
   el("archiveGroupBtn").addEventListener("click", archiveGroup);
   el("groupLessonForm").addEventListener("submit", saveGroupLessonAttendance);
+  el("conductedGroupLessonBtn").addEventListener("click", markGroupLessonConductedFromDialog);
   el("moveForm").addEventListener("submit", moveLesson);
   el("settingsForm").addEventListener("submit", saveSettings);
   el("clearLocalDataBtn").addEventListener("click", clearLocalData);
@@ -1568,13 +1585,14 @@ function moveLesson(event) {
     const oldTime = lesson.time;
     excludeRegularSlotForLesson(lesson, oldDate, oldTime);
     const movedLesson = lesson.expected
-      ? { ...lesson, id: uuid(), expected: false, conducted: false, source: "regular" }
+      ? { ...lesson, id: uuid(), expected: false, conducted: false, source: "manual" }
       : lesson;
     movedLesson.movedFrom = `${oldDate} ${oldTime}`;
     movedLesson.date = data.date;
     movedLesson.time = data.time;
     movedLesson.note = data.reason ? `${movedLesson.note || ""} Перенос: ${data.reason}`.trim() : movedLesson.note;
     removeExclusion(movedLesson.studentId, movedLesson.date, movedLesson.time);
+    removeGroupExclusion(movedLesson.groupId, movedLesson.date, movedLesson.time);
     if (lesson.expected) state.lessons.push(movedLesson);
     state.selectedDate = data.date;
   }
@@ -1582,6 +1600,21 @@ function moveLesson(event) {
   el("moveDialog").close();
   render();
   showUndoToast("Урок перенесен");
+}
+
+function moveGroupLessonFromDialog(event) {
+  event.preventDefault();
+  const lessonId = el("groupLessonForm").lessonId.value;
+  el("groupLessonDialog").close();
+  openMoveDialog(lessonId);
+}
+
+function markGroupLessonConductedFromDialog(event) {
+  event.preventDefault();
+  el("groupLessonMembers").querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
+    checkbox.checked = true;
+  });
+  el("conductedGroupLessonBtn").classList.add("active");
 }
 
 function render() {
@@ -1627,6 +1660,7 @@ function fillStudentSelects() {
 function renderHeader() {
   const today = new Date();
   el("todayTitle").textContent = today.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric", timeZone: state.timezone || "Europe/Moscow" });
+  el("helpBtn").textContent = `v${appVersion.split("-").pop()}`;
   document.querySelectorAll(".mode").forEach((button) => button.classList.toggle("active", button.dataset.mode === state.mode));
 }
 
@@ -2230,8 +2264,10 @@ function createLessonFromForm(form, conducted = false) {
   const regularEntry = regularEntryForDateTime(foundStudent, data.date, data.time);
   const expectedMoved = form.expectedStudentId.value
     && (form.expectedDate.value !== data.date || form.expectedTime.value !== data.time);
+  const movedFrom = expectedMoved ? `${form.expectedDate.value} ${form.expectedTime.value}` : "";
   if (expectedMoved) addExclusion(form.expectedStudentId.value, form.expectedDate.value, form.expectedTime.value);
   removeExclusion(data.studentId, data.date, data.time);
+  const lessonDuration = Number((expectedMoved ? foundStudent.lessonDuration : regularEntry?.duration) || foundStudent.lessonDuration || 60);
     state.lessons.push({
       id: uuid(),
       date: data.date,
@@ -2239,12 +2275,12 @@ function createLessonFromForm(form, conducted = false) {
       studentId: data.studentId,
       subject: data.subject || foundStudent.subject,
       price: Number(data.price),
-      duration: Number(regularEntry?.duration || foundStudent.lessonDuration || 60),
+      duration: lessonDuration,
       onlineLink: foundStudent.onlineLink || "",
     note: data.note || (form.expectedStudentId.value ? "Постоянное расписание" : ""),
-    source: form.expectedStudentId.value ? "regular" : "manual",
+    source: expectedMoved ? "manual" : form.expectedStudentId.value ? "regular" : "manual",
       conducted,
-      movedFrom: ""
+      movedFrom
     });
   state.selectedDate = data.date;
   save();
@@ -2314,9 +2350,12 @@ function openGroupSlotDialog(id) {
   const saved = state.groupAttendance[groupLessonKey(lesson)] || { present: {}, conducted: false };
   form.lessonId.value = lesson.id;
   form.groupId.value = lesson.groupId;
+  form.originalDate.value = lesson.date;
+  form.originalTime.value = lesson.time;
   form.date.value = lesson.date;
   form.time.value = lesson.time;
   el("groupLessonTitle").textContent = `${item.name} · ${lesson.date} ${lesson.time}`;
+  el("conductedGroupLessonBtn").classList.toggle("active", Boolean(saved.conducted));
   const members = groupStudents(lesson.groupId);
   el("groupLessonMembers").innerHTML = members.length
     ? members.map((member) => {
@@ -2339,6 +2378,40 @@ function saveGroupLessonAttendance(event) {
   const form = el("groupLessonForm");
   const data = Object.fromEntries(new FormData(form));
   const members = groupStudents(data.groupId);
+  const moved = data.originalDate && data.originalTime && (data.originalDate !== data.date || data.originalTime !== data.time);
+  if (moved) {
+    rememberUndo();
+    const oldLesson = { groupId: data.groupId, date: data.originalDate, time: data.originalTime };
+    const oldKey = groupLessonKey(oldLesson);
+    const existingLesson = state.lessons.find((item) => item.id === data.lessonId);
+    const plannedLesson = plannedLessons().find((item) => item.id === data.lessonId) || existingLesson;
+    const item = group(data.groupId);
+    const storedLesson = existingLesson || {
+      id: uuid(),
+      groupId: data.groupId,
+      studentId: "",
+      source: "manual",
+      expected: false,
+      conducted: false,
+      price: 0
+    };
+    Object.assign(storedLesson, {
+      groupId: data.groupId,
+      date: data.date,
+      time: data.time,
+      duration: Number(plannedLesson?.duration || regularEntryForDateTime(item, data.date, data.time)?.duration || 60),
+      subject: item?.subject || plannedLesson?.subject || "",
+      grade: item?.grade || plannedLesson?.grade || "",
+      onlineLink: item?.onlineLink || plannedLesson?.onlineLink || "",
+      note: plannedLesson?.note || "Перенос группы",
+      movedFrom: `${data.originalDate} ${data.originalTime}`
+    });
+    if (!existingLesson) state.lessons.push(storedLesson);
+    addGroupExclusion(data.groupId, data.originalDate, data.originalTime);
+    removeGroupExclusion(data.groupId, data.date, data.time);
+    delete state.groupAttendance[oldKey];
+    state.selectedDate = data.date;
+  }
   const lesson = { groupId: data.groupId, date: data.date, time: data.time };
   const present = {};
   members.forEach((member) => {
@@ -2356,7 +2429,7 @@ function saveGroupLessonAttendance(event) {
 }
 
 function openMoveDialog(id) {
-  const lesson = state.lessons.find((item) => item.id === id);
+  const lesson = state.lessons.find((item) => item.id === id) || plannedLessons().find((item) => item.id === id);
   if (!lesson) return;
   const form = el("moveForm");
   form.lessonId.value = lesson.id;
@@ -2910,9 +2983,8 @@ function lessonsOverlap(a, b) {
 }
 
 function isExcludedLesson(lesson) {
-  if (!lesson.studentId) return false;
   return (state.exclusions || []).some((excluded) =>
-    excluded.studentId === lesson.studentId
+    ((lesson.studentId && excluded.studentId === lesson.studentId) || (lesson.groupId && excluded.groupId === lesson.groupId))
     && excluded.date === lesson.date
     && excluded.time === lesson.time
   );
@@ -2980,6 +3052,7 @@ function expectedGroupLessonsForRange(start, end) {
       if (item.scheduleEndDate && date > item.scheduleEndDate) continue;
       entries
         .filter((entry) => entry.weekday === day.getDay())
+        .filter((entry) => !(state.exclusions || []).some((excluded) => excluded.groupId === item.id && excluded.date === date && excluded.time === entry.time))
         .forEach((entry) => {
           lessons.push({
             id: `group-${item.id}-${date}-${entry.time}`,

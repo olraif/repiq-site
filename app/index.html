@@ -17,7 +17,7 @@
         <div>
           <button type="button" class="date-ai-trigger" id="dayAiBtn"><span>AI</span><strong id="todayTitle">Сегодня</strong></button>
           <h1>Репетитор AI</h1>
-          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1as</button>
+          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1aw</button>
         </div>
         <div class="header-actions">
           <button class="header-icon-btn header-settings-btn" id="settingsBtn" aria-label="Настройки" title="Настройки">
@@ -575,12 +575,15 @@
         <h2 id="groupLessonTitle">Групповое занятие</h2>
         <input type="hidden" name="lessonId" />
         <input type="hidden" name="groupId" />
-        <input type="hidden" name="date" />
-        <input type="hidden" name="time" />
+        <input type="hidden" name="originalDate" />
+        <input type="hidden" name="originalTime" />
+        <label>Дата <input name="date" type="date" required /></label>
+        <label>Время <input name="time" type="time" required /></label>
         <div class="list" id="groupLessonMembers"></div>
-        <div class="dialog-actions">
-          <button value="cancel" class="ghost">Закрыть</button>
+        <div class="dialog-actions three">
+          <button type="button" class="conducted-action" id="conductedGroupLessonBtn">Проведено</button>
           <button value="save" class="primary">Сохранить</button>
+          <button value="cancel" class="ghost">Закрыть</button>
         </div>
       </form>
     </dialog>

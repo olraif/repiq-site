@@ -1,4 +1,4 @@
-const CACHE = "tutor-app-v37";
+const CACHE = "tutor-app-v42";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.json", "./icon-32.png", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (event) => {
