@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI-агенты Repiq — обучение для репетитора</title>
+    <meta
+      name="description"
+      content="Будущий раздел обучения Repiq по использованию AI-агентов в работе репетитора."
+    />
+    <style>
+      :root {
+        --bg: #eaf8ff;
+        --panel: #ffffff;
+        --text: #172b3a;
+        --muted: #657887;
+        --brand: #2f99d1;
+        --brand-dark: #187eb7;
+        --line: #d7e6ef;
+        --soft: #f3fbff;
+        --purple: #eee1ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: Arial, "Segoe UI", sans-serif;
+        margin: 0;
+      }
+
+      a {
+        color: var(--brand-dark);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .page {
+        margin: 0 auto;
+        max-width: 1080px;
+        padding: 24px 18px 48px;
+      }
+
+      header {
+        align-items: center;
+        display: flex;
+        gap: 18px;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+
+      .brand {
+        align-items: center;
+        display: flex;
+        gap: 12px;
+      }
+
+      .logo {
+        background: var(--brand);
+        border-radius: 18px;
+        color: #fff;
+        display: grid;
+        font-size: 22px;
+        font-weight: 800;
+        height: 54px;
+        place-items: center;
+        width: 54px;
+      }
+
+      .brand strong {
+        display: block;
+        font-size: 22px;
+      }
+
+      .brand span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .header-links {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        justify-content: flex-end;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #ffffff 0%, #f6fcff 100%);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: 0 14px 36px rgba(47, 153, 209, 0.12);
+        display: grid;
+        gap: 24px;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
+        padding: 34px;
+      }
+
+      .eyebrow {
+        color: #7950a7;
+        font-size: 14px;
+        font-weight: 800;
+        margin: 0 0 10px;
+      }
+
+      h1 {
+        font-size: clamp(34px, 6vw, 58px);
+        line-height: 1;
+        margin: 0 0 18px;
+      }
+
+      h2 {
+        font-size: 30px;
+        margin: 0 0 16px;
+      }
+
+      h3 {
+        font-size: 20px;
+        margin: 0 0 8px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .lead,
+      .muted {
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .lead {
+        font-size: 20px;
+        margin-bottom: 24px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .button {
+        align-items: center;
+        background: var(--brand);
+        border-radius: 14px;
+        color: #fff;
+        display: inline-flex;
+        font-weight: 800;
+        justify-content: center;
+        min-height: 52px;
+        padding: 14px 20px;
+      }
+
+      .button:hover {
+        background: var(--brand-dark);
+        text-decoration: none;
+      }
+
+      .button.secondary {
+        background: #e2f3ff;
+        color: var(--brand-dark);
+      }
+
+      .status-card,
+      .card,
+      .note {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+
+      .status-card {
+        align-self: start;
+        background: var(--purple);
+        padding: 20px;
+      }
+
+      section {
+        margin-top: 34px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card,
+      .note {
+        padding: 18px;
+      }
+
+      .note {
+        background: var(--soft);
+      }
+
+      footer {
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: space-between;
+        margin-top: 36px;
+        padding-top: 20px;
+      }
+
+      @media (max-width: 820px) {
+        header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .header-links {
+          justify-content: flex-start;
+        }
+
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .page {
+          padding: 18px 12px 36px;
+        }
+
+        .hero {
+          padding: 22px;
+        }
+
+        .actions,
+        .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <a class="brand" href="./index.html" aria-label="На главную">
+          <div class="logo">AI</div>
+          <div>
+            <strong>Репетитор AI</strong>
+            <span>обучение и инструменты для репетитора</span>
+          </div>
+        </a>
+        <nav class="header-links" aria-label="Быстрые ссылки">
+          <a href="./index.html">Главная</a>
+          <a href="./training.html">Обучение CRM</a>
+          <a href="./app/">Открыть веб-версию</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div>
+            <p class="eyebrow">AI-агенты</p>
+            <h1>Обучение по AI-агентам для репетитора</h1>
+            <p class="lead">
+              Этот раздел готовится. Здесь появятся короткие уроки о том, как использовать AI-агентов в работе репетитора:
+              для уроков, заданий, обратной связи, анализа и спокойной коммуникации.
+            </p>
+            <div class="actions">
+              <a class="button" href="./training.html">Сначала обучение CRM</a>
+              <a class="button secondary" href="./app/">Открыть CRM</a>
+            </div>
+          </div>
+
+          <aside class="status-card">
+            <h3>Раздел скоро откроется</h3>
+            <p class="muted">
+              Сейчас базовая CRM уже доступна, а обучение по AI-агентам будет добавляться по мере запуска модулей.
+            </p>
+          </aside>
+        </section>
+
+        <section>
+          <h2>Что здесь будет</h2>
+          <div class="grid">
+            <article class="card">
+              <h3>Ассистент AI</h3>
+              <p class="muted">Голосовое управление учениками, оплатами, переносами и расписанием.</p>
+            </article>
+            <article class="card">
+              <h3>Материалы AI</h3>
+              <p class="muted">Подготовка урока, конспекта, презентации и задания для ученика.</p>
+            </article>
+            <article class="card">
+              <h3>Решебник AI</h3>
+              <p class="muted">Разбор заданий по фото и в диалоге с понятными комментариями.</p>
+            </article>
+            <article class="card">
+              <h3>Анализ AI</h3>
+              <p class="muted">Прогресс ученика, обратная связь родителю и подсказки по CRM.</p>
+            </article>
+            <article class="card">
+              <h3>Antistress AI</h3>
+              <p class="muted">Подготовка к сложным разговорам с родителями и учениками.</p>
+            </article>
+            <article class="card">
+              <h3>Маркетинг AI</h3>
+              <p class="muted">Анкеты, площадки, заявки и поиск новых учеников.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="note">
+          <h2>Пока фокус на CRM</h2>
+          <p class="muted">
+            Сначала важно навести порядок в учениках, расписании и оплатах. AI-агенты будут полезнее, когда основная
+            система работы репетитора уже понятна и заполнена.
+          </p>
+        </section>
+      </main>
+
+      <footer>
+        <span>© 2026 Репетитор AI</span>
+        <span>
+          <a href="./privacy.html">Политика конфиденциальности</a>
+        </span>
+      </footer>
+    </div>
+  </body>
+</html>
