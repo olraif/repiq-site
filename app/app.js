@@ -689,46 +689,21 @@ function saveSettings(event) {
 }
 
 function openDayAiDialog() {
-  if (!state.aiEntitlement?.active) {
-    openAiPaywall("day-ai");
-    return;
-  }
   el("dayAiDate").textContent = selectedDateLabel();
   el("dayAiOutput").textContent = state.lastDayAiDate === state.selectedDate && state.lastDayAiText
     ? state.lastDayAiText
-    : "неактивно";
+    : "Нажмите «Собрать день», чтобы получить сводку по занятиям, оплатам, свободным окнам и задачам.";
   el("dayAiDialog").showModal();
 }
 
 async function generateDayAi() {
-  if (!state.aiEntitlement?.active) {
-    openAiPaywall("day-ai");
-    return;
-  }
   const box = el("dayAiOutput");
   box.textContent = "Собираю день...";
-  try {
-    const result = await callAiEndpoint("/ai/day", {
-      date: state.selectedDate,
-      students: state.students,
-      groups: state.groups,
-      lessons: plannedLessons().filter((lesson) => lesson.date === state.selectedDate)
-    });
-    const text = result.text?.trim() || "AI вернул пустой ответ. Попробуйте ещё раз.";
-    if (result.usage) {
-      state.aiEntitlement.requestsLeft = result.usage.requestsLeft ?? state.aiEntitlement.requestsLeft;
-    }
-    state.lastDayAiDate = state.selectedDate;
-    state.lastDayAiText = text;
-    save();
-    box.textContent = text;
-  } catch (error) {
-    if (error.code === "AI_PRO_REQUIRED") {
-      openAiPaywall("day-ai");
-      return;
-    }
-    box.textContent = `Не получилось собрать день. ${error.message || ""}`.trim();
-  }
+  const text = buildDayAiSummary();
+  state.lastDayAiDate = state.selectedDate;
+  state.lastDayAiText = text;
+  save();
+  box.textContent = text;
 }
 
 async function getOrCreateDeviceToken() {
@@ -987,6 +962,112 @@ function responseText(data) {
     .map((content) => content.text || "")
     .join("")
     .trim();
+}
+
+function buildDayAiSummary() {
+  const lessons = plannedLessons()
+    .filter((lesson) => lesson.date === state.selectedDate)
+    .sort(sortByDateTime);
+  const studyLessons = lessons.filter((lesson) => !isPersonalEvent(lesson));
+  const personalEvents = lessons.filter(isPersonalEvent);
+  const totals = totalsFor(studyLessons);
+  const unpaidRows = dayUnpaidRows(studyLessons);
+  const missingLinks = dayMissingOnlineLinks(studyLessons);
+  const needsConducted = studyLessons.filter((lesson) => !lessonConductedForSummary(lesson) && isPastLesson(lesson));
+  const freeWindows = dayFreeWindows(lessons).slice(0, 4);
+  const lines = [
+    `День AI · ${selectedDateLabel()}`,
+    "",
+    `Сегодня: ${studyLessons.length} зан. · ${money.format(totals.paid)} оплачено · ${money.format(totals.unpaid)} не оплачено`
+  ];
+  if (personalEvents.length) lines.push(`Личные дела: ${personalEvents.length}`);
+
+  lines.push("", "Занятия:");
+  if (!studyLessons.length) {
+    lines.push("• Занятий нет. Можно планировать свободные окна или отдых.");
+  } else {
+    studyLessons.slice(0, 10).forEach((lesson) => {
+      lines.push(`• ${lesson.time}-${lessonEndsAt(lesson)} · ${lessonOwnerName(lesson)} · ${lessonStatusLabel(lesson)}`);
+    });
+    if (studyLessons.length > 10) lines.push(`• ещё ${studyLessons.length - 10} зан.`);
+  }
+
+  lines.push("", "Оплаты:");
+  if (unpaidRows.length) {
+    unpaidRows.slice(0, 6).forEach((row) => lines.push(`• ${row}`));
+    if (unpaidRows.length > 6) lines.push(`• ещё ${unpaidRows.length - 6} неоплач.`);
+  } else {
+    lines.push("• По видимым занятиям дня всё оплачено.");
+  }
+
+  lines.push("", "Свободные окна:");
+  if (freeWindows.length) freeWindows.forEach((windowText) => lines.push(`• ${windowText}`));
+  else lines.push("• Свободных окон в рабочем времени не видно.");
+
+  lines.push("", "Проверить:");
+  const actions = [];
+  if (needsConducted.length) actions.push(`отметить проведение: ${needsConducted.map(lessonOwnerName).slice(0, 3).join(", ")}`);
+  if (missingLinks.length) actions.push(`добавить ссылку: ${missingLinks.slice(0, 3).join(", ")}`);
+  if (unpaidRows.length) actions.push("посмотреть неоплаченные занятия");
+  if (!actions.length) actions.push("критичных задач нет");
+  actions.forEach((action) => lines.push(`• ${action}`));
+
+  return lines.join("\n");
+}
+
+function lessonOwnerName(lesson) {
+  if (isPersonalEvent(lesson)) return lesson.title || "Личное дело";
+  return lesson.groupId ? group(lesson.groupId).name : student(lesson.studentId).name;
+}
+
+function lessonConductedForSummary(lesson) {
+  if (lesson.groupId) return groupLessonConducted(lesson);
+  return Boolean(lesson.conducted);
+}
+
+function lessonStatusLabel(lesson) {
+  if (lessonConductedForSummary(lesson)) return "проведено";
+  const status = lessonStatus(lesson);
+  if (status.unpaid > 0) return `не оплачено ${money.format(status.unpaid)}`;
+  return "оплачено";
+}
+
+function dayUnpaidRows(lessons) {
+  return lessons
+    .map((lesson) => ({ lesson, status: lessonStatus(lesson), visual: lessonVisualClass(lesson) }))
+    .filter((item) => item.visual.includes("debt") && item.status.unpaid > 0)
+    .map((item) => `${item.lesson.time} · ${lessonOwnerName(item.lesson)} · ${money.format(item.status.unpaid)}`);
+}
+
+function dayMissingOnlineLinks(lessons) {
+  return [...new Set(lessons
+    .filter((lesson) => !lesson.onlineLink)
+    .map(lessonOwnerName)
+    .filter(Boolean))];
+}
+
+function dayFreeWindows(dayLessons) {
+  const slots = timeSlots(state.workStart || "09:00", state.workEnd || "22:00", 30);
+  const windows = [];
+  let start = "";
+  let last = "";
+  slots.forEach((time) => {
+    const free = !lessonAtSlot(dayLessons, state.selectedDate, time);
+    if (free && !start) start = time;
+    if (free) last = time;
+    if (!free && start) {
+      addFreeWindow(windows, start, minutesToTime(timeToMinutes(last) + 30));
+      start = "";
+      last = "";
+    }
+  });
+  if (start) addFreeWindow(windows, start, minutesToTime(timeToMinutes(last) + 30));
+  return windows;
+}
+
+function addFreeWindow(windows, start, end) {
+  if (timeToMinutes(end) - timeToMinutes(start) < 60) return;
+  windows.push(`${start}-${end}`);
 }
 
 function exportDataBackup() {
