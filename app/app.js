@@ -514,7 +514,7 @@ function transferLessonPayments(lesson, nextLesson) {
 function freeLessonById(lessonId) {
   const lesson = state.lessons.find((item) => item.id === lessonId);
   if (!lesson) return;
-  if (lessonBelongsToRegularSchedule(lesson)) addExclusion(lesson.studentId, lesson.date, lesson.time);
+  excludeRegularSlotForLesson(lesson, lesson.date, lesson.time);
   state.lessons = state.lessons.filter((item) => item.id !== lesson.id);
   state.selectedDate = lesson.date;
   save();
@@ -531,6 +531,14 @@ function addExclusion(studentId, date, time) {
 function lessonBelongsToRegularSchedule(lesson) {
   if (!lesson.studentId || isPersonalEvent(lesson)) return false;
   return Boolean(regularEntryForDateTime(student(lesson.studentId), lesson.date, lesson.time));
+}
+
+function excludeRegularSlotForLesson(lesson, date, time) {
+  if (!lesson?.studentId || isPersonalEvent(lesson)) return;
+  const regularCandidate = { ...lesson, date, time };
+  if (lesson.expected || lesson.source === "regular" || lessonBelongsToRegularSchedule(regularCandidate)) {
+    addExclusion(lesson.studentId, date, time);
+  }
 }
 
 function toggleConducted(lessonId) {
@@ -1516,15 +1524,19 @@ function loadRegularSchedule() {
 function moveLesson(event) {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(event.currentTarget));
-  const lesson = state.lessons.find((item) => item.id === data.lessonId);
+  const lesson = state.lessons.find((item) => item.id === data.lessonId) || plannedLessons().find((item) => item.id === data.lessonId);
   if (lesson) {
     const oldDate = lesson.date;
     const oldTime = lesson.time;
-    if (lessonBelongsToRegularSchedule(lesson)) addExclusion(lesson.studentId, oldDate, oldTime);
-    lesson.movedFrom = `${lesson.date} ${lesson.time}`;
-    lesson.date = data.date;
-    lesson.time = data.time;
-    lesson.note = data.reason ? `${lesson.note || ""} Перенос: ${data.reason}`.trim() : lesson.note;
+    excludeRegularSlotForLesson(lesson, oldDate, oldTime);
+    const movedLesson = lesson.expected
+      ? { ...lesson, id: uuid(), expected: false, conducted: false, source: "regular" }
+      : lesson;
+    movedLesson.movedFrom = `${oldDate} ${oldTime}`;
+    movedLesson.date = data.date;
+    movedLesson.time = data.time;
+    movedLesson.note = data.reason ? `${movedLesson.note || ""} Перенос: ${data.reason}`.trim() : movedLesson.note;
+    if (lesson.expected) state.lessons.push(movedLesson);
     state.selectedDate = data.date;
   }
   save();
