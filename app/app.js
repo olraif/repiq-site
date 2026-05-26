@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "2026.05.18-1555.1ax";
+const appVersion = "2026.05.18-1555.1ay";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const reviewStateKey = "repiq-review-request-v1";
@@ -83,7 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
   bindSwipeNavigation();
   render();
   startReminderWatcher();
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register(`./sw.js?v=${encodeURIComponent(appVersion)}`)
+      .then((registration) => registration.update?.())
+      .catch(() => {});
+  }
 });
 
 function uuid() {
