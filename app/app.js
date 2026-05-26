@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "2026.05.18-1555.1ay";
+const appVersion = "2026.05.18-1555.1az";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const reviewStateKey = "repiq-review-request-v1";
@@ -679,6 +679,7 @@ function bindDialogs() {
   el("groupForm").addEventListener("submit", saveGroup);
   el("archiveGroupBtn").addEventListener("click", archiveGroup);
   el("groupLessonForm").addEventListener("submit", saveGroupLessonAttendance);
+  el("freeGroupLessonBtn").addEventListener("click", freeGroupLessonFromDialog);
   el("conductedGroupLessonBtn").addEventListener("click", markGroupLessonConductedFromDialog);
   el("moveForm").addEventListener("submit", moveLesson);
   el("settingsForm").addEventListener("submit", saveSettings);
@@ -1657,6 +1658,24 @@ function markGroupLessonConductedFromDialog(event) {
     checkbox.checked = true;
   });
   el("conductedGroupLessonBtn").classList.add("active");
+}
+
+function freeGroupLessonFromDialog(event) {
+  event.preventDefault();
+  const form = el("groupLessonForm");
+  const groupId = form.groupId.value;
+  const date = form.originalDate.value || form.date.value;
+  const time = form.originalTime.value || form.time.value;
+  if (!groupId || !date || !time) return;
+  rememberUndo();
+  addGroupExclusion(groupId, date, time);
+  delete state.groupAttendance[groupLessonKey({ groupId, date, time })];
+  state.lessons = state.lessons.filter((lesson) => !(lesson.groupId === groupId && lesson.date === date && lesson.time === time));
+  state.selectedDate = date;
+  save();
+  el("groupLessonDialog").close();
+  render();
+  showUndoToast("Групповой слот освобожден");
 }
 
 function render() {
