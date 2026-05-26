@@ -17,7 +17,7 @@
         <div>
           <button type="button" class="date-ai-trigger" id="dayAiBtn"><span>AI</span><strong id="todayTitle">Сегодня</strong></button>
           <h1>Репетитор AI</h1>
-          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1az</button>
+          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1ba</button>
         </div>
         <div class="header-actions">
           <button class="header-icon-btn header-settings-btn" id="settingsBtn" aria-label="Настройки" title="Настройки">
@@ -581,7 +581,7 @@
         <label>Время <input name="time" type="time" required /></label>
         <div class="list" id="groupLessonMembers"></div>
         <div class="dialog-actions four">
-          <button type="button" class="danger subtle-danger" id="freeGroupLessonBtn">Освободить</button>
+          <button type="button" class="danger subtle-danger" id="freeGroupLessonBtn" onclick="freeGroupLessonFromDialog(event)">Освободить</button>
           <button type="button" class="conducted-action" id="conductedGroupLessonBtn">Проведено</button>
           <button value="save" class="primary">Сохранить</button>
           <button value="cancel" class="ghost">Закрыть</button>
@@ -589,6 +589,6 @@
       </form>
     </dialog>
 
-    <script src="./app.js"></script>
+    <script src="./app.js?v=2026.05.18-1555.1ba"></script>
   </body>
 </html>

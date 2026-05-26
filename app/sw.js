@@ -1,4 +1,4 @@
-const CACHE = "tutor-app-v45";
+const CACHE = "tutor-app-v46";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.json", "./icon-32.png", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 const NETWORK_FIRST = [".html", ".js", ".css", ".json"];
 
