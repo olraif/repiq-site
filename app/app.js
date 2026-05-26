@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "2026.05.18-1555.1aw";
+const appVersion = "2026.05.18-1555.1ax";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const reviewStateKey = "repiq-review-request-v1";
@@ -740,7 +740,7 @@ function saveSettings(event) {
 function openDayAiDialog() {
   const date = dayAiDate();
   el("dayAiDate").textContent = dayAiDateLabel(date);
-  el("dayAiOutput").textContent = state.lastDayAiDate === date && state.lastDayAiText
+  el("dayAiOutput").textContent = state.lastDayAiDate === date && state.lastDayAiVersion === appVersion && state.lastDayAiText
     ? state.lastDayAiText
     : "Нажмите «Собрать день», чтобы получить сводку по занятиям, оплатам, свободным окнам и задачам.";
   el("dayAiDialog").showModal();
@@ -752,6 +752,7 @@ async function generateDayAi() {
   const date = dayAiDate();
   const text = buildDayAiSummary(date);
   state.lastDayAiDate = date;
+  state.lastDayAiVersion = appVersion;
   state.lastDayAiText = text;
   save();
   box.textContent = text;
@@ -1046,45 +1047,72 @@ function buildDayAiSummary(date = dayAiDate()) {
   const unpaidRows = dayUnpaidRows(studyLessons);
   const missingLinks = dayMissingOnlineLinks(studyLessons);
   const needsConducted = studyLessons.filter((lesson) => !lessonConductedForSummary(lesson) && isPastLesson(lesson));
+  const debtStudents = dayBalanceRisks(studyLessons);
   const freeWindows = dayFreeWindows(lessons, date).slice(0, 4);
-  const lines = [
-    `День AI · ${dayAiDateLabel(date)}`,
-    "",
-    `Сегодня: ${studyLessons.length} зан. · ${money.format(totals.paid)} оплачено · ${money.format(totals.unpaid)} не оплачено`
-  ];
-  if (personalEvents.length) lines.push(`Личные дела: ${personalEvents.length}`);
+  const firstLesson = studyLessons[0];
+  const lastLesson = studyLessons[studyLessons.length - 1];
+  const paidCount = studyLessons.filter((lesson) => lessonStatus(lesson).unpaid <= 0).length;
+  const issueCount = unpaidRows.length + missingLinks.length + needsConducted.length + debtStudents.length;
+  const lines = [`День AI · ${dayAiDateLabel(date)}`];
 
-  lines.push("", "Занятия:");
+  lines.push("", "Главное:");
+  lines.push(`• ${dayMoodLine(studyLessons.length, issueCount)}`);
+  lines.push(`• Занятий: ${studyLessons.length} · оплачено: ${paidCount}/${studyLessons.length || 0} · сумма дня: ${money.format(totals.paid)} / ${money.format(totals.paid + totals.unpaid)}`);
+  if (firstLesson && lastLesson) lines.push(`• Первый урок: ${firstLesson.time} · последний: до ${lessonEndsAt(lastLesson)}`);
+  if (personalEvents.length) lines.push(`• Личных дел в сетке: ${personalEvents.length}`);
+
+  lines.push("", "Фокус дня:");
+  const focus = [];
+  if (needsConducted.length) focus.push(`отметить проведённые уроки: ${needsConducted.map(lessonOwnerName).slice(0, 3).join(", ")}`);
+  if (unpaidRows.length) focus.push(`проверить оплату: ${unpaidRows.length} зан.`);
+  if (missingLinks.length) focus.push(`добавить ссылки: ${missingLinks.slice(0, 3).join(", ")}`);
+  if (debtStudents.length) focus.push(`баланс в минусе: ${debtStudents.slice(0, 3).join(", ")}`);
+  if (!focus.length) focus.push("критичных задач нет, можно вести день спокойно");
+  focus.forEach((item) => lines.push(`• ${item}`));
+
+  lines.push("", "Расписание:");
   if (!studyLessons.length) {
-    lines.push("• Занятий нет. Можно планировать свободные окна или отдых.");
+    lines.push("• Занятий нет. Можно поставить разовые уроки, личные дела или оставить окно для отдыха.");
   } else {
-    studyLessons.slice(0, 10).forEach((lesson) => {
-      lines.push(`• ${lesson.time}-${lessonEndsAt(lesson)} · ${lessonOwnerName(lesson)} · ${lessonStatusLabel(lesson)}`);
-    });
+    studyLessons.slice(0, 10).forEach((lesson) => lines.push(`• ${lessonAiLine(lesson)}`));
     if (studyLessons.length > 10) lines.push(`• ещё ${studyLessons.length - 10} зан.`);
   }
 
-  lines.push("", "Оплаты:");
+  lines.push("", "Оплаты и баланс:");
   if (unpaidRows.length) {
     unpaidRows.slice(0, 6).forEach((row) => lines.push(`• ${row}`));
     if (unpaidRows.length > 6) lines.push(`• ещё ${unpaidRows.length - 6} неоплач.`);
   } else {
-    lines.push("• По видимым занятиям дня всё оплачено.");
+    lines.push("• По занятиям дня всё выглядит оплачено.");
   }
+  if (debtStudents.length) lines.push(`• Баланс в минусе: ${debtStudents.slice(0, 4).join(", ")}`);
 
   lines.push("", "Свободные окна:");
   if (freeWindows.length) freeWindows.forEach((windowText) => lines.push(`• ${windowText}`));
   else lines.push("• Свободных окон в рабочем времени не видно.");
 
-  lines.push("", "Проверить:");
+  lines.push("", "Что сделать:");
   const actions = [];
   if (needsConducted.length) actions.push(`отметить проведение: ${needsConducted.map(lessonOwnerName).slice(0, 3).join(", ")}`);
-  if (missingLinks.length) actions.push(`добавить ссылку на онлайн-урок в карточке: ${missingLinks.slice(0, 3).join(", ")}`);
+  if (missingLinks.length) actions.push(`проверить ссылку на урок в карточке: ${missingLinks.slice(0, 3).join(", ")}`);
   if (unpaidRows.length) actions.push("посмотреть неоплаченные занятия");
-  if (!actions.length) actions.push("критичных задач нет");
-  actions.forEach((action) => lines.push(`• ${action}`));
+  if (freeWindows.length) actions.push(`использовать окно ${freeWindows[0]} для подготовки или переноса`);
+  if (!actions.length) actions.push("ничего срочного, день собран");
+  actions.slice(0, 5).forEach((action, index) => lines.push(`${index + 1}. ${action}`));
 
   return lines.join("\n");
+}
+
+function dayMoodLine(lessonCount, issueCount) {
+  if (!lessonCount) return "День свободный: можно спокойно заняться планированием и материалами.";
+  if (!issueCount) return "День выглядит собранным: расписание и оплаты без явных проблем.";
+  if (issueCount <= 2) return "День рабочий: есть пара мелочей, которые лучше закрыть заранее.";
+  return "День плотный: сначала закрыть риски, потом вести уроки по расписанию.";
+}
+
+function lessonAiLine(lesson) {
+  const linkMark = lesson.onlineLink ? "" : " · нет ссылки";
+  return `${lesson.time}-${lessonEndsAt(lesson)} · ${lessonOwnerName(lesson)} · ${lessonStatusLabel(lesson)}${linkMark}`;
 }
 
 function lessonOwnerName(lesson) {
@@ -1116,6 +1144,15 @@ function dayMissingOnlineLinks(lessons) {
     .filter((lesson) => !lesson.onlineLink)
     .map(lessonOwnerName)
     .filter(Boolean))];
+}
+
+function dayBalanceRisks(lessons) {
+  const studentIds = [...new Set(lessons
+    .flatMap((lesson) => lesson.groupId ? groupStudents(lesson.groupId).map((item) => item.id) : [lesson.studentId])
+    .filter(Boolean))];
+  return studentIds
+    .filter((studentId) => balanceAmountForStudent(studentId) < 0)
+    .map((studentId) => `${student(studentId).name} ${money.format(Math.abs(balanceAmountForStudent(studentId)))}`);
 }
 
 function dayFreeWindows(dayLessons, date = dayAiDate()) {
