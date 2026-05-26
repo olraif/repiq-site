@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "2026.05.18-1555.1ba";
+const appVersion = "2026.05.18-1555.1bb";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const reviewStateKey = "repiq-review-request-v1";
@@ -662,6 +662,9 @@ function bindDialogs() {
   el("groupForm").onlineLink.addEventListener("input", (event) => setOnlineLink("groupOnlineLinkOpen", event.target.value));
   el("groupForm").lessonsPerWeek.addEventListener("change", () => updateVisibleRegularRows(el("groupForm")));
   el("lessonForm").studentId.addEventListener("change", (event) => setOnlineLink("lessonOnlineLink", student(event.target.value)?.onlineLink || ""));
+  el("lessonForm").groupId.addEventListener("change", () => updateLessonGroupDefaults(el("lessonForm")));
+  el("lessonForm").date.addEventListener("change", () => updateLessonGroupDefaults(el("lessonForm")));
+  el("lessonForm").time.addEventListener("change", () => updateLessonGroupDefaults(el("lessonForm")));
   el("editLessonForm").studentId.addEventListener("change", (event) => setOnlineLink("editLessonOnlineLink", student(event.target.value)?.onlineLink || ""));
   document.querySelectorAll("[data-copy-online]").forEach((button) => {
     button.addEventListener("click", () => copyOnlineLink(button.dataset.copyOnline));
@@ -2237,6 +2240,8 @@ function openLessonDialog(time = "16:00", options = {}) {
   form.reset();
   form.itemType.value = "lesson";
   setLessonPersonalOptionEnabled(form, options.allowPersonal !== false);
+  const hasGroups = state.groups.some((item) => !item.archived);
+  setLessonGroupOptionEnabled(form, options.allowGroup !== false && hasGroups);
   form.expectedStudentId.value = "";
   form.expectedDate.value = "";
   form.expectedTime.value = "";
@@ -2250,7 +2255,10 @@ function openLessonDialog(time = "16:00", options = {}) {
     form.subject.value = first.subject;
     form.price.value = first.price;
   }
+  const firstGroup = state.groups.find((item) => !item.archived);
+  if (firstGroup) form.groupId.value = firstGroup.id;
   setOnlineLink("lessonOnlineLink", first?.onlineLink || "");
+  updateLessonGroupDefaults(form);
   updateLessonFormType(form);
   el("lessonDialog").showModal();
 }
@@ -2264,11 +2272,20 @@ function setLessonPersonalOptionEnabled(form, enabled) {
   if (!enabled) form.itemType.value = "lesson";
 }
 
+function setLessonGroupOptionEnabled(form, enabled) {
+  const groupInput = form.querySelector('input[name="itemType"][value="group"]');
+  const groupLabel = groupInput?.closest("label");
+  if (!groupInput || !groupLabel) return;
+  groupInput.disabled = !enabled;
+  groupLabel.classList.toggle("hidden", !enabled);
+  if (!enabled && form.itemType.value === "group") form.itemType.value = "lesson";
+}
+
 function openExpectedSlotDialog(studentId, date, time) {
   const foundStudent = student(studentId);
   state.selectedDate = date;
   save();
-  openLessonDialog(time);
+  openLessonDialog(time, { allowPersonal: false, allowGroup: false });
   const form = el("lessonForm");
   form.expectedStudentId.value = studentId;
   form.expectedDate.value = date;
@@ -2321,6 +2338,32 @@ function createLessonFromForm(form, conducted = false) {
     render();
     return;
   }
+  if (data.itemType === "group") {
+    const foundGroup = group(data.groupId);
+    if (!foundGroup?.id) return;
+    const regularEntry = regularEntryForDateTime(foundGroup, data.date, data.time);
+    removeGroupExclusion(data.groupId, data.date, data.time);
+    state.lessons.push({
+      id: uuid(),
+      date: data.date,
+      time: data.time,
+      groupId: data.groupId,
+      subject: foundGroup.subject || "",
+      grade: foundGroup.grade || "",
+      price: 0,
+      duration: Number(data.groupDuration || regularEntry?.duration || normalizeRegularSlots(foundGroup)[0]?.duration || 60),
+      onlineLink: foundGroup.onlineLink || "",
+      note: data.note || "Разовое групповое занятие",
+      source: "manual",
+      expected: false,
+      conducted: false,
+      movedFrom: ""
+    });
+    state.selectedDate = data.date;
+    save();
+    render();
+    return;
+  }
   const foundStudent = student(data.studentId);
   const regularEntry = regularEntryForDateTime(foundStudent, data.date, data.time);
   const expectedMoved = form.expectedStudentId.value
@@ -2350,11 +2393,20 @@ function createLessonFromForm(form, conducted = false) {
 
 function updateLessonFormType(form) {
   const isPersonal = form.itemType.value === "personal";
+  const isGroup = form.itemType.value === "group";
+  const isLesson = form.itemType.value === "lesson";
   form.querySelectorAll(".lesson-fields").forEach((block) => {
-    block.classList.toggle("hidden", isPersonal);
+    block.classList.toggle("hidden", !isLesson);
     block.querySelectorAll("input, select, textarea").forEach((field) => {
-      field.disabled = isPersonal;
-      if (field.name === "studentId" || field.name === "subject" || field.name === "price") field.required = !isPersonal;
+      field.disabled = !isLesson;
+      if (field.name === "studentId" || field.name === "subject" || field.name === "price") field.required = isLesson;
+    });
+  });
+  form.querySelectorAll(".group-fields").forEach((block) => {
+    block.classList.toggle("hidden", !isGroup);
+    block.querySelectorAll("input, select, textarea").forEach((field) => {
+      field.disabled = !isGroup;
+      if (field.name === "groupId") field.required = isGroup;
     });
   });
   form.querySelectorAll(".personal-fields").forEach((block) => {
@@ -2365,7 +2417,14 @@ function updateLessonFormType(form) {
     });
   });
   const title = form.closest("dialog")?.querySelector("h2");
-  if (title) title.textContent = isPersonal ? "Дело" : "Занятие";
+  if (title) title.textContent = isPersonal ? "Дело" : isGroup ? "Групповое занятие" : "Занятие";
+}
+
+function updateLessonGroupDefaults(form) {
+  if (!form.groupDuration) return;
+  const foundGroup = group(form.groupId.value);
+  const regularEntry = foundGroup?.id ? regularEntryForDateTime(foundGroup, form.date.value, form.time.value) : null;
+  form.groupDuration.value = Number(regularEntry?.duration || normalizeRegularSlots(foundGroup || {})[0]?.duration || 60);
 }
 
 function freeLessonFromForm(event) {

@@ -17,7 +17,7 @@
         <div>
           <button type="button" class="date-ai-trigger" id="dayAiBtn"><span>AI</span><strong id="todayTitle">Сегодня</strong></button>
           <h1>Репетитор AI</h1>
-          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1ba</button>
+          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1bb</button>
         </div>
         <div class="header-actions">
           <button class="header-icon-btn header-settings-btn" id="settingsBtn" aria-label="Настройки" title="Настройки">
@@ -277,6 +277,7 @@
         <input type="hidden" name="expectedTime" />
         <div class="type-switch" id="lessonTypeSwitch">
           <label><input type="radio" name="itemType" value="lesson" checked /> Урок</label>
+          <label><input type="radio" name="itemType" value="group" /> Группа</label>
           <label><input type="radio" name="itemType" value="personal" /> Дело</label>
         </div>
         <label>Дата <input name="date" type="date" required /></label>
@@ -289,6 +290,10 @@
             <a class="online-lesson-link" id="lessonOnlineLink" href="#" target="_blank" rel="noopener">Открыть онлайн-занятие</a>
             <button class="online-copy-btn" type="button" data-copy-online="lessonOnlineLink">Копировать</button>
           </div>
+        </div>
+        <div class="group-fields hidden">
+          <label>Группа <select name="groupId"></select></label>
+          <label>Длительность, мин <input name="groupDuration" type="number" min="15" step="5" value="60" /></label>
         </div>
         <div class="personal-fields hidden">
           <label>Название дела <input name="title" placeholder="Врач, дорога, подготовка" /></label>
@@ -589,6 +594,6 @@
       </form>
     </dialog>
 
-    <script src="./app.js?v=2026.05.18-1555.1ba"></script>
+    <script src="./app.js?v=2026.05.18-1555.1bb"></script>
   </body>
 </html>
