@@ -191,6 +191,21 @@ h2 {
   width: 18px;
 }
 
+.header-support-btn {
+  background: #fff1f7;
+  border-color: #f7cfe0;
+  color: #d85b8a;
+}
+
+.header-support-btn:active {
+  background: #fde5f0;
+  color: #c8497a;
+}
+
+.header-support-btn svg {
+  fill: rgba(216, 91, 138, 0.14);
+}
+
 .header-stars-btn {
   width: 50px;
 }
@@ -335,13 +350,6 @@ h2 {
   text-align: center;
   text-decoration: underline;
   text-decoration-color: rgba(155, 172, 184, 0.35);
-}
-
-.support-project-btn {
-  background: #eefbf3;
-  border-color: #caefd8;
-  color: #2c8a52;
-  font-weight: 800;
 }
 
 .clear-data-btn {
