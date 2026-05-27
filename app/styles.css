@@ -337,6 +337,13 @@ h2 {
   text-decoration-color: rgba(155, 172, 184, 0.35);
 }
 
+.support-project-btn {
+  background: #eefbf3;
+  border-color: #caefd8;
+  color: #2c8a52;
+  font-weight: 800;
+}
+
 .clear-data-btn {
   background: transparent;
   border: 1px solid #f1c8d0;

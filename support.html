@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Поддержать Repiq — бесплатную CRM для репетитора</title>
+    <meta
+      name="description"
+      content="Поддержать развитие Repiq или заказать настройку CRM для репетитора: ученики, группы, расписание, оплаты и резервные копии."
+    />
+    <style>
+      :root {
+        --bg: #eaf8ff;
+        --panel: #ffffff;
+        --text: #172b3a;
+        --muted: #657887;
+        --brand: #2f99d1;
+        --brand-dark: #187eb7;
+        --line: #d7e6ef;
+        --soft: #f3fbff;
+        --green: #d9f8e3;
+        --yellow: #fff1b8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: Arial, "Segoe UI", sans-serif;
+        margin: 0;
+      }
+
+      a {
+        color: var(--brand-dark);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .page {
+        margin: 0 auto;
+        max-width: 980px;
+        padding: 24px 18px 48px;
+      }
+
+      header {
+        align-items: center;
+        display: flex;
+        gap: 18px;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+
+      .brand {
+        align-items: center;
+        display: flex;
+        gap: 12px;
+      }
+
+      .logo {
+        background: var(--brand);
+        border-radius: 18px;
+        color: #fff;
+        display: grid;
+        font-size: 22px;
+        font-weight: 800;
+        height: 54px;
+        place-items: center;
+        width: 54px;
+      }
+
+      .brand strong {
+        display: block;
+        font-size: 22px;
+      }
+
+      .brand span,
+      .muted {
+        color: var(--muted);
+      }
+
+      .header-links {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        justify-content: flex-end;
+      }
+
+      .hero,
+      .card,
+      .note {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #ffffff 0%, #f6fcff 100%);
+        box-shadow: 0 14px 36px rgba(47, 153, 209, 0.12);
+        padding: 34px;
+      }
+
+      h1 {
+        font-size: clamp(34px, 6vw, 58px);
+        letter-spacing: 0;
+        line-height: 1;
+        margin: 0 0 18px;
+      }
+
+      h2 {
+        font-size: 30px;
+        margin: 0 0 16px;
+      }
+
+      h3 {
+        font-size: 20px;
+        margin: 0 0 8px;
+      }
+
+      p {
+        line-height: 1.45;
+        margin: 0;
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: 20px;
+        line-height: 1.45;
+        margin-bottom: 24px;
+        max-width: 760px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .button {
+        align-items: center;
+        background: var(--brand);
+        border-radius: 14px;
+        color: #fff;
+        display: inline-flex;
+        font-weight: 800;
+        justify-content: center;
+        min-height: 52px;
+        padding: 14px 20px;
+      }
+
+      .button:hover {
+        background: var(--brand-dark);
+        text-decoration: none;
+      }
+
+      .button.secondary {
+        background: #e2f3ff;
+        color: var(--brand-dark);
+      }
+
+      section {
+        margin-top: 28px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card,
+      .note {
+        padding: 18px;
+      }
+
+      .card.green {
+        background: var(--green);
+      }
+
+      .card.yellow {
+        background: var(--yellow);
+      }
+
+      ul {
+        color: var(--muted);
+        line-height: 1.55;
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+
+      footer {
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: space-between;
+        margin-top: 36px;
+        padding-top: 20px;
+      }
+
+      @media (max-width: 760px) {
+        header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .header-links {
+          justify-content: flex-start;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .page {
+          padding: 18px 12px 36px;
+        }
+
+        .hero {
+          padding: 22px;
+        }
+
+        .actions,
+        .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="brand">
+          <div class="logo">AI</div>
+          <div>
+            <strong>Репетитор AI</strong>
+            <span>CRM и помощник для репетитора</span>
+          </div>
+        </div>
+        <nav class="header-links" aria-label="Быстрые ссылки">
+          <a href="./">Главная</a>
+          <a href="./training.html">Обучение CRM</a>
+          <a href="./app/">Веб-версия</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero">
+          <h1>Поддержать Repiq</h1>
+          <p class="lead">
+            Repiq развивается как бесплатная CRM для репетиторов. Если приложение помогает вам вести учеников,
+            расписание и оплаты, можно поддержать проект или заказать личную настройку.
+          </p>
+          <div class="actions">
+            <a class="button" href="mailto:olesy.raif@mail.ru?subject=Поддержать%20Repiq">Написать для поддержки</a>
+            <a class="button secondary" href="#setup">Настройка Repiq — 2500 ₽</a>
+          </div>
+        </section>
+
+        <section>
+          <h2>Как можно поддержать</h2>
+          <div class="grid">
+            <article class="card green">
+              <h3>Донат на развитие</h3>
+              <p>Поддержка помогает оплачивать сайт, тестирование, подготовку инструкций и развитие бесплатной CRM.</p>
+            </article>
+            <article class="card">
+              <h3>Рассказать коллегам</h3>
+              <p>Можно отправить ссылку репетиторам, которым нужен простой учёт учеников, расписания и оплат.</p>
+            </article>
+            <article class="card">
+              <h3>Оставить отзыв</h3>
+              <p>Отзывы в RuStore помогают другим репетиторам быстрее найти приложение и понять, что оно живое.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="note" id="setup">
+          <h2>Настройка Repiq — 2500 ₽</h2>
+          <p class="muted">
+            Подходит, если хочется быстро перенести свою систему в приложение и не разбираться одной.
+          </p>
+          <ul>
+            <li>разберём формат занятий: индивидуальные, группы или смешанный вариант;</li>
+            <li>поможем завести учеников, группы, расписание и ссылки на онлайн-занятия;</li>
+            <li>покажем, как вести оплаты, баланс, переносы и резервную копию;</li>
+            <li>добавим бонусы обучения: идеи для анализа рынка, поиска заявок и улучшения анкеты репетитора;</li>
+            <li>ответим на вопросы по Android и веб-версии.</li>
+          </ul>
+          <div class="actions" style="margin-top: 16px">
+            <a class="button" href="mailto:olesy.raif@mail.ru?subject=Настройка%20Repiq">Записаться на настройку</a>
+            <a class="button secondary" href="./training.html">Открыть обучение CRM</a>
+          </div>
+        </section>
+
+        <section class="note">
+          <h2>Что будет дальше</h2>
+          <p class="muted">
+            CRM остаётся бесплатной. Обучение и настройка помогают быстрее внедрить систему в работу.
+            AI-модули будут развиваться отдельно: сначала как полезные подборки и шаблоны, затем как полноценные агенты.
+          </p>
+        </section>
+      </main>
+
+      <footer>
+        <span>© 2026 Репетитор AI</span>
+        <span><a href="./privacy.html">Политика конфиденциальности</a></span>
+      </footer>
+    </div>
+  </body>
+</html>

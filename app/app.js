@@ -27,9 +27,10 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "2026.05.18-1555.1bc";
+const appVersion = "2026.05.18-1555.1bd";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
+const SUPPORT_PROJECT_URL = "https://www.repiq.ru/support.html?utm_source=app&utm_medium=settings&utm_campaign=support_project";
 const reviewStateKey = "repiq-review-request-v1";
 const appConfig = {
   apiBaseUrl: window.TUTOR_AI_CONFIG?.API_BASE_URL || "",
@@ -693,6 +694,7 @@ function bindDialogs() {
   el("openPaymentSiteBtn").addEventListener("click", openPaymentSite);
   el("shareAppBtn").addEventListener("click", shareApp);
   el("rateAppBtn").addEventListener("click", openRustoreReview);
+  el("supportProjectBtn").addEventListener("click", openSupportProject);
   el("reviewRateBtn").addEventListener("click", () => {
     saveReviewState({ never: true, ratedAt: new Date().toISOString() });
     el("reviewDialog").close();
@@ -864,6 +866,10 @@ async function checkAiAccessFromPaywall() {
 function openPaymentSite() {
   if (!appConfig.paymentSiteUrl) return;
   window.open(appConfig.paymentSiteUrl, "_blank", "noopener");
+}
+
+function openSupportProject() {
+  window.open(SUPPORT_PROJECT_URL, "_blank", "noopener");
 }
 
 async function shareApp() {
