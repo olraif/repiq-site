@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "2026.05.18-1555.1bb";
+const appVersion = "2026.05.18-1555.1bc";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const reviewStateKey = "repiq-review-request-v1";
@@ -3242,8 +3242,9 @@ function lessonMatchesRegularSlots(lesson, slots) {
 function syncStudentRegularScheduleAfterChange(studentId, oldSlots, oldStartDate = "", oldEndDate = "") {
   const item = state.students.find((studentItem) => studentItem.id === studentId);
   if (!item) return;
+  const newSlots = item.regularSlots || [];
   const oldSignature = regularSlotsSignature(oldSlots, oldStartDate, oldEndDate);
-  const newSignature = regularSlotsSignature(item.regularSlots || [], item.scheduleStartDate || "", item.scheduleEndDate || "");
+  const newSignature = regularSlotsSignature(newSlots, item.scheduleStartDate || "", item.scheduleEndDate || "");
   if (oldSignature === newSignature) return;
   const fromDate = todayIso();
   state.lessons = state.lessons.filter((lesson) => {
@@ -3256,7 +3257,7 @@ function syncStudentRegularScheduleAfterChange(studentId, oldSlots, oldStartDate
   state.exclusions = (state.exclusions || []).filter((excluded) => {
     if (excluded.studentId !== studentId) return true;
     if (excluded.date < fromDate) return true;
-    return !lessonMatchesRegularSlots(excluded, oldSlots);
+    return !lessonMatchesRegularSlots(excluded, oldSlots) && !lessonMatchesRegularSlots(excluded, newSlots);
   });
 }
 
@@ -3277,8 +3278,9 @@ function cleanupStaleRegularLessons(studentId) {
 function syncGroupRegularScheduleAfterChange(groupId, oldSlots, oldStartDate = "", oldEndDate = "") {
   const item = state.groups.find((groupItem) => groupItem.id === groupId);
   if (!item) return;
+  const newSlots = item.regularSlots || [];
   const oldSignature = regularSlotsSignature(oldSlots, oldStartDate, oldEndDate);
-  const newSignature = regularSlotsSignature(item.regularSlots || [], item.scheduleStartDate || "", item.scheduleEndDate || "");
+  const newSignature = regularSlotsSignature(newSlots, item.scheduleStartDate || "", item.scheduleEndDate || "");
   if (oldSignature === newSignature) return;
   const fromDate = todayIso();
   state.lessons = state.lessons.filter((lesson) => {
@@ -3286,6 +3288,11 @@ function syncGroupRegularScheduleAfterChange(groupId, oldSlots, oldStartDate = "
     if (lesson.conducted || lesson.movedFrom) return true;
     if (lesson.date < fromDate) return true;
     return !lessonMatchesRegularSlots(lesson, oldSlots);
+  });
+  state.exclusions = (state.exclusions || []).filter((excluded) => {
+    if (excluded.groupId !== groupId) return true;
+    if (excluded.date < fromDate) return true;
+    return !lessonMatchesRegularSlots(excluded, oldSlots) && !lessonMatchesRegularSlots(excluded, newSlots);
   });
 }
 
