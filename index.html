@@ -93,6 +93,43 @@
         justify-content: flex-end;
       }
 
+      .header-actions {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-end;
+      }
+
+      .support-icon-link {
+        align-items: center;
+        background: #fff1f7;
+        border: 1px solid #f7cfe0;
+        border-radius: 14px;
+        color: #d85b8a;
+        display: inline-grid;
+        flex: 0 0 auto;
+        height: 42px;
+        place-items: center;
+        text-decoration: none;
+        width: 42px;
+      }
+
+      .support-icon-link svg {
+        fill: rgba(216, 91, 138, 0.14);
+        height: 21px;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.9;
+        width: 21px;
+      }
+
+      .support-icon-link:hover {
+        background: #fde5f0;
+        text-decoration: none;
+      }
+
       .hero {
         align-items: center;
         background: linear-gradient(135deg, #ffffff 0%, #f6fcff 100%);
@@ -339,13 +376,17 @@
             <span>CRM и помощник для репетитора</span>
           </div>
         </div>
-        <nav class="header-links" aria-label="Быстрые ссылки">
-          <a href="https://www.rustore.ru/catalog/app/com.olesya.tutor">Скачать в RuStore</a>
-          <a href="./app/">Открыть веб-версию</a>
-          <a href="./training.html">Обучение CRM</a>
-          <a href="./support.html">Поддержать проект</a>
-          <a href="./ai-training.html">AI-агенты</a>
-        </nav>
+        <div class="header-actions">
+          <nav class="header-links" aria-label="Быстрые ссылки">
+            <a href="https://www.rustore.ru/catalog/app/com.olesya.tutor">Скачать в RuStore</a>
+            <a href="./app/">Открыть веб-версию</a>
+            <a href="./training.html">Обучение CRM</a>
+            <a href="./ai-training.html">AI-агенты</a>
+          </nav>
+          <a class="support-icon-link" href="./support.html" aria-label="Поддержать проект" title="Поддержать проект">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.2-4.4-9.4-9.1C1 8.4 3.1 5.2 6.5 5.2c2 0 3.4 1.1 4.1 2.2.7-1.1 2.1-2.2 4.1-2.2 3.4 0 5.5 3.2 3.9 6.7C19.2 16.6 12 21 12 21Z"/><path d="M8.5 12.2h2.2l1.1-2.2 1.5 4 1-1.8h1.9"/></svg>
+          </a>
+        </div>
       </header>
 
       <main>
@@ -360,7 +401,6 @@
               <a class="button" href="https://www.rustore.ru/catalog/app/com.olesya.tutor">Скачать в RuStore</a>
               <a class="button secondary" href="./app/">Открыть веб-версию</a>
               <a class="button secondary" href="./training.html">Обучение CRM</a>
-              <a class="button secondary" href="./support.html">Поддержать проект</a>
               <a class="button secondary" href="./ai-training.html">AI-агенты</a>
             </div>
           </div>
@@ -426,11 +466,10 @@
         <section class="note">
           <h2>Поддержать и внедрить</h2>
           <p class="muted">
-            Repiq остаётся бесплатной CRM без ограничения по ученикам. Если приложение помогает в работе, можно поддержать развитие проекта
+            Репетитор AI остаётся бесплатной CRM без ограничения по ученикам. Если приложение помогает в работе, можно поддержать развитие проекта
             или заказать спокойную настройку под вашу систему занятий.
           </p>
           <div class="actions" style="margin-top: 14px">
-            <a class="button" href="./support.html">Поддержать проект</a>
             <a class="button secondary" href="./support.html#setup">Настройка Репетитор AI — 2500 ₽</a>
           </div>
         </section>
