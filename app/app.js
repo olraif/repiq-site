@@ -27,10 +27,10 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "2026.05.18-1555.1be";
+const appVersion = "2026.05.18-1555.1bf";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
-const SUPPORT_PROJECT_URL = "https://www.repiq.ru/support.html?utm_source=app&utm_medium=settings&utm_campaign=support_project";
+const SUPPORT_PROJECT_URL = "https://pay.cloudtips.ru/p/36494679";
 const reviewStateKey = "repiq-review-request-v1";
 const appConfig = {
   apiBaseUrl: window.TUTOR_AI_CONFIG?.API_BASE_URL || "",

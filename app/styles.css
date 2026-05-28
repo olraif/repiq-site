@@ -192,18 +192,18 @@ h2 {
 }
 
 .header-support-btn {
-  background: #fff1f7;
-  border-color: #f7cfe0;
-  color: #d85b8a;
+  background: #fff7e8;
+  border-color: #f2d8ae;
+  color: #b7792e;
 }
 
 .header-support-btn:active {
-  background: #fde5f0;
-  color: #c8497a;
+  background: #ffefd2;
+  color: #9a6121;
 }
 
 .header-support-btn svg {
-  fill: rgba(216, 91, 138, 0.14);
+  fill: rgba(183, 121, 46, 0.12);
 }
 
 .header-stars-btn {
