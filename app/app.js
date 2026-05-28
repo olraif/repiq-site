@@ -841,11 +841,9 @@ function openAiPaywall(feature = "ai-pro") {
 function aiFeatureLabel(feature) {
   return {
     "day-ai": "День AI",
-    assistant: "Ассистент AI",
+    templates: "Шаблоны AI",
     materials: "Материалы AI",
     solver: "Решебник AI",
-    analysis: "Анализ AI",
-    antistress: "Antistress AI",
     marketing: "Маркетинг AI"
   }[feature] || "AI Pro";
 }
@@ -1736,11 +1734,9 @@ function renderHeader() {
 
 function renderMetrics() {
   el("metrics").innerHTML = [
-    metric("Ассистент AI", "голосовое управление", "ученики, оплаты, переносы", "assistant"),
     metric("Материалы AI", "готовый урок за 60 сек", "презентация, конспект, домашка", "materials"),
     metric("Решебник AI", "по фото и в диалоге", "решение и комментарии", "solver"),
-    metric("Анализ AI", "прогресс и обратная связь", "CRM, уроки, динамика", "analysis"),
-    metric("Antistress AI", "сложные разговоры", "родители, ученики", "antistress"),
+    metric("Шаблоны AI", "сообщения и правила", "оплаты, отмены, договоренности", "templates"),
     metric("Маркетинг AI", "поиск учеников", "анкеты, площадки, заявки", "marketing")
   ].join("");
   document.querySelectorAll("[data-ai-feature]").forEach((card) => {

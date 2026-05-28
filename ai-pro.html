@@ -3,95 +3,113 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Репетитор AI Pro</title>
+    <title>Репетитор AI Pro — материалы, решебник, шаблоны и маркетинг</title>
+    <meta
+      name="description"
+      content="AI Pro для репетитора: материалы к уроку за 60 секунд, решебник, шаблоны сообщений и Marketing AI для поиска учеников."
+    />
     <style>
       :root {
+        --bg: #eef8ff;
+        --panel: #ffffff;
+        --text: #17323f;
+        --muted: #526978;
+        --brand: #2e95d3;
+        --brand-dark: #187eb7;
+        --line: #cfe6f2;
+        --soft: #f6fcff;
         color-scheme: light;
         font-family: Arial, "Segoe UI", sans-serif;
       }
 
-      body {
-        background: #eef8ff;
-        color: #17323f;
-        margin: 0;
-      }
-
-      main {
-        margin: 0 auto;
-        max-width: 860px;
-        padding: 28px 18px 48px;
-      }
-
-      h1 {
-        font-size: clamp(32px, 7vw, 56px);
-        line-height: 1;
-        margin: 12px 0;
-      }
-
-      h2 {
-        margin-top: 30px;
-      }
-
-      p,
-      li {
-        color: #526978;
-        font-size: 18px;
-        line-height: 1.5;
-      }
-
-      .hero,
-      .card {
-        background: white;
-        border: 1px solid #cfe6f2;
-        border-radius: 14px;
-        padding: 22px;
-      }
-
-      .grid {
-        display: grid;
-        gap: 12px;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      }
-
-      .price strong {
-        color: #2e95d3;
-        display: block;
-        font-size: 30px;
-      }
-
-      a {
-        color: #2e95d3;
-      }
+      * { box-sizing: border-box; }
+      body { background: var(--bg); color: var(--text); margin: 0; }
+      main { margin: 0 auto; max-width: 1040px; padding: 28px 18px 56px; }
+      nav { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; margin-bottom: 22px; }
+      a { color: var(--brand-dark); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      h1 { font-size: clamp(34px, 7vw, 62px); line-height: 1; margin: 12px 0 16px; }
+      h2 { font-size: 30px; margin: 34px 0 14px; }
+      h3 { margin: 0 0 8px; }
+      p, li { color: var(--muted); font-size: 18px; line-height: 1.5; }
+      .hero, .card, .price, .note { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+      .hero { display: grid; gap: 24px; grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr); }
+      .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+      .button { align-items: center; background: var(--brand); border-radius: 12px; color: #fff; display: inline-flex; font-weight: 800; justify-content: center; min-height: 48px; padding: 12px 18px; }
+      .button.secondary { background: #dff3ff; color: var(--brand-dark); }
+      .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+      .price strong { color: var(--brand); display: block; font-size: 30px; }
+      .tag { background: #e7f6ff; border-radius: 999px; color: var(--brand-dark); display: inline-block; font-size: 14px; font-weight: 800; padding: 8px 10px; }
+      .note { background: var(--soft); margin-top: 18px; }
+      @media (max-width: 780px) { .hero { grid-template-columns: 1fr; } }
     </style>
   </head>
   <body>
     <main>
+      <nav>
+        <a href="./index.html">Репетитор AI</a>
+        <span>
+          <a href="./marketing-ai.html">Marketing AI</a> ·
+          <a href="./training.html">Обучение CRM</a> ·
+          <a href="./support.html#setup">Настройка</a>
+        </span>
+      </nav>
+
       <section class="hero">
-        <small>Репетитор AI</small>
-        <h1>AI Pro для репетитора</h1>
-        <p>
-          Будущие AI-модули для подготовки уроков, домашних заданий, обратной связи,
-          анализа прогресса, маркетинга и спокойной работы с учениками и родителями.
-        </p>
+        <div>
+          <span class="tag">AI Pro для репетитора</span>
+          <h1>Уроки, задачи, шаблоны и поиск учеников в одном AI-наборе</h1>
+          <p>
+            Бесплатная CRM остается основой. AI Pro нужен для того, чтобы быстрее готовить занятия,
+            объяснять задачи, писать аккуратные сообщения родителям и находить новые заявки.
+          </p>
+          <div class="actions">
+            <a class="button" href="./marketing-ai.html">Смотреть Marketing AI</a>
+            <a class="button secondary" href="./support.html#setup">Настроить CRM за 2500 ₽</a>
+          </div>
+        </div>
+        <aside class="price">
+          <p>Планируемые тарифы доступа</p>
+          <strong>299 ₽ / 30 дней</strong>
+          <p>Также: 799 ₽ за 90 дней и 2490 ₽ за год. На старте возможна ручная активация по email после оплаты на сайте.</p>
+        </aside>
       </section>
 
-      <h2>Что планируется</h2>
+      <h2>4 платных AI-блока</h2>
       <div class="grid">
-        <div class="card">Ассистент AI: голосовое управление CRM</div>
-        <div class="card">Материалы AI: готовый урок за 60 секунд</div>
-        <div class="card">Решебник AI: разбор по фото и в диалоге</div>
-        <div class="card">Анализ AI: прогресс и обратная связь</div>
-        <div class="card">Antistress AI: сложные разговоры</div>
-        <div class="card">Маркетинг AI: поиск учеников</div>
+        <article class="card">
+          <h3>Материалы AI</h3>
+          <p>Тема, класс, цель урока и длительность превращаются в план занятия, конспект, упражнения, домашку и сообщение родителю.</p>
+        </article>
+        <article class="card">
+          <h3>Решебник AI</h3>
+          <p>Разбор задачи по тексту, позже по фото: решение по шагам и объяснение так, чтобы репетитор мог сразу использовать это на уроке.</p>
+        </article>
+        <article class="card">
+          <h3>Шаблоны AI</h3>
+          <p>Сообщения родителям, правила оплат, переносы, отмены, договоренности, мягкие напоминания и тексты для тех, кто работает с договорами или без них.</p>
+        </article>
+        <article class="card">
+          <h3>Маркетинг AI</h3>
+          <p>Поиск публичных заявок, фильтр по предмету и бюджету, готовые отклики, анкеты для площадок и система регулярного поиска учеников.</p>
+        </article>
       </div>
 
-      <h2>Статус</h2>
-      <div class="card">
-        <p>Раздел находится в разработке. Основная CRM доступна бесплатно в RuStore.</p>
-        <p><a href="https://www.rustore.ru/catalog/app/com.olesya.tutor">Открыть приложение в RuStore</a></p>
+      <h2>Что продаем уже сейчас</h2>
+      <div class="grid">
+        <div class="price"><strong>2500 ₽</strong><p>Настройка CRM: ученики, расписание, оплаты, резервная копия и обучение за один созвон.</p></div>
+        <div class="price"><strong>990-1490 ₽</strong><p>Мини-курс CRM: как вести расписание, оплаты, переносы и баланс без таблиц.</p></div>
+        <div class="price"><strong>2990-4990 ₽</strong><p>AI-практикум: материалы к урокам, решебник, шаблоны и рабочие сценарии.</p></div>
+        <div class="price"><strong>от 990 ₽/мес</strong><p>Marketing AI: заявки, отбор, отклики и продвижение репетитора.</p></div>
       </div>
 
-      <p><a href="./index.html">На главную</a></p>
+      <section class="note">
+        <h2>Почему без RuStore Pay</h2>
+        <p>
+          Сейчас продажи идут через сайт и ручную/полуручную активацию, потому что владелец проекта работает как самозанятый.
+          RuStore остается каналом установки бесплатного приложения, а платные услуги и AI-доступ продаются отдельно.
+        </p>
+      </section>
     </main>
   </body>
 </html>
