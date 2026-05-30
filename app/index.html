@@ -17,7 +17,7 @@
         <div>
           <button type="button" class="date-ai-trigger" id="dayAiBtn"><span>AI</span><strong id="todayTitle">Сегодня</strong></button>
           <h1>Репетитор AI</h1>
-          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1bh</button>
+          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1bi</button>
         </div>
         <div class="header-actions">
           <button class="header-icon-btn header-settings-btn" id="settingsBtn" aria-label="Настройки" title="Настройки">
@@ -289,6 +289,7 @@
           <label>Ученик <select name="studentId" required></select></label>
           <label>Предмет <input name="subject" required /></label>
           <label>Стоимость <input name="price" type="number" min="0" step="1" required /></label>
+          <label>Окончание <input name="endTime" type="time" required /></label>
           <div class="online-link-actions hidden" id="lessonOnlineActions">
             <a class="online-lesson-link" id="lessonOnlineLink" href="#" target="_blank" rel="noopener">Открыть онлайн-занятие</a>
             <button class="online-copy-btn" type="button" data-copy-online="lessonOnlineLink">Копировать</button>
@@ -373,6 +374,7 @@
           <label>Ученик <select name="studentId" required></select></label>
           <label>Предмет <input name="subject" required /></label>
           <label>Стоимость <input name="price" type="number" min="0" step="1" required /></label>
+          <label>Окончание <input name="endTime" type="time" required /></label>
           <div class="online-link-actions hidden" id="editLessonOnlineActions">
             <a class="online-lesson-link" id="editLessonOnlineLink" href="#" target="_blank" rel="noopener">Открыть онлайн-занятие</a>
             <button class="online-copy-btn" type="button" data-copy-online="editLessonOnlineLink">Копировать</button>
@@ -597,6 +599,6 @@
       </form>
     </dialog>
 
-    <script src="./app.js?v=1555.1bh"></script>
+    <script src="./app.js?v=1555.1bi"></script>
   </body>
 </html>

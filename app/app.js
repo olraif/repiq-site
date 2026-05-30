@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "1555.1bh";
+const appVersion = "1555.1bi";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const SUPPORT_PROJECT_URL = "https://pay.cloudtips.ru/p/36494679";
@@ -261,7 +261,7 @@ function lessonPrice(lesson) {
   if (lesson.groupId && !lesson.studentId) {
     return groupStudents(lesson.groupId).reduce((total, item) => total + Number(item.price || 0), 0);
   }
-  return Number(student(lesson.studentId).price || lesson.price || 0);
+  return Number(lesson.price !== undefined && lesson.price !== "" ? lesson.price : student(lesson.studentId).price || 0);
 }
 
 function lessonStudentDetails(lesson) {
@@ -288,9 +288,18 @@ function timeToMinutes(time) {
 }
 
 function minutesToTime(totalMinutes) {
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
+  const dayMinutes = 24 * 60;
+  const normalized = ((Number(totalMinutes) % dayMinutes) + dayMinutes) % dayMinutes;
+  const hours = Math.floor(normalized / 60);
+  const minutes = normalized % 60;
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+function durationFromTimes(startTime, endTime, fallback = 60) {
+  if (!startTime || !endTime) return Number(fallback || 60);
+  let duration = timeToMinutes(endTime) - timeToMinutes(startTime);
+  if (duration <= 0) duration += 24 * 60;
+  return duration || Number(fallback || 60);
 }
 
 function lessonDurationMinutes(lesson) {
@@ -662,11 +671,17 @@ function bindDialogs() {
   el("studentForm").lessonsPerWeek.addEventListener("change", () => updateVisibleRegularRows(el("studentForm")));
   el("groupForm").onlineLink.addEventListener("input", (event) => setOnlineLink("groupOnlineLinkOpen", event.target.value));
   el("groupForm").lessonsPerWeek.addEventListener("change", () => updateVisibleRegularRows(el("groupForm")));
-  el("lessonForm").studentId.addEventListener("change", (event) => setOnlineLink("lessonOnlineLink", student(event.target.value)?.onlineLink || ""));
+  el("lessonForm").studentId.addEventListener("change", () => updateLessonStudentDefaults(el("lessonForm")));
   el("lessonForm").groupId.addEventListener("change", () => updateLessonGroupDefaults(el("lessonForm")));
-  el("lessonForm").date.addEventListener("change", () => updateLessonGroupDefaults(el("lessonForm")));
-  el("lessonForm").time.addEventListener("change", () => updateLessonGroupDefaults(el("lessonForm")));
-  el("editLessonForm").studentId.addEventListener("change", (event) => setOnlineLink("editLessonOnlineLink", student(event.target.value)?.onlineLink || ""));
+  el("lessonForm").date.addEventListener("change", () => {
+    updateLessonGroupDefaults(el("lessonForm"));
+    updateLessonStudentDefaults(el("lessonForm"), { syncSubject: false, syncPrice: false });
+  });
+  el("lessonForm").time.addEventListener("change", () => {
+    updateLessonGroupDefaults(el("lessonForm"));
+    updateLessonStudentDefaults(el("lessonForm"), { syncSubject: false, syncPrice: false });
+  });
+  el("editLessonForm").studentId.addEventListener("change", () => updateLessonStudentDefaults(el("editLessonForm"), { linkId: "editLessonOnlineLink" }));
   document.querySelectorAll("[data-copy-online]").forEach((button) => {
     button.addEventListener("click", () => copyOnlineLink(button.dataset.copyOnline));
   });
@@ -2165,10 +2180,8 @@ function bindLessonButtons() {
     }
     openLessonDialog(button.dataset.time);
     if (button.dataset.student) {
-      const foundStudent = student(button.dataset.student);
       el("lessonForm").studentId.value = button.dataset.student;
-      el("lessonForm").subject.value = foundStudent.subject;
-      el("lessonForm").price.value = foundStudent.price;
+      updateLessonStudentDefaults(el("lessonForm"));
     }
   }));
   document.querySelectorAll("[data-edit]").forEach((button) => button.addEventListener("click", () => openEditLessonDialog(button.dataset.edit)));
@@ -2253,12 +2266,10 @@ function openLessonDialog(time = "16:00", options = {}) {
   const first = state.students[0];
   if (first) {
     form.studentId.value = first.id;
-    form.subject.value = first.subject;
-    form.price.value = first.price;
   }
   const firstGroup = state.groups.find((item) => !item.archived);
   if (firstGroup) form.groupId.value = firstGroup.id;
-  setOnlineLink("lessonOnlineLink", first?.onlineLink || "");
+  updateLessonStudentDefaults(form);
   updateLessonGroupDefaults(form);
   updateLessonFormType(form);
   el("lessonDialog").showModal();
@@ -2294,10 +2305,8 @@ function openExpectedSlotDialog(studentId, date, time) {
   form.date.value = date;
   form.time.value = time;
   form.studentId.value = studentId;
-  form.subject.value = foundStudent.subject;
-  form.price.value = foundStudent.price;
   form.itemType.value = "lesson";
-  setOnlineLink("lessonOnlineLink", foundStudent.onlineLink || "");
+  updateLessonStudentDefaults(form);
   updateLessonFormType(form);
   el("freeLessonFormBtn").style.display = "";
   const expectedLesson = {
@@ -2372,7 +2381,8 @@ function createLessonFromForm(form, conducted = false) {
   const movedFrom = expectedMoved ? `${form.expectedDate.value} ${form.expectedTime.value}` : "";
   if (expectedMoved) addExclusion(form.expectedStudentId.value, form.expectedDate.value, form.expectedTime.value);
   removeExclusion(data.studentId, data.date, data.time);
-  const lessonDuration = Number((expectedMoved ? foundStudent.lessonDuration : regularEntry?.duration) || foundStudent.lessonDuration || 60);
+  const defaultDuration = Number((expectedMoved ? foundStudent.lessonDuration : regularEntry?.duration) || foundStudent.lessonDuration || 60);
+  const lessonDuration = durationFromTimes(data.time, data.endTime, defaultDuration);
     state.lessons.push({
       id: uuid(),
       date: data.date,
@@ -2400,7 +2410,7 @@ function updateLessonFormType(form) {
     block.classList.toggle("hidden", !isLesson);
     block.querySelectorAll("input, select, textarea").forEach((field) => {
       field.disabled = !isLesson;
-      if (field.name === "studentId" || field.name === "subject" || field.name === "price") field.required = isLesson;
+      if (field.name === "studentId" || field.name === "subject" || field.name === "price" || field.name === "endTime") field.required = isLesson;
     });
   });
   form.querySelectorAll(".group-fields").forEach((block) => {
@@ -2426,6 +2436,19 @@ function updateLessonGroupDefaults(form) {
   const foundGroup = group(form.groupId.value);
   const regularEntry = foundGroup?.id ? regularEntryForDateTime(foundGroup, form.date.value, form.time.value) : null;
   form.groupDuration.value = Number(regularEntry?.duration || normalizeRegularSlots(foundGroup || {})[0]?.duration || 60);
+}
+
+function updateLessonStudentDefaults(form, options = {}) {
+  const { linkId = "lessonOnlineLink", syncSubject = true, syncPrice = true, syncEnd = true } = options;
+  const foundStudent = student(form.studentId.value);
+  if (syncSubject && form.subject) form.subject.value = foundStudent.subject || "";
+  if (syncPrice && form.price) form.price.value = foundStudent.price || "";
+  if (syncEnd && form.endTime) {
+    const regularEntry = foundStudent?.id ? regularEntryForDateTime(foundStudent, form.date.value, form.time.value) : null;
+    const duration = Number(regularEntry?.duration || foundStudent.lessonDuration || 60);
+    form.endTime.value = minutesToTime(timeToMinutes(form.time.value) + duration);
+  }
+  setOnlineLink(linkId, foundStudent.onlineLink || "");
 }
 
 function freeLessonFromForm(event) {
@@ -2571,6 +2594,7 @@ function openEditLessonDialog(id) {
   form.studentId.value = lesson.studentId || "";
   form.subject.value = lesson.subject || "";
   form.price.value = isPersonalEvent(lesson) ? 0 : lessonPrice(lesson);
+  form.endTime.value = lessonEndsAt(lesson);
   setOnlineLink("editLessonOnlineLink", lesson.onlineLink || student(lesson.studentId)?.onlineLink || "");
   form.title.value = lesson.title || "";
   form.duration.value = String(lessonDurationMinutes(lesson));
@@ -2624,7 +2648,7 @@ function saveEditedLesson(event) {
       lesson.studentId = data.studentId;
       lesson.subject = data.subject || foundStudent.subject;
       lesson.price = Number(data.price);
-      lesson.duration = Number(foundStudent.lessonDuration || lesson.duration || 60);
+      lesson.duration = durationFromTimes(data.time, data.endTime, foundStudent.lessonDuration || lesson.duration || 60);
       lesson.onlineLink = foundStudent.onlineLink || "";
     }
     if (!isPersonalEvent(lesson) && (oldDate !== lesson.date || oldTime !== lesson.time)) {
