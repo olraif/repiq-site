@@ -123,6 +123,16 @@ h1 {
   letter-spacing: 0;
 }
 
+.site-title-link {
+  color: inherit;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.site-title-link:hover {
+  color: var(--brand);
+}
+
 h2 {
   font-size: 18px;
   letter-spacing: 0;
