@@ -67,14 +67,9 @@
       }
 
       .logo {
-        background: var(--brand);
         border-radius: 18px;
-        color: #fff;
-        display: grid;
-        font-size: 22px;
-        font-weight: 800;
         height: 54px;
-        place-items: center;
+        object-fit: cover;
         width: 54px;
       }
 
@@ -258,6 +253,32 @@
         padding: 18px;
       }
 
+      .service-card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .service-card .button {
+        align-self: flex-start;
+        margin-top: auto;
+      }
+
+      .service-price {
+        color: var(--brand-dark);
+        font-size: 26px;
+        font-weight: 900;
+      }
+
+      .section-visual {
+        border-radius: 14px;
+        display: block;
+        margin-bottom: 14px;
+        max-height: 190px;
+        object-fit: cover;
+        width: 100%;
+      }
+
       .video-grid {
         display: grid;
         gap: 14px;
@@ -333,7 +354,7 @@
     <div class="page">
       <header>
         <a class="brand" href="./index.html" aria-label="На главную">
-          <div class="logo">AI</div>
+          <img class="logo" src="./icon-192.png?v=brand-1" alt="" />
           <div>
             <strong>Репетитор AI</strong>
             <span>CRM и обучение для репетитора</span>
@@ -362,7 +383,7 @@
             </p>
             <div class="actions">
               <a class="button" href="#lessons">Изучить программу</a>
-              <a class="button secondary" href="./app/">Открыть бесплатную CRM</a>
+              <a class="button secondary" href="./app/">Открыть веб-версию CRM</a>
             </div>
           </div>
 
@@ -441,17 +462,19 @@
         <section>
           <h2>Как можно подключиться</h2>
           <div class="grid">
-            <article class="card">
-              <h3>Самостоятельное обучение</h3>
-              <p class="muted">Пройдите короткую программу и перенесите свою рабочую систему в CRM в удобном темпе.</p>
-            </article>
-            <article class="card">
+            <article class="card service-card">
+              <img class="section-visual" src="./assets/site-images/training-setup.png" alt="Настройка CRM для репетитора" />
               <h3>Настройка CRM</h3>
-              <p class="muted">Поможем завести учеников, расписание, оплаты и резервную копию, чтобы вы начали работать без лишней суеты.</p>
+              <div class="service-price">2500 ₽</div>
+              <p class="muted">Одна встреча до 60 минут. Поможем завести учеников, расписание, оплаты и резервную копию, чтобы вы начали работать без лишней суеты.</p>
+              <a class="button" href="https://t.me/repiq_ru">Заказать настройку</a>
             </article>
-            <article class="card">
-              <h3>Система работы под ключ</h3>
-              <p class="muted">Разберём вашу практику целиком: CRM, правила работы, шаблоны общения и следующие шаги для роста.</p>
+            <article class="card service-card">
+              <img class="section-visual" src="./assets/site-images/training-system.png" alt="Индивидуальная система работы репетитора" />
+              <h3>Индивидуальная система под ключ</h3>
+              <div class="service-price">от 9900 ₽</div>
+              <p class="muted">Разберём практику целиком: CRM, правила работы, шаблоны общения, поиск учеников и план дальнейшего роста.</p>
+              <a class="button" href="https://t.me/repiq_ru">Обсудить систему</a>
             </article>
           </div>
         </section>
@@ -480,7 +503,8 @@
         <span>© 2026 Репетитор AI</span>
         <span>
           <a href="./privacy.html">Политика конфиденциальности</a>
-          · <a href="./partners.html">Для партнёров и авторов курсов</a>
+          · <a href="./partners.html">Для партнёров</a>
+          · <a href="https://t.me/repiq_ru">Telegram</a>
         </span>
       </footer>
     </div>

@@ -46,6 +46,8 @@
       .steps { counter-reset: step; display: grid; gap: 12px; }
       .steps .card { position: relative; }
       .steps .card:before { color: var(--brand); content: counter(step); counter-increment: step; font-size: 34px; font-weight: 900; position: absolute; right: 18px; top: 12px; }
+      .card-visual { border-radius: 10px; display: block; margin: -10px -10px 16px; max-height: 220px; object-fit: cover; width: calc(100% + 20px); }
+      footer { color: var(--muted); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin-top: 36px; padding-top: 20px; }
       @media (max-width: 780px) { .hero { grid-template-columns: 1fr; } }
     </style>
   </head>
@@ -81,10 +83,12 @@
       <h2>Два направления Marketing AI</h2>
       <div class="grid">
         <article class="card">
+          <img class="card-visual" src="./assets/site-images/marketing-requests.png" alt="Подборка заявок на занятия" />
           <h3>Сбор заявок</h3>
           <p>Система собирает открытые запросы на занятия и помогает быстро увидеть те, которые подходят по предмету, формату и бюджету.</p>
         </article>
         <article class="card">
+          <img class="card-visual" src="./assets/site-images/marketing-templates.png" alt="Шаблоны продвижения репетитора" />
           <h3>Шаблоны продвижения</h3>
           <p>Готовые основы для анкеты, описания услуг и откликов. Вы адаптируете текст под себя и отвечаете клиенту лично.</p>
         </article>
@@ -111,6 +115,11 @@
           переписывать отклики и разбираться, где лучше разместить анкету.
         </p>
       </section>
+
+      <footer>
+        <span>© 2026 Репетитор AI</span>
+        <span><a href="./privacy.html">Политика конфиденциальности</a> · <a href="./partners.html">Для партнёров</a> · <a href="https://t.me/repiq_ru">Telegram</a></span>
+      </footer>
     </main>
   </body>
 </html>
