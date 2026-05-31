@@ -3,15 +3,127 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content="0; url=./index.html#marketing-ai" />
     <link rel="manifest" href="./site.webmanifest?v=1555.1bj" />
     <link rel="icon" type="image/png" sizes="32x32" href="./icon-32.png?v=1555.1bj" />
     <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=1555.1bj" />
     <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png?v=1555.1bj" />
-    <title>Marketing AI для репетитора</title>
-    <script>window.location.replace('./index.html#marketing-ai');</script>
+    <title>Marketing AI для репетитора — поиск учеников и готовые отклики</title>
+    <meta
+      name="description"
+      content="Marketing AI для репетитора: поиск публичных заявок, фильтр по предмету и бюджету, готовые тексты откликов и настройка анкет."
+    />
+    <style>
+      :root {
+        --bg: #eef8ff;
+        --panel: #ffffff;
+        --text: #17323f;
+        --muted: #526978;
+        --brand: #2e95d3;
+        --brand-dark: #187eb7;
+        --line: #cfe6f2;
+        --green: #dcf7e5;
+        color-scheme: light;
+        font-family: Arial, "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      body { background: var(--bg); color: var(--text); margin: 0; }
+      main { margin: 0 auto; max-width: 1060px; padding: 28px 18px 56px; }
+      nav { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; margin-bottom: 22px; }
+      a { color: var(--brand-dark); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      h1 { font-size: clamp(34px, 7vw, 64px); line-height: 1; margin: 12px 0 16px; }
+      h2 { font-size: 30px; margin: 34px 0 14px; }
+      h3 { margin: 0 0 8px; }
+      p, li { color: var(--muted); font-size: 18px; line-height: 1.5; }
+      .hero, .card, .price, .note { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+      .hero { display: grid; gap: 24px; grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr); }
+      .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+      .button { align-items: center; background: var(--brand); border-radius: 12px; color: #fff; display: inline-flex; font-weight: 800; justify-content: center; min-height: 48px; padding: 12px 18px; }
+      .button.secondary { background: #dff3ff; color: var(--brand-dark); }
+      .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+      .tag { background: var(--green); border-radius: 999px; color: #207647; display: inline-block; font-size: 14px; font-weight: 800; padding: 8px 10px; }
+      .price strong { color: var(--brand); display: block; font-size: 30px; }
+      .steps { counter-reset: step; display: grid; gap: 12px; }
+      .steps .card { position: relative; }
+      .steps .card:before { color: var(--brand); content: counter(step); counter-increment: step; font-size: 34px; font-weight: 900; position: absolute; right: 18px; top: 12px; }
+      @media (max-width: 780px) { .hero { grid-template-columns: 1fr; } }
+    </style>
   </head>
   <body>
-    <p><a href="./index.html#marketing-ai">Открыть раздел Marketing AI</a></p>
+    <main>
+      <nav>
+        <a href="./index.html">Репетитор AI</a>
+        <span>
+          <a href="./ai-pro.html">AI Pro</a> ·
+          <a href="./partners.html">Партнерам</a> ·
+          <a href="./support.html#setup">Настройка</a>
+        </span>
+      </nav>
+
+      <section class="hero">
+        <div>
+          <span class="tag">Поиск заявок без автоспама</span>
+          <h1>Marketing AI помогает репетитору находить учеников</h1>
+          <p>
+            Это не автоспам и не обещание гарантированных клиентов. Это система: найти публичные заявки,
+            убрать мусор, выбрать подходящие, подготовить аккуратный отклик и улучшить анкету репетитора.
+          </p>
+          <div class="actions">
+            <a class="button" href="https://t.me/repiq_ru">Записаться в ранний доступ</a>
+            <a class="button secondary" href="./partners.html">Для партнеров и курсов</a>
+          </div>
+        </div>
+        <aside class="price">
+          <p>Стартовые форматы</p>
+          <strong>от 990 ₽/мес</strong>
+          <p>Подборка заявок, фильтр и тексты откликов. Пакет настройки профиля и площадок: от 4900 ₽.</p>
+        </aside>
+      </section>
+
+      <h2>Что делает Marketing AI</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Ищет заявки</h3>
+          <p>Python-парсер собирает открытые публичные источники: площадки, посты, каналы и страницы, где люди ищут репетитора.</p>
+        </article>
+        <article class="card">
+          <h3>Фильтрует мусор</h3>
+          <p>Отсекает вакансии, курсы, франшизы, неподходящие бюджеты и темы, которые не относятся к частному репетитору.</p>
+        </article>
+        <article class="card">
+          <h3>Готовит отклик</h3>
+          <p>Для каждой хорошей заявки дает короткий человеческий текст: без давления, спама и лишней саморекламы.</p>
+        </article>
+        <article class="card">
+          <h3>Улучшает анкету</h3>
+          <p>Помогает написать профиль, услуги, цены, описание опыта и ответы на типовые вопросы родителей.</p>
+        </article>
+      </div>
+
+      <h2>Как это будет работать в первом MVP</h2>
+      <div class="steps">
+        <article class="card"><h3>Выбираем предмет и город/онлайн</h3><p>Репетитор указывает, кого ищет: математика, информатика, начальная школа, ЕГЭ, онлайн или город.</p></article>
+        <article class="card"><h3>Собираем таблицу заявок</h3><p>Инструмент выгружает CSV/таблицу: дата, источник, ссылка, предмет, бюджет, качество заявки, текст отклика.</p></article>
+        <article class="card"><h3>Репетитор отвечает вручную</h3><p>Мы не рассылаем сообщения автоматически. Репетитор сам открывает ссылку и решает, писать или нет.</p></article>
+        <article class="card"><h3>Дальше подключаем AI Pro</h3><p>Когда MVP покажет пользу, переносим фильтр, отклики и историю заявок в приложение/веб-версию.</p></article>
+      </div>
+
+      <h2>Тарифы для первых продаж</h2>
+      <div class="grid">
+        <div class="price"><strong>990 ₽/мес</strong><p>Базовая подборка заявок и шаблоны откликов.</p></div>
+        <div class="price"><strong>1990 ₽/мес</strong><p>Больше источников, приоритетные заявки, несколько предметов.</p></div>
+        <div class="price"><strong>4900 ₽</strong><p>Настройка анкеты, площадок и текстов отклика.</p></div>
+        <div class="price"><strong>9900 ₽</strong><p>Пакет под ключ: профиль, стратегия, источники, первые заявки и сопровождение.</p></div>
+      </div>
+
+      <section class="note">
+        <h2>Кому подойдет</h2>
+        <p>
+          Частным репетиторам, которым нужны новые ученики, но не хочется каждый день вручную искать заявки,
+          переписывать отклики и разбираться, где лучше разместить анкету.
+        </p>
+      </section>
+    </main>
   </body>
 </html>
