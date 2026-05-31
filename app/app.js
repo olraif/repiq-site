@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "1555.1bk";
+const appVersion = "1555.1bj";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const SUPPORT_PROJECT_URL = "https://pay.cloudtips.ru/p/36494679";
@@ -507,20 +507,10 @@ function studentBalance(studentId) {
   const paid = paidAmountForStudent(studentId);
   const consumed = conductedAmountForStudent(studentId);
   const balance = balanceAmountForStudent(studentId);
-  const price = lessonPriceForBalance(studentId, lessons);
+  const owner = student(studentId);
+  const price = priceForDuration(owner.price || 0, owner.lessonDuration || 60);
   const lessonsLeft = price > 0 ? Math.max(0, Math.floor(balance / price)) : 0;
   return { plan, paid, consumed, balance, lessonsLeft, advance: Math.max(0, balance), debt: Math.max(0, -balance), unpaid: Math.max(0, -balance) };
-}
-
-function lessonPriceForBalance(studentId, lessons = payableLessonsForStudent(studentId)) {
-  const today = todayIso();
-  const nextLesson = lessons
-    .filter((lesson) => lesson.date >= today)
-    .filter((lesson) => !lessonConductedForStudent(lesson, studentId))
-    .sort(sortByDateTime)[0] || lessons.sort(sortByDateTime)[0];
-  if (nextLesson) return lessonPrice(nextLesson);
-  const owner = student(studentId);
-  return priceForDuration(owner.price || 0, owner.lessonDuration || 60);
 }
 
 function studentCreditAmount(studentId) {
