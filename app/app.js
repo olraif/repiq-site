@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "1555.1bk";
+const appVersion = "1555.1bl";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const SUPPORT_PROJECT_URL = "https://pay.cloudtips.ru/p/36494679";
@@ -259,13 +259,18 @@ function isStudentArchived(item) {
 function lessonPrice(lesson) {
   if (isPersonalEvent(lesson)) return 0;
   if (lesson.groupId && !lesson.studentId) {
-    return groupStudents(lesson.groupId).reduce((total, item) => total + priceForDuration(item.price || 0, lessonDurationMinutes(lesson)), 0);
+    return groupStudents(lesson.groupId).reduce((total, item) => total + studentPriceForDuration(item, lessonDurationMinutes(lesson)), 0);
   }
-  return Number(lesson.price !== undefined && lesson.price !== "" ? lesson.price : student(lesson.studentId).price || 0);
+  const owner = student(lesson.studentId);
+  return Number(lesson.price !== undefined && lesson.price !== "" ? lesson.price : studentPriceForDuration(owner, lessonDurationMinutes(lesson)));
 }
 
-function priceForDuration(basePrice, duration = 60) {
-  return Math.round(Number(basePrice || 0) * Number(duration || 60) / 60);
+function priceForDuration(basePrice, duration = 60, baseDuration = 60) {
+  return Math.round(Number(basePrice || 0) * Number(duration || 60) / Number(baseDuration || 60));
+}
+
+function studentPriceForDuration(owner, duration = 60) {
+  return priceForDuration(owner?.price || 0, duration, owner?.lessonDuration || 60);
 }
 
 function lessonStudentDetails(lesson) {
@@ -428,7 +433,7 @@ function payableLessonsForStudent(studentId) {
       id: `group-pay-${studentId}-${lesson.groupId}-${lesson.date}-${lesson.time}`,
       studentId,
       subject: group(lesson.groupId).subject,
-      price: priceForDuration(owner.price || lesson.price || 0, lessonDurationMinutes(lesson))
+      price: studentPriceForDuration(owner, lessonDurationMinutes(lesson))
     }));
   return dedupeLessons([...individual, ...groupLessons]).sort(sortByDateTime);
 }
@@ -443,7 +448,7 @@ function groupLessonStatus(lesson) {
     ...lesson,
     id: `group-pay-${member.id}-${lesson.groupId}-${lesson.date}-${lesson.time}`,
     studentId: member.id,
-    price: priceForDuration(member.price || lesson.price || 0, lessonDurationMinutes(lesson))
+    price: studentPriceForDuration(member, lessonDurationMinutes(lesson))
   }));
   const plan = sumLessonPrices(virtualLessons);
   const paid = virtualLessons.reduce((total, item) => total + (paymentAllocationForStudent(item.studentId).get(item.id) || 0), 0);
@@ -520,7 +525,7 @@ function lessonPriceForBalance(studentId, lessons = payableLessonsForStudent(stu
     .sort(sortByDateTime)[0] || lessons.sort(sortByDateTime)[0];
   if (nextLesson) return lessonPrice(nextLesson);
   const owner = student(studentId);
-  return priceForDuration(owner.price || 0, owner.lessonDuration || 60);
+  return studentPriceForDuration(owner, owner.lessonDuration || 60);
 }
 
 function studentCreditAmount(studentId) {
@@ -2463,7 +2468,7 @@ function updateLessonStudentDefaults(form, options = {}) {
   const duration = syncEnd
     ? Number(regularEntry?.duration || foundStudent.lessonDuration || 60)
     : durationFromTimes(form.time?.value, form.endTime?.value, foundStudent.lessonDuration || 60);
-  if (syncPrice && form.price) form.price.value = priceForDuration(foundStudent.price || 0, duration);
+  if (syncPrice && form.price) form.price.value = studentPriceForDuration(foundStudent, duration);
   if (syncEnd && form.endTime) {
     form.endTime.value = minutesToTime(timeToMinutes(form.time.value) + duration);
   }
@@ -3193,7 +3198,7 @@ function expectedLessonsForRange(start, end) {
             time: entry.time,
             studentId: item.id,
             subject: item.subject,
-            price: priceForDuration(item.price || 0, duration),
+            price: studentPriceForDuration(item, duration),
             duration,
             onlineLink: item.onlineLink || "",
             note: "Постоянное расписание",
