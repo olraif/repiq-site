@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "1555.1bj";
+const appVersion = "1555.1bi";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const SUPPORT_PROJECT_URL = "https://pay.cloudtips.ru/p/36494679";
@@ -259,13 +259,9 @@ function isStudentArchived(item) {
 function lessonPrice(lesson) {
   if (isPersonalEvent(lesson)) return 0;
   if (lesson.groupId && !lesson.studentId) {
-    return groupStudents(lesson.groupId).reduce((total, item) => total + priceForDuration(item.price || 0, lessonDurationMinutes(lesson)), 0);
+    return groupStudents(lesson.groupId).reduce((total, item) => total + Number(item.price || 0), 0);
   }
   return Number(lesson.price !== undefined && lesson.price !== "" ? lesson.price : student(lesson.studentId).price || 0);
-}
-
-function priceForDuration(basePrice, duration = 60) {
-  return Math.round(Number(basePrice || 0) * Number(duration || 60) / 60);
 }
 
 function lessonStudentDetails(lesson) {
@@ -428,7 +424,7 @@ function payableLessonsForStudent(studentId) {
       id: `group-pay-${studentId}-${lesson.groupId}-${lesson.date}-${lesson.time}`,
       studentId,
       subject: group(lesson.groupId).subject,
-      price: priceForDuration(owner.price || lesson.price || 0, lessonDurationMinutes(lesson))
+      price: Number(owner.price || lesson.price || 0)
     }));
   return dedupeLessons([...individual, ...groupLessons]).sort(sortByDateTime);
 }
@@ -443,7 +439,7 @@ function groupLessonStatus(lesson) {
     ...lesson,
     id: `group-pay-${member.id}-${lesson.groupId}-${lesson.date}-${lesson.time}`,
     studentId: member.id,
-    price: priceForDuration(member.price || lesson.price || 0, lessonDurationMinutes(lesson))
+    price: Number(member.price || lesson.price || 0)
   }));
   const plan = sumLessonPrices(virtualLessons);
   const paid = virtualLessons.reduce((total, item) => total + (paymentAllocationForStudent(item.studentId).get(item.id) || 0), 0);
@@ -507,8 +503,7 @@ function studentBalance(studentId) {
   const paid = paidAmountForStudent(studentId);
   const consumed = conductedAmountForStudent(studentId);
   const balance = balanceAmountForStudent(studentId);
-  const owner = student(studentId);
-  const price = priceForDuration(owner.price || 0, owner.lessonDuration || 60);
+  const price = Number(student(studentId).price || 0);
   const lessonsLeft = price > 0 ? Math.max(0, Math.floor(balance / price)) : 0;
   return { plan, paid, consumed, balance, lessonsLeft, advance: Math.max(0, balance), debt: Math.max(0, -balance), unpaid: Math.max(0, -balance) };
 }
@@ -557,7 +552,7 @@ function freeLessonById(lessonId) {
   state.selectedDate = lesson.date;
   save();
   render();
-  showToast("Слот освобожден");
+  showUndoToast("Слот освобожден");
 }
 
 function addExclusion(studentId, date, time) {
@@ -686,9 +681,7 @@ function bindDialogs() {
     updateLessonGroupDefaults(el("lessonForm"));
     updateLessonStudentDefaults(el("lessonForm"), { syncSubject: false, syncPrice: false });
   });
-  el("lessonForm").endTime.addEventListener("change", () => updateLessonStudentDefaults(el("lessonForm"), { syncSubject: false, syncEnd: false }));
   el("editLessonForm").studentId.addEventListener("change", () => updateLessonStudentDefaults(el("editLessonForm"), { linkId: "editLessonOnlineLink" }));
-  el("editLessonForm").endTime.addEventListener("change", () => updateLessonStudentDefaults(el("editLessonForm"), { linkId: "editLessonOnlineLink", syncSubject: false, syncEnd: false }));
   document.querySelectorAll("[data-copy-online]").forEach((button) => {
     button.addEventListener("click", () => copyOnlineLink(button.dataset.copyOnline));
   });
@@ -2449,12 +2442,10 @@ function updateLessonStudentDefaults(form, options = {}) {
   const { linkId = "lessonOnlineLink", syncSubject = true, syncPrice = true, syncEnd = true } = options;
   const foundStudent = student(form.studentId.value);
   if (syncSubject && form.subject) form.subject.value = foundStudent.subject || "";
-  const regularEntry = foundStudent?.id ? regularEntryForDateTime(foundStudent, form.date.value, form.time.value) : null;
-  const duration = syncEnd
-    ? Number(regularEntry?.duration || foundStudent.lessonDuration || 60)
-    : durationFromTimes(form.time?.value, form.endTime?.value, foundStudent.lessonDuration || 60);
-  if (syncPrice && form.price) form.price.value = priceForDuration(foundStudent.price || 0, duration);
+  if (syncPrice && form.price) form.price.value = foundStudent.price || "";
   if (syncEnd && form.endTime) {
+    const regularEntry = foundStudent?.id ? regularEntryForDateTime(foundStudent, form.date.value, form.time.value) : null;
+    const duration = Number(regularEntry?.duration || foundStudent.lessonDuration || 60);
     form.endTime.value = minutesToTime(timeToMinutes(form.time.value) + duration);
   }
   setOnlineLink(linkId, foundStudent.onlineLink || "");
@@ -3175,7 +3166,6 @@ function expectedLessonsForRange(start, end) {
         .filter((entry) => entry.weekday === day.getDay())
         .filter((entry) => !(state.exclusions || []).some((excluded) => excluded.studentId === item.id && excluded.date === date && excluded.time === entry.time))
         .forEach((entry) => {
-          const duration = Number(entry.duration || item.lessonDuration || 60);
           lessons.push({
             id: `expected-${item.id}-${date}-${entry.time}`,
             expected: true,
@@ -3183,8 +3173,8 @@ function expectedLessonsForRange(start, end) {
             time: entry.time,
             studentId: item.id,
             subject: item.subject,
-            price: priceForDuration(item.price || 0, duration),
-            duration,
+            price: Number(item.price || 0),
+            duration: Number(entry.duration || item.lessonDuration || 60),
             onlineLink: item.onlineLink || "",
             note: "Постоянное расписание",
             movedFrom: ""
