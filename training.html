@@ -208,7 +208,6 @@
 
       .course-card,
       .card,
-      .video-slot,
       .note {
         background: var(--panel);
         border: 1px solid var(--line);
@@ -273,33 +272,9 @@
       .section-visual {
         border-radius: 14px;
         display: block;
+        height: auto;
         margin-bottom: 14px;
-        max-height: 190px;
-        object-fit: cover;
         width: 100%;
-      }
-
-      .video-grid {
-        display: grid;
-        gap: 14px;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .video-slot {
-        background: var(--soft);
-        min-height: 180px;
-        padding: 18px;
-      }
-
-      .video-badge {
-        background: #dff1ff;
-        border-radius: 999px;
-        color: var(--brand-dark);
-        display: inline-flex;
-        font-size: 13px;
-        font-weight: 800;
-        margin-bottom: 12px;
-        padding: 7px 10px;
       }
 
       .note {
@@ -328,8 +303,7 @@
         }
 
         .hero,
-        .grid,
-        .video-grid {
+        .grid {
           grid-template-columns: 1fr;
         }
       }
@@ -382,7 +356,7 @@
               оплаты, переносы и баланс так, чтобы работа стала понятной, спокойной и готовой к росту.
             </p>
             <div class="actions">
-              <a class="button" href="#lessons">Изучить программу</a>
+              <a class="button" href="#formats">Выбрать формат</a>
               <a class="button secondary" href="./app/">Открыть веб-версию CRM</a>
             </div>
           </div>
@@ -404,7 +378,7 @@
         </section>
 
         <section>
-          <h2>Что будет в курсе</h2>
+          <h2>Что можно привести в порядок</h2>
           <div class="grid">
             <article class="card">
               <h3>База учеников</h3>
@@ -433,52 +407,26 @@
           </div>
         </section>
 
-        <section id="lessons">
-          <h2>Видеоуроки</h2>
-          <div class="video-grid">
-            <article class="video-slot">
-              <span class="video-badge">Урок 1</span>
-              <h3>Первый запуск и пустая база</h3>
-              <p class="muted">Что видно в приложении после установки и с чего начать заполнение.</p>
-            </article>
-            <article class="video-slot">
-              <span class="video-badge">Урок 2</span>
-              <h3>Ученики и группы</h3>
-              <p class="muted">Как добавить ученика, выбрать формат занятий и создать группу.</p>
-            </article>
-            <article class="video-slot">
-              <span class="video-badge">Урок 3</span>
-              <h3>Расписание и сетка</h3>
-              <p class="muted">Как читать цвета слотов, ставить уроки и видеть свободное время.</p>
-            </article>
-            <article class="video-slot">
-              <span class="video-badge">Урок 4</span>
-              <h3>Оплата, баланс и проведено</h3>
-              <p class="muted">Как деньги попадают на баланс и когда списываются за проведённый урок.</p>
-            </article>
-          </div>
-        </section>
-
-        <section>
-          <h2>Как можно подключиться</h2>
+        <section id="formats">
+          <h2>Выберите свой формат</h2>
           <div class="grid">
             <article class="card service-card">
               <img class="section-visual" src="./assets/site-images/marketing-templates.png" alt="Курс по работе с CRM для репетитора" />
-              <h3>Курс по работе с CRM</h3>
+              <h3>Разобраться самостоятельно</h3>
               <div class="service-price">999 ₽</div>
-              <p class="muted">Четыре коротких видеоурока: первый запуск, ученики и группы, расписание, оплаты и баланс.</p>
+              <p class="muted">Мини-курс из четырёх коротких видео. Вы спокойно посмотрите, как устроена CRM, внесёте учеников и начнёте работать в своём темпе. Сама CRM остаётся бесплатной.</p>
               <a class="button" href="https://t.me/repiq_ru">Записаться на курс</a>
             </article>
             <article class="card service-card">
               <img class="section-visual" src="./assets/site-images/training-setup.png" alt="Настройка CRM для репетитора" />
-              <h3>Настройка CRM</h3>
+              <h3>Настроить CRM вместе</h3>
               <div class="service-price">2500 ₽</div>
               <p class="muted">Одна встреча до 60 минут. Поможем завести учеников, расписание, оплаты и резервную копию, чтобы вы начали работать без лишней суеты.</p>
               <a class="button" href="https://t.me/repiq_ru">Заказать настройку</a>
             </article>
             <article class="card service-card">
               <img class="section-visual" src="./assets/site-images/training-system.png" alt="Индивидуальная система работы репетитора" />
-              <h3>Индивидуальная система под ключ</h3>
+              <h3>Выстроить систему для роста</h3>
               <div class="service-price">от 9900 ₽</div>
               <p class="muted">Разберём практику целиком: CRM, правила работы, шаблоны общения, поиск учеников и план дальнейшего роста.</p>
               <a class="button" href="https://t.me/repiq_ru">Обсудить систему</a>

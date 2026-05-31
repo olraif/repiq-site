@@ -46,7 +46,7 @@
       .steps { counter-reset: step; display: grid; gap: 12px; }
       .steps .card { position: relative; }
       .steps .card:before { color: var(--brand); content: counter(step); counter-increment: step; font-size: 34px; font-weight: 900; position: absolute; right: 18px; top: 12px; }
-      .card-visual { border-radius: 10px; display: block; margin: -10px -10px 16px; max-height: 220px; object-fit: cover; width: calc(100% + 20px); }
+      .card-visual { border-radius: 10px; display: block; height: auto; margin: -10px -10px 16px; width: calc(100% + 20px); }
       .hero-visual { border-radius: 10px; display: block; margin-top: 18px; max-height: 205px; object-fit: cover; width: 100%; }
       footer { color: var(--muted); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin-top: 36px; padding-top: 20px; }
       @media (max-width: 780px) { .hero { grid-template-columns: 1fr; } }

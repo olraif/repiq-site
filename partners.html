@@ -36,13 +36,14 @@
       p, li { color: var(--muted); font-size: 18px; line-height: 1.5; }
       .hero, .card, .note { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
       .hero { display: grid; gap: 24px; grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr); }
-      .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+      .grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .button { align-items: center; background: var(--brand); border-radius: 12px; color: #fff; display: inline-flex; font-weight: 800; justify-content: center; min-height: 48px; padding: 12px 18px; }
       .button.secondary { background: #dff3ff; color: var(--brand-dark); }
       .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
       .commission { color: var(--brand); font-size: 34px; font-weight: 900; }
+      .hero-visual { border-radius: 10px; display: block; height: auto; margin-top: 16px; width: 100%; }
       footer { color: var(--muted); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin-top: 36px; padding-top: 20px; }
-      @media (max-width: 780px) { .hero { grid-template-columns: 1fr; } }
+      @media (max-width: 780px) { .hero, .grid { grid-template-columns: 1fr; } }
     </style>
   </head>
   <body>
@@ -73,6 +74,7 @@
           <p>Партнерская модель</p>
           <div class="commission">Индивидуально</div>
           <p>Подберем формат сотрудничества под курс, сообщество или канал: промокод, партнерская ссылка или совместный вебинар.</p>
+          <img class="hero-visual" src="./assets/site-images/training-system.png" alt="Система работы репетитора" />
         </aside>
       </section>
 
