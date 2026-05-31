@@ -564,6 +564,7 @@ h2 {
   font-size: 13px;
   line-height: 1.18;
   margin-top: 4px;
+  white-space: nowrap;
 }
 
 .ai-metric small {

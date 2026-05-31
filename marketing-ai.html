@@ -31,7 +31,7 @@
       nav { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; margin-bottom: 22px; }
       a { color: var(--brand-dark); text-decoration: none; }
       a:hover { text-decoration: underline; }
-      h1 { font-size: clamp(34px, 7vw, 64px); line-height: 1; margin: 12px 0 16px; }
+      h1 { font-size: clamp(34px, 5.4vw, 56px); line-height: 1; margin: 12px 0 16px; }
       h2 { font-size: 30px; margin: 34px 0 14px; }
       h3 { margin: 0 0 8px; }
       p, li { color: var(--muted); font-size: 18px; line-height: 1.5; }
@@ -47,6 +47,7 @@
       .steps .card { position: relative; }
       .steps .card:before { color: var(--brand); content: counter(step); counter-increment: step; font-size: 34px; font-weight: 900; position: absolute; right: 18px; top: 12px; }
       .card-visual { border-radius: 10px; display: block; margin: -10px -10px 16px; max-height: 220px; object-fit: cover; width: calc(100% + 20px); }
+      .hero-visual { border-radius: 10px; display: block; margin-top: 18px; max-height: 205px; object-fit: cover; width: 100%; }
       footer { color: var(--muted); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin-top: 36px; padding-top: 20px; }
       @media (max-width: 780px) { .hero { grid-template-columns: 1fr; } }
     </style>
@@ -77,6 +78,7 @@
           <p>Marketing AI</p>
           <strong>По мере необходимости</strong>
           <p>Используйте общий баланс кредитов для поиска заявок. Шаблоны продвижения и настройку профиля можно подключить отдельно.</p>
+          <img class="hero-visual" src="./assets/site-images/marketing-requests.png" alt="Подборка заявок для репетитора" />
         </aside>
       </section>
 

@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "1555.1bl";
+const appVersion = "1555.1bm";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const SUPPORT_PROJECT_URL = "https://pay.cloudtips.ru/p/36494679";
@@ -1770,7 +1770,7 @@ function renderHeader() {
 
 function renderMetrics() {
   el("metrics").innerHTML = [
-    metric("Материалы AI", "готовый урок за 60 сек", "презентация, конспект, домашка", "materials"),
+    metric("Материалы AI", "урок за 60 секунд", "презентация, конспект, домашка", "materials"),
     metric("Решебник AI", "по фото и в диалоге", "решение и комментарии", "solver"),
     metric("Шаблоны AI", "сообщения и правила", "оплаты, отмены, договоренности", "templates"),
     metric("Маркетинг AI", "поиск учеников", "анкеты, площадки, заявки", "marketing")

@@ -31,7 +31,7 @@
       nav { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; margin-bottom: 22px; }
       a { color: var(--brand-dark); text-decoration: none; }
       a:hover { text-decoration: underline; }
-      h1 { font-size: clamp(34px, 7vw, 62px); line-height: 1; margin: 12px 0 16px; }
+      h1 { font-size: clamp(34px, 5.2vw, 54px); line-height: 1; margin: 12px 0 16px; }
       h2 { font-size: 30px; margin: 34px 0 14px; }
       h3 { margin: 0 0 8px; }
       p, li { color: var(--muted); font-size: 18px; line-height: 1.5; }
@@ -44,6 +44,7 @@
       .price strong { color: var(--brand); display: block; font-size: 30px; }
       .tag { background: #e7f6ff; border-radius: 999px; color: var(--brand-dark); display: inline-block; font-size: 14px; font-weight: 800; padding: 8px 10px; }
       .note { background: var(--soft); margin-top: 18px; }
+      .hero-visual { border-radius: 10px; display: block; margin-top: 18px; max-height: 205px; object-fit: cover; width: 100%; }
       footer { color: var(--muted); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin-top: 36px; padding-top: 20px; }
       @media (max-width: 780px) { .hero { grid-template-columns: 1fr; } }
     </style>
@@ -75,6 +76,7 @@
           <p>AI Pro без абонентской платы</p>
           <strong>Пакеты кредитов</strong>
           <p>Покупайте кредиты по мере необходимости и тратьте их только на нужные AI-действия. Кредиты не сгорают в конце месяца.</p>
+          <img class="hero-visual" src="./assets/site-images/training-system.png" alt="Инструменты AI Pro для работы репетитора" />
         </aside>
       </section>
 
