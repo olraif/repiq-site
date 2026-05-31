@@ -125,7 +125,7 @@ h1 {
 
 .site-title-link {
   color: inherit;
-  display: inline-block;
+  display: block;
   text-decoration: none;
 }
 
