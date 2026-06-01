@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "1555.1bm";
+const appVersion = "1555.1bn";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const SUPPORT_PROJECT_URL = "https://pay.cloudtips.ru/p/36494679";
@@ -1773,7 +1773,7 @@ function renderMetrics() {
     metric("Материалы AI", "урок за 60 секунд", "презентация, конспект, домашка", "materials"),
     metric("Решебник AI", "по фото и в диалоге", "решение и комментарии", "solver"),
     metric("Шаблоны AI", "сообщения и правила", "оплаты, отмены, договоренности", "templates"),
-    metric("Маркетинг AI", "поиск учеников", "анкеты, площадки, заявки", "marketing")
+    metric("Маркетинг AI", "поиск учеников", "автоматизированный сбор заявок", "marketing")
   ].join("");
   document.querySelectorAll("[data-ai-feature]").forEach((card) => {
     card.addEventListener("click", () => openAiPaywall(card.dataset.aiFeature));
@@ -1867,7 +1867,7 @@ function visibleYears() {
 }
 
 function metric(label, value, hint = "", feature = "ai-pro") {
-  return `<button type="button" class="metric ai-metric" data-ai-feature="${feature}"><span>${label}</span><strong>${value}</strong>${hint ? `<small>${hint}</small>` : ""}</button>`;
+  return `<button type="button" class="metric ai-metric" data-ai-feature="${feature}"><em>AI Pro</em><span>${label}</span><strong>${value}</strong>${hint ? `<small>${hint}</small>` : ""}</button>`;
 }
 
 function renderPlan() {

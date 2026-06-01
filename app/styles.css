@@ -562,11 +562,26 @@ h2 {
   text-align: left;
 }
 
+.ai-metric em {
+  background: #f1eaff;
+  border-radius: 999px;
+  color: #7e57c2;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  padding: 4px 5px;
+  position: absolute;
+  right: 8px;
+  top: 7px;
+}
+
 .ai-metric span {
   color: var(--accent);
   font-size: 11px;
   font-weight: 800;
   line-height: 1.15;
+  padding-right: 38px;
 }
 
 .ai-metric strong {
@@ -1722,6 +1737,7 @@ button {
 
   .ai-metric span {
     font-size: 10px;
+    padding-right: 36px;
   }
 
   .ai-metric strong {
