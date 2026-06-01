@@ -269,6 +269,17 @@
         font-weight: 900;
       }
 
+      .service-list {
+        color: var(--muted);
+        line-height: 1.45;
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .service-list li + li {
+        margin-top: 6px;
+      }
+
       .section-visual {
         border-radius: 14px;
         display: block;
@@ -414,21 +425,36 @@
               <img class="section-visual" src="./assets/site-images/marketing-templates.png" alt="Курс по работе с CRM для репетитора" />
               <h3>Разобраться самостоятельно</h3>
               <div class="service-price">999 ₽</div>
-              <p class="muted">Практический курс из семи коротких уроков: обзор CRM, ученики, карточки, группы, расписание, оплаты и ежедневная работа. Бонус — чек-лист «Настройка CRM за один вечер». Сама CRM остаётся бесплатной.</p>
+              <ul class="service-list">
+                <li>практический курс из семи коротких уроков;</li>
+                <li>обзор CRM, ученики, карточки, группы, расписание, оплаты и ежедневная работа;</li>
+                <li>бонус — чек-лист «Настройка CRM за один вечер».</li>
+              </ul>
+              <p class="muted">Сама CRM остаётся бесплатной.</p>
               <a class="button" href="https://t.me/repiq_ru">Записаться на курс</a>
             </article>
             <article class="card service-card">
               <img class="section-visual" src="./assets/site-images/training-setup.png" alt="Настройка CRM для репетитора" />
               <h3>Настроить CRM вместе</h3>
               <div class="service-price">2500 ₽</div>
-              <p class="muted">Одна встреча до 60 минут. Поможем завести учеников, расписание, оплаты и резервную копию, чтобы вы начали работать без лишней суеты.</p>
+              <ul class="service-list">
+                <li>курс «Разобраться самостоятельно» в подарок;</li>
+                <li>одна индивидуальная встреча до 60 минут;</li>
+                <li>настройка учеников, расписания, оплат и резервной копии под вашу практику.</li>
+              </ul>
               <a class="button" href="https://t.me/repiq_ru">Заказать настройку</a>
             </article>
             <article class="card service-card">
               <img class="section-visual" src="./assets/site-images/training-system.png" alt="Индивидуальная система работы репетитора" />
               <h3>Выстроить систему для роста</h3>
               <div class="service-price">от 9900 ₽</div>
-              <p class="muted">Разберём практику целиком: CRM, правила работы, шаблоны общения, поиск учеников и план дальнейшего роста.</p>
+              <ul class="service-list">
+                <li>курс «Разобраться самостоятельно» в подарок;</li>
+                <li>индивидуальная настройка CRM до 60 минут;</li>
+                <li>разбор текущей практики и план развития;</li>
+                <li>настройка критериев поиска заявок и шаблонов откликов;</li>
+                <li>три встречи сопровождения с корректировкой по первым откликам.</li>
+              </ul>
               <a class="button" href="https://t.me/repiq_ru">Обсудить систему</a>
             </article>
           </div>
