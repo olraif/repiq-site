@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./icon-32.png?v=1555.1bj" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png?v=1555.1bj" />
+    <title>Мини-курс CRM Репетитор AI</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <style>
+      :root {
+        --bg: #eaf8ff;
+        --panel: #fff;
+        --text: #172b3a;
+        --muted: #657887;
+        --brand: #2f99d1;
+        --brand-dark: #187eb7;
+        --line: #d7e6ef;
+        --soft: #f3fbff;
+        --green: #d9f8e3;
+        --yellow: #fff1b8;
+      }
+
+      * { box-sizing: border-box; }
+      body { background: var(--bg); color: var(--text); font-family: Arial, "Segoe UI", sans-serif; margin: 0; }
+      a { color: var(--brand-dark); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      button, input { font: inherit; }
+      .page { margin: 0 auto; max-width: 1160px; padding: 22px 18px 48px; }
+      header { align-items: center; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 22px; }
+      .brand { align-items: center; display: flex; gap: 11px; }
+      .brand img { height: 48px; width: 48px; }
+      .brand strong { display: block; font-size: 21px; }
+      .brand span, .muted { color: var(--muted); }
+      .brand span { font-size: 13px; }
+      .header-links { display: flex; flex-wrap: wrap; gap: 14px; justify-content: flex-end; }
+      .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+      .access { margin: 90px auto 0; max-width: 560px; padding: 30px; text-align: center; }
+      .access img { height: 72px; margin-bottom: 12px; width: 72px; }
+      h1 { font-size: clamp(34px, 5vw, 54px); letter-spacing: 0; line-height: 1.02; margin: 0 0 14px; }
+      h2 { font-size: 28px; margin: 0 0 14px; }
+      h3 { font-size: 19px; margin: 0 0 7px; }
+      p { line-height: 1.48; margin: 0; }
+      .access-form { display: flex; gap: 10px; margin-top: 22px; }
+      input { border: 1px solid #bed8e8; border-radius: 12px; min-width: 0; padding: 14px 15px; width: 100%; }
+      .button { align-items: center; background: var(--brand); border: 0; border-radius: 12px; color: #fff; cursor: pointer; display: inline-flex; font-weight: 800; justify-content: center; min-height: 50px; padding: 13px 18px; }
+      .button:hover { background: var(--brand-dark); text-decoration: none; }
+      .button.secondary { background: #e2f3ff; color: var(--brand-dark); }
+      .access-message { color: #c84e4e; font-size: 14px; min-height: 21px; padding-top: 10px; }
+      .course { display: none; }
+      .course.active { display: block; }
+      .course-hero { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr) 280px; margin-bottom: 20px; padding: 24px; }
+      .course-hero .lead { color: var(--muted); font-size: 18px; max-width: 720px; }
+      .summary { align-self: start; background: var(--soft); border-radius: 13px; padding: 15px; }
+      .summary strong { display: block; font-size: 30px; margin-bottom: 4px; }
+      .workspace { display: grid; gap: 18px; grid-template-columns: 310px minmax(0, 1fr); }
+      .lesson-list { display: grid; gap: 9px; }
+      .lesson-button { background: var(--panel); border: 1px solid var(--line); border-radius: 13px; color: var(--text); cursor: pointer; padding: 13px; text-align: left; width: 100%; }
+      .lesson-button:hover, .lesson-button.current { border-color: #9ed6f3; box-shadow: 0 6px 16px rgba(47, 153, 209, 0.1); }
+      .lesson-button.locked { cursor: default; opacity: 0.68; }
+      .lesson-meta { align-items: center; color: var(--brand-dark); display: flex; font-size: 12px; font-weight: 800; gap: 7px; margin-bottom: 6px; }
+      .lesson-status { background: #e2f3ff; border-radius: 999px; padding: 4px 7px; }
+      .lesson-status.ready { background: var(--green); color: #267446; }
+      .lesson-status.wait { background: var(--yellow); color: #826218; }
+      .lesson-view { overflow: hidden; }
+      .video-wrap { background: #dfeef7; aspect-ratio: 9 / 16; max-height: 680px; width: 100%; }
+      video { background: #dfeef7; display: block; height: 100%; object-fit: contain; width: 100%; }
+      .lesson-copy { padding: 20px; }
+      .lesson-copy .muted { line-height: 1.45; }
+      .lesson-result { background: var(--green); border-radius: 11px; margin-top: 14px; padding: 13px; }
+      .lesson-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+      .material { margin-top: 18px; padding: 18px; }
+      footer { color: var(--muted); display: flex; flex-wrap: wrap; font-size: 14px; gap: 12px; justify-content: space-between; margin-top: 28px; }
+
+      @media (max-width: 820px) {
+        header { align-items: flex-start; flex-direction: column; }
+        .header-links { justify-content: flex-start; }
+        .course-hero, .workspace { grid-template-columns: 1fr; }
+        .lesson-view { order: -1; }
+        .video-wrap { max-height: 620px; }
+      }
+
+      @media (max-width: 520px) {
+        .page { padding: 16px 12px 34px; }
+        .access { margin-top: 48px; padding: 22px; }
+        .access-form { flex-direction: column; }
+        .course-hero { padding: 18px; }
+        .lesson-copy { padding: 16px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <a class="brand" href="./index.html" aria-label="На главную">
+          <img src="./icon-192.png" alt="" />
+          <div>
+            <strong>Репетитор AI</strong>
+            <span>Мини-курс по настройке CRM</span>
+          </div>
+        </a>
+        <nav class="header-links" aria-label="Ссылки">
+          <a href="./training.html">Об обучении</a>
+          <a href="./app/">Открыть CRM</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="access panel" id="accessPanel">
+          <img src="./icon-192.png" alt="" />
+          <h1>Доступ к мини-курсу</h1>
+          <p class="muted">Введите код, который вы получили после оплаты. Курс откроется на этом устройстве.</p>
+          <form class="access-form" id="accessForm">
+            <input id="accessCode" type="text" autocomplete="one-time-code" placeholder="Код доступа" aria-label="Код доступа" required />
+            <button class="button" type="submit">Открыть курс</button>
+          </form>
+          <p class="access-message" id="accessMessage" aria-live="polite"></p>
+        </section>
+
+        <section class="course" id="coursePanel">
+          <div class="course-hero panel">
+            <div>
+              <p class="muted">Практический мини-курс</p>
+              <h1>Настройте CRM за один вечер</h1>
+              <p class="lead">За семь коротких уроков вы добавите учеников, настроите расписание, разберётесь с оплатами и сохраните резервную копию.</p>
+            </div>
+            <div class="summary">
+              <span class="muted">Программа курса</span>
+              <strong>7 уроков</strong>
+              <p class="muted">Первый урок уже доступен. Новые уроки будут добавляться по мере записи.</p>
+            </div>
+          </div>
+
+          <div class="workspace">
+            <aside class="lesson-list" aria-label="Уроки курса">
+              <button class="lesson-button current" type="button">
+                <span class="lesson-meta">Урок 1 <span class="lesson-status ready">Доступен</span></span>
+                <strong>Обзор системы и первый запуск</strong>
+              </button>
+              <button class="lesson-button locked" type="button">
+                <span class="lesson-meta">Урок 2 <span class="lesson-status wait">Готовится</span></span>
+                <strong>Ученики и карточка ученика</strong>
+              </button>
+              <button class="lesson-button locked" type="button">
+                <span class="lesson-meta">Урок 3 <span class="lesson-status wait">Готовится</span></span>
+                <strong>Постоянное расписание</strong>
+              </button>
+              <button class="lesson-button locked" type="button">
+                <span class="lesson-meta">Урок 4 <span class="lesson-status wait">Готовится</span></span>
+                <strong>Группы и смешанный формат</strong>
+              </button>
+              <button class="lesson-button locked" type="button">
+                <span class="lesson-meta">Урок 5 <span class="lesson-status wait">Готовится</span></span>
+                <strong>Сетка и разовые уроки</strong>
+              </button>
+              <button class="lesson-button locked" type="button">
+                <span class="lesson-meta">Урок 6 <span class="lesson-status wait">Готовится</span></span>
+                <strong>Оплаты и баланс</strong>
+              </button>
+              <button class="lesson-button locked" type="button">
+                <span class="lesson-meta">Урок 7 <span class="lesson-status wait">Готовится</span></span>
+                <strong>Настройки и резервная копия</strong>
+              </button>
+            </aside>
+
+            <article class="lesson-view panel">
+              <div class="video-wrap">
+                <video controls preload="metadata" poster="./assets/course/images/lesson-01-intro.png">
+                  <source src="./assets/course/videos/lesson-01.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <div class="lesson-copy">
+                <p class="muted">Урок 1</p>
+                <h2>Обзор системы и первый запуск</h2>
+                <p class="muted">Посмотрите структуру приложения, основные вкладки, настройки и карточки AI Pro. После урока откройте CRM и спокойно пройдите тот же путь самостоятельно.</p>
+                <div class="lesson-result"><strong>Результат:</strong> вы понимаете структуру приложения и знаете, с чего начать настройку.</div>
+                <div class="lesson-actions">
+                  <a class="button secondary" href="./app/">Открыть веб-версию CRM</a>
+                  <button class="button" id="completeLesson" type="button">Отметить урок пройденным</button>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <section class="material panel">
+            <h2>Материалы курса</h2>
+            <p class="muted">Скачайте сценарий и чек-лист настройки CRM. По нему удобно пройти основные шаги после просмотра уроков.</p>
+            <div class="lesson-actions">
+              <a class="button secondary" href="./assets/course/files/mini-course-crm-999.pdf" download>Скачать PDF-чек-лист</a>
+              <button class="button secondary" id="logout" type="button">Выйти из курса</button>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <footer>
+        <span>© 2026 Репетитор AI</span>
+        <a href="./privacy.html">Политика конфиденциальности</a>
+      </footer>
+    </div>
+
+    <script>
+      const accessKey = "repiq-course-access-v1";
+      const progressKey = "repiq-course-progress-v1";
+      const acceptedCodeHash = "89df9797c5cf5fb0ece57fbb9a1053de218ce4a4ae9d98dcdd36dc3b053dfb00";
+      const accessPanel = document.getElementById("accessPanel");
+      const coursePanel = document.getElementById("coursePanel");
+      const accessForm = document.getElementById("accessForm");
+      const accessCode = document.getElementById("accessCode");
+      const accessMessage = document.getElementById("accessMessage");
+      const completeLesson = document.getElementById("completeLesson");
+
+      function showCourse() {
+        accessPanel.hidden = true;
+        coursePanel.classList.add("active");
+        completeLesson.textContent = localStorage.getItem(progressKey) === "lesson-01" ? "Урок пройден" : "Отметить урок пройденным";
+      }
+
+      async function hashCode(value) {
+        const data = new TextEncoder().encode(value.trim().toUpperCase());
+        const hash = await crypto.subtle.digest("SHA-256", data);
+        return Array.from(new Uint8Array(hash)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+      }
+
+      accessForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        accessMessage.textContent = "";
+        const currentHash = await hashCode(accessCode.value);
+        if (currentHash !== acceptedCodeHash) {
+          accessMessage.textContent = "Код не подошёл. Проверьте написание или обратитесь в поддержку.";
+          return;
+        }
+        localStorage.setItem(accessKey, "active");
+        showCourse();
+      });
+
+      completeLesson.addEventListener("click", () => {
+        localStorage.setItem(progressKey, "lesson-01");
+        completeLesson.textContent = "Урок пройден";
+      });
+
+      document.getElementById("logout").addEventListener("click", () => {
+        localStorage.removeItem(accessKey);
+        location.reload();
+      });
+
+      const isLocalPreview = ["localhost", "127.0.0.1"].includes(location.hostname) && new URLSearchParams(location.search).get("preview") === "1";
+      if (localStorage.getItem(accessKey) === "active" || isLocalPreview) showCourse();
+    </script>
+  </body>
+</html>
