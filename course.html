@@ -127,18 +127,18 @@
             <div class="summary">
               <span class="muted">Программа курса</span>
               <strong>7 уроков</strong>
-              <p class="muted">Первый урок уже доступен. Новые уроки будут добавляться по мере записи.</p>
+              <p class="muted">Первые два урока уже доступны. Новые уроки будут добавляться по мере записи.</p>
             </div>
           </div>
 
           <div class="workspace">
             <aside class="lesson-list" aria-label="Уроки курса">
-              <button class="lesson-button current" type="button">
+              <button class="lesson-button current" type="button" data-lesson="lesson-01">
                 <span class="lesson-meta">Урок 1 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Обзор системы и первый запуск</strong>
               </button>
-              <button class="lesson-button locked" type="button">
-                <span class="lesson-meta">Урок 2 <span class="lesson-status wait">Готовится</span></span>
+              <button class="lesson-button" type="button" data-lesson="lesson-02">
+                <span class="lesson-meta">Урок 2 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Ученики и карточка ученика</strong>
               </button>
               <button class="lesson-button locked" type="button">
@@ -165,15 +165,15 @@
 
             <article class="lesson-view panel">
               <div class="video-wrap">
-                <video controls preload="metadata" poster="./assets/course/images/lesson-01-intro.png">
+                <video id="lessonVideo" controls preload="metadata" poster="./assets/course/images/lesson-01-intro.png">
                   <source src="./assets/course/videos/lesson-01-web.mp4" type="video/mp4" />
                 </video>
               </div>
               <div class="lesson-copy">
-                <p class="muted">Урок 1</p>
-                <h2>Обзор системы и первый запуск</h2>
-                <p class="muted">Посмотрите структуру приложения, основные вкладки, настройки и карточки AI Pro. После урока откройте CRM и спокойно пройдите тот же путь самостоятельно.</p>
-                <div class="lesson-result"><strong>Результат:</strong> вы понимаете структуру приложения и знаете, с чего начать настройку.</div>
+                <p class="muted" id="lessonNumber">Урок 1</p>
+                <h2 id="lessonTitle">Обзор системы и первый запуск</h2>
+                <p class="muted" id="lessonDescription">Посмотрите структуру приложения, основные вкладки, настройки и карточки AI Pro. После урока откройте CRM и спокойно пройдите тот же путь самостоятельно.</p>
+                <div class="lesson-result"><strong>Результат:</strong> <span id="lessonResult">вы понимаете структуру приложения и знаете, с чего начать настройку.</span></div>
                 <div class="lesson-actions">
                   <a class="button secondary" href="./app/">Открыть веб-версию CRM</a>
                   <button class="button" id="completeLesson" type="button">Отметить урок пройденным</button>
@@ -209,11 +209,55 @@
       const accessCode = document.getElementById("accessCode");
       const accessMessage = document.getElementById("accessMessage");
       const completeLesson = document.getElementById("completeLesson");
+      const lessonVideo = document.getElementById("lessonVideo");
+      const lessons = {
+        "lesson-01": {
+          number: "Урок 1",
+          title: "Обзор системы и первый запуск",
+          description: "Посмотрите структуру приложения, основные вкладки, настройки и карточки AI Pro. После урока откройте CRM и спокойно пройдите тот же путь самостоятельно.",
+          result: "вы понимаете структуру приложения и знаете, с чего начать настройку.",
+          video: "./assets/course/videos/lesson-01-web.mp4",
+          poster: "./assets/course/images/lesson-01-intro.png"
+        },
+        "lesson-02": {
+          number: "Урок 2",
+          title: "Ученики и карточка ученика",
+          description: "Добавьте первого ученика, укажите формат занятий, стоимость и обычную длительность урока. Карточка ученика станет основой для расписания и расчёта баланса.",
+          result: "в CRM добавлен первый ученик с корректной стоимостью и длительностью занятия.",
+          video: "./assets/course/videos/lesson-02-web.mp4",
+          poster: "./assets/course/images/lesson-02-intro.png"
+        }
+      };
+      let currentLessonId = "lesson-01";
+
+      function getProgress() {
+        try { return JSON.parse(localStorage.getItem(progressKey) || "{}"); }
+        catch { return {}; }
+      }
+
+      function updateCompleteButton() {
+        completeLesson.textContent = getProgress()[currentLessonId] ? "Урок пройден" : "Отметить урок пройденным";
+      }
+
+      function openLesson(lessonId) {
+        const lesson = lessons[lessonId];
+        if (!lesson) return;
+        currentLessonId = lessonId;
+        document.querySelectorAll(".lesson-button[data-lesson]").forEach((button) => button.classList.toggle("current", button.dataset.lesson === lessonId));
+        lessonVideo.poster = lesson.poster;
+        lessonVideo.querySelector("source").src = lesson.video;
+        lessonVideo.load();
+        document.getElementById("lessonNumber").textContent = lesson.number;
+        document.getElementById("lessonTitle").textContent = lesson.title;
+        document.getElementById("lessonDescription").textContent = lesson.description;
+        document.getElementById("lessonResult").textContent = lesson.result;
+        updateCompleteButton();
+      }
 
       function showCourse() {
         accessPanel.hidden = true;
         coursePanel.classList.add("active");
-        completeLesson.textContent = localStorage.getItem(progressKey) === "lesson-01" ? "Урок пройден" : "Отметить урок пройденным";
+        updateCompleteButton();
       }
 
       async function hashCode(value) {
@@ -235,13 +279,14 @@
       });
 
       completeLesson.addEventListener("click", () => {
-        if (localStorage.getItem(progressKey) === "lesson-01") {
-          localStorage.removeItem(progressKey);
-          completeLesson.textContent = "Отметить урок пройденным";
-          return;
-        }
-        localStorage.setItem(progressKey, "lesson-01");
-        completeLesson.textContent = "Урок пройден";
+        const progress = getProgress();
+        progress[currentLessonId] = !progress[currentLessonId];
+        localStorage.setItem(progressKey, JSON.stringify(progress));
+        updateCompleteButton();
+      });
+
+      document.querySelectorAll(".lesson-button[data-lesson]").forEach((button) => {
+        button.addEventListener("click", () => openLesson(button.dataset.lesson));
       });
 
       document.getElementById("logout").addEventListener("click", () => {

@@ -202,6 +202,16 @@ h2 {
   width: 16px;
 }
 
+.header-training-btn {
+  background: #edf8ff;
+  color: var(--brand-dark);
+  text-decoration: none;
+}
+
+.header-training-btn:active {
+  background: #dff2ff;
+}
+
 .header-support-btn {
   background: #fff7e8;
   border-color: #f2d8ae;
