@@ -213,7 +213,7 @@
       function showCourse() {
         accessPanel.hidden = true;
         coursePanel.classList.add("active");
-        completeLesson.textContent = localStorage.getItem(progressKey) === "lesson-01" ? "Урок пройден" : "Отметить урок пройденным";
+        completeLesson.textContent = localStorage.getItem(progressKey) === "lesson-01" ? "Урок пройден. Отменить" : "Отметить урок пройденным";
       }
 
       async function hashCode(value) {
@@ -235,8 +235,13 @@
       });
 
       completeLesson.addEventListener("click", () => {
+        if (localStorage.getItem(progressKey) === "lesson-01") {
+          localStorage.removeItem(progressKey);
+          completeLesson.textContent = "Отметить урок пройденным";
+          return;
+        }
         localStorage.setItem(progressKey, "lesson-01");
-        completeLesson.textContent = "Урок пройден";
+        completeLesson.textContent = "Урок пройден. Отменить";
       });
 
       document.getElementById("logout").addEventListener("click", () => {
