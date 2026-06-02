@@ -345,6 +345,46 @@ h2 {
   margin: 0;
 }
 
+.training-link {
+  align-items: center;
+  background: #edf8ff;
+  border: 1px solid #cbe8f7;
+  border-radius: 12px;
+  color: var(--text);
+  display: flex;
+  gap: 10px;
+  padding: 11px 12px;
+  text-decoration: none;
+}
+
+.training-link svg {
+  fill: none;
+  flex: 0 0 auto;
+  height: 24px;
+  stroke: var(--brand);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 24px;
+}
+
+.training-link strong,
+.training-link small {
+  display: block;
+}
+
+.training-link strong {
+  color: var(--brand-dark);
+  font-size: 13px;
+}
+
+.training-link small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
 .settings-link {
   align-items: center;
   background: transparent;
@@ -361,6 +401,21 @@ h2 {
   text-align: center;
   text-decoration: underline;
   text-decoration-color: rgba(155, 172, 184, 0.35);
+}
+
+.training-promo {
+  background: #edf8ff;
+  border: 1px solid #cbe8f7;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.training-promo a {
+  color: var(--brand-dark);
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 7px;
 }
 
 .clear-data-btn {

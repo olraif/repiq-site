@@ -186,7 +186,7 @@
             <h2>Материалы курса</h2>
             <p class="muted">Скачайте сценарий и чек-лист настройки CRM. По нему удобно пройти основные шаги после просмотра уроков.</p>
             <div class="lesson-actions">
-              <a class="button secondary" href="./assets/course/files/mini-course-crm-999.pdf" download>Скачать PDF-чек-лист</a>
+              <a class="button secondary" href="./assets/course/files/mini-course-crm-999.pdf" download="Чек-лист настройки CRM за один вечер.pdf">Скачать чек-лист</a>
               <button class="button secondary" id="logout" type="button">Выйти из курса</button>
             </div>
           </section>
@@ -213,7 +213,7 @@
       function showCourse() {
         accessPanel.hidden = true;
         coursePanel.classList.add("active");
-        completeLesson.textContent = localStorage.getItem(progressKey) === "lesson-01" ? "Урок пройден. Отменить" : "Отметить урок пройденным";
+        completeLesson.textContent = localStorage.getItem(progressKey) === "lesson-01" ? "Урок пройден" : "Отметить урок пройденным";
       }
 
       async function hashCode(value) {
@@ -241,7 +241,7 @@
           return;
         }
         localStorage.setItem(progressKey, "lesson-01");
-        completeLesson.textContent = "Урок пройден. Отменить";
+        completeLesson.textContent = "Урок пройден";
       });
 
       document.getElementById("logout").addEventListener("click", () => {
