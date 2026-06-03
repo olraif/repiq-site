@@ -27,7 +27,7 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "1555.1bo";
+const appVersion = "1555.1bp";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
 const SUPPORT_PROJECT_URL = "https://pay.cloudtips.ru/p/36494679";
@@ -129,7 +129,7 @@ function load() {
   data.deviceToken ||= "";
   data.aiEntitlement = normalizeAiEntitlement(data.aiEntitlement);
   data.groups = (data.groups || []).map((item) => ({ status: "Активна", name: "", subject: "", grade: "", archived: false, lessonsPerWeek: Math.max(1, normalizeRegularSlots(item).length || Number(item.lessonsPerWeek || 1)), scheduleStartDate: "", scheduleEndDate: "", onlineLink: "", regularSchedule: "", regularSlots: normalizeRegularSlots(item), ...item, lessonsPerWeek: Math.max(1, normalizeRegularSlots(item).length || Number(item.lessonsPerWeek || 1)), onlineLink: item.onlineLink || "", regularSlots: normalizeRegularSlots(item) }));
-  data.students = (data.students || []).map((item) => ({ status: "Активен", format: "Индивидуально", groupId: "", lessonsPerWeek: 1, lessonDuration: 60, grade: "", studentNote: "", scheduleStartDate: "", scheduleEndDate: "", onlineLink: "", regularSchedule: "", regularSlots: normalizeRegularSlots(item), parentName: "", parentPhone: "", ...item, studentNote: item.studentNote || timezoneFullLabel(item.studentTimezone) || "", onlineLink: item.onlineLink || "", regularSlots: normalizeRegularSlots(item) }));
+  data.students = (data.students || []).map((item) => ({ status: "Активен", format: "Индивидуально", groupId: "", lessonsPerWeek: 1, lessonDuration: 60, groupPrice: item.groupPrice ?? item.price ?? 0, groupLessonDuration: item.groupLessonDuration ?? item.lessonDuration ?? 60, grade: "", studentNote: "", scheduleStartDate: "", scheduleEndDate: "", onlineLink: "", regularSchedule: "", regularSlots: normalizeRegularSlots(item), parentName: "", parentPhone: "", ...item, groupPrice: item.groupPrice ?? item.price ?? 0, groupLessonDuration: item.groupLessonDuration ?? item.lessonDuration ?? 60, studentNote: item.studentNote || timezoneFullLabel(item.studentTimezone) || "", onlineLink: item.onlineLink || "", regularSlots: normalizeRegularSlots(item) }));
   data.payments = (data.payments || []).map((payment) => ({ scope: "lesson", invoice: payment.invoice || payment.account || "", archived: false, ...payment }));
   data.lessons = (data.lessons || []).map((lesson) => ({ type: lesson.type || "lesson", title: lesson.title || "", movedFrom: "", conducted: false, ...lesson, id: lesson.id || uuid() }));
   data.exclusions ||= [];
@@ -271,6 +271,10 @@ function priceForDuration(basePrice, duration = 60, baseDuration = 60) {
 
 function studentPriceForDuration(owner, duration = 60) {
   return priceForDuration(owner?.price || 0, duration, owner?.lessonDuration || 60);
+}
+
+function studentGroupPriceForDuration(owner, duration = 60) {
+  return priceForDuration(owner?.groupPrice ?? owner?.price ?? 0, duration, owner?.groupLessonDuration || owner?.lessonDuration || 60);
 }
 
 function lessonStudentDetails(lesson) {
@@ -433,7 +437,7 @@ function payableLessonsForStudent(studentId) {
       id: `group-pay-${studentId}-${lesson.groupId}-${lesson.date}-${lesson.time}`,
       studentId,
       subject: group(lesson.groupId).subject,
-      price: studentPriceForDuration(owner, lessonDurationMinutes(lesson))
+      price: studentGroupPriceForDuration(owner, lessonDurationMinutes(lesson))
     }));
   return dedupeLessons([...individual, ...groupLessons]).sort(sortByDateTime);
 }
@@ -448,7 +452,7 @@ function groupLessonStatus(lesson) {
     ...lesson,
     id: `group-pay-${member.id}-${lesson.groupId}-${lesson.date}-${lesson.time}`,
     studentId: member.id,
-    price: studentPriceForDuration(member, lessonDurationMinutes(lesson))
+    price: studentGroupPriceForDuration(member, lessonDurationMinutes(lesson))
   }));
   const plan = sumLessonPrices(virtualLessons);
   const paid = virtualLessons.reduce((total, item) => total + (paymentAllocationForStudent(item.studentId).get(item.id) || 0), 0);
@@ -512,9 +516,28 @@ function studentBalance(studentId) {
   const paid = paidAmountForStudent(studentId);
   const consumed = conductedAmountForStudent(studentId);
   const balance = balanceAmountForStudent(studentId);
-  const price = lessonPriceForBalance(studentId, lessons);
-  const lessonsLeft = price > 0 ? Math.max(0, Math.floor(balance / price)) : 0;
+  const lessonsLeft = lessonsCoveredByBalance(studentId, lessons, balance);
   return { plan, paid, consumed, balance, lessonsLeft, advance: Math.max(0, balance), debt: Math.max(0, -balance), unpaid: Math.max(0, -balance) };
+}
+
+function lessonsCoveredByBalance(studentId, lessons = payableLessonsForStudent(studentId), balance = balanceAmountForStudent(studentId)) {
+  if (balance <= 0) return 0;
+  let rest = Number(balance || 0);
+  let count = 0;
+  const today = todayIso();
+  const futureLessons = lessons
+    .filter((lesson) => lesson.date >= today)
+    .filter((lesson) => !lessonConductedForStudent(lesson, studentId))
+    .sort(sortByDateTime);
+  for (const lesson of futureLessons) {
+    const price = lessonPrice(lesson);
+    if (price <= 0 || rest < price) break;
+    rest -= price;
+    count += 1;
+  }
+  if (futureLessons.length) return count;
+  const price = lessonPriceForBalance(studentId, lessons);
+  return price > 0 ? Math.max(0, Math.floor(balance / price)) : 0;
 }
 
 function lessonPriceForBalance(studentId, lessons = payableLessonsForStudent(studentId)) {
@@ -1500,8 +1523,14 @@ function saveStudent(event) {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(event.currentTarget));
   const hasIndividual = studentHasIndividualSchedule(data.format);
+  const hasGroup = studentHasGroup(data.format);
+  const hasMixedFormat = hasIndividual && hasGroup;
   const regularSlots = hasIndividual ? regularSlotsFromForm(data, Number(data.lessonsPerWeek || 1)) : [];
-  const groupId = studentHasGroup(data.format) ? data.groupId : "";
+  const groupId = hasGroup ? data.groupId : "";
+  const price = Number(data.price || 0);
+  const lessonDuration = Number(data.lessonDuration || 60);
+  const groupPrice = hasMixedFormat ? Number(data.groupPrice || 0) : hasGroup ? price : Number(data.groupPrice || price || 0);
+  const groupLessonDuration = hasMixedFormat ? Number(data.groupLessonDuration || lessonDuration) : hasGroup ? lessonDuration : Number(data.groupLessonDuration || lessonDuration);
   const existing = state.students.find((item) => item.id === data.studentId);
   if (existing) {
     const oldRegularSlots = normalizeRegularSlots(existing);
@@ -1523,13 +1552,15 @@ function saveStudent(event) {
       phone: data.phone,
       parentName: data.parentName,
       parentPhone: data.parentPhone,
-      price: Number(data.price),
-      lessonDuration: Number(data.lessonDuration || 60),
+      price,
+      lessonDuration,
+      groupPrice,
+      groupLessonDuration,
       onlineLink: data.onlineLink || ""
     });
     syncStudentRegularScheduleAfterChange(existing.id, oldRegularSlots, oldScheduleStartDate, oldScheduleEndDate);
   } else {
-    state.students.push({ id: `S${String(state.students.length + 1).padStart(3, "0")}`, ...data, format: data.format, groupId, grade: data.grade, studentNote: data.studentNote || "", onlineLink: data.onlineLink || "", regularSchedule: regularSlotsText(regularSlots), regularSlots, scheduleStartDate: regularSlots.length ? data.scheduleStartDate : "", scheduleEndDate: regularSlots.length ? data.scheduleEndDate : "", lessonsPerWeek: Number(data.lessonsPerWeek || 1), price: Number(data.price), lessonDuration: Number(data.lessonDuration || 60) });
+    state.students.push({ id: `S${String(state.students.length + 1).padStart(3, "0")}`, ...data, format: data.format, groupId, grade: data.grade, studentNote: data.studentNote || "", onlineLink: data.onlineLink || "", regularSchedule: regularSlotsText(regularSlots), regularSlots, scheduleStartDate: regularSlots.length ? data.scheduleStartDate : "", scheduleEndDate: regularSlots.length ? data.scheduleEndDate : "", lessonsPerWeek: Number(data.lessonsPerWeek || 1), price, lessonDuration, groupPrice, groupLessonDuration });
   }
   save();
   el("studentDialog").close();
@@ -2532,7 +2563,7 @@ function openGroupSlotDialog(id) {
           ...lesson,
           id: `group-pay-${member.id}-${lesson.groupId}-${lesson.date}-${lesson.time}`,
           studentId: member.id,
-          price: Number(member.price || lesson.price || 0)
+          price: studentGroupPriceForDuration(member, lessonDurationMinutes(lesson))
         };
         const paid = (paymentAllocationForStudent(member.id).get(virtualLesson.id) || 0) >= lessonPrice(virtualLesson);
         return `<label class="list-item attendance-row ${paid ? "paid-row" : "debt-row"}"><span><strong>${member.name}</strong><small>${paid ? "оплачено" : "не оплачено"}</small></span><input type="checkbox" name="present:${member.id}" ${checked} /></label>`;
@@ -2721,6 +2752,8 @@ function prepareStudentForm(studentId = "") {
   form.parentPhone.value = item?.parentPhone || "";
   form.price.value = item?.price || "";
   form.lessonDuration.value = item?.lessonDuration || 60;
+  form.groupPrice.value = item?.groupPrice ?? item?.price ?? "";
+  form.groupLessonDuration.value = item?.groupLessonDuration || item?.lessonDuration || 60;
   updateStudentFormatFields();
   renderStudentSchedule(item?.id || "");
   const historyBox = el("studentHistoryBox");
@@ -3391,15 +3424,24 @@ function updateStudentFormatFields() {
   const format = form.format.value;
   const showGroup = studentHasGroup(format);
   const showIndividual = studentHasIndividualSchedule(format);
+  const showMixedPrices = showGroup && showIndividual;
   el("studentGroupField").classList.toggle("hidden", !showGroup);
   el("studentLessonsPerWeekField").classList.toggle("hidden", !showIndividual);
   el("studentIndividualScheduleBlock").classList.toggle("hidden", !showIndividual);
   el("studentGroupScheduleHint").classList.toggle("hidden", showIndividual);
+  el("studentPriceField").firstChild.textContent = showMixedPrices ? "Цена индивидуального занятия " : "Цена занятия ";
+  el("studentDurationField").firstChild.textContent = showMixedPrices ? "Длительность индивидуального занятия, мин " : "Длительность занятия, мин ";
+  el("studentGroupPriceField").classList.toggle("hidden", !showMixedPrices);
+  el("studentGroupDurationField").classList.toggle("hidden", !showMixedPrices);
   form.groupId.disabled = !showGroup;
   form.lessonsPerWeek.disabled = !showIndividual;
   form.scheduleStartDate.disabled = !showIndividual;
   form.scheduleEndDate.disabled = !showIndividual;
   form.onlineLink.disabled = !showIndividual;
+  form.groupPrice.disabled = !showMixedPrices;
+  form.groupLessonDuration.disabled = !showMixedPrices;
+  form.groupPrice.required = showMixedPrices;
+  form.groupLessonDuration.required = showMixedPrices;
   updateVisibleRegularRows(form);
 }
 

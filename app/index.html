@@ -17,7 +17,7 @@
         <div>
           <button type="button" class="date-ai-trigger" id="dayAiBtn"><span>AI</span><strong id="todayTitle">Сегодня</strong></button>
           <a class="site-title-link" href="https://repiq.ru/" target="_blank" rel="noopener" title="Сайт Репетитор AI"><h1>Репетитор AI</h1></a>
-          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1bo</button>
+          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1bp</button>
         </div>
         <div class="header-actions">
           <button class="header-icon-btn header-settings-btn" id="settingsBtn" aria-label="Настройки" title="Настройки">
@@ -514,8 +514,12 @@
         <label>Телефон ученика <input name="phone" /></label>
         <label>Родитель <input name="parentName" /></label>
         <label>Телефон родителя <input name="parentPhone" /></label>
-        <label>Цена занятия <input name="price" type="number" min="0" step="1" required /></label>
-        <label>Длительность занятия, мин <input name="lessonDuration" type="number" min="30" step="5" value="60" /></label>
+        <div class="student-price-grid">
+          <label id="studentPriceField">Цена занятия <input name="price" type="number" min="0" step="1" required /></label>
+          <label id="studentDurationField">Длительность занятия, мин <input name="lessonDuration" type="number" min="30" step="5" value="60" /></label>
+          <label id="studentGroupPriceField" class="hidden">Цена группового занятия <input name="groupPrice" type="number" min="0" step="1" /></label>
+          <label id="studentGroupDurationField" class="hidden">Длительность группового занятия, мин <input name="groupLessonDuration" type="number" min="30" step="5" value="60" /></label>
+        </div>
         <div class="dialog-actions">
           <button value="cancel" class="ghost">Закрыть</button>
           <button value="save" class="primary">Сохранить</button>
@@ -620,6 +624,6 @@
       </form>
     </dialog>
 
-    <script src="./app.js?v=1555.1bo"></script>
+    <script src="./app.js?v=1555.1bp"></script>
   </body>
 </html>

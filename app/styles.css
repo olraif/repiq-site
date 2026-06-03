@@ -1546,6 +1546,20 @@ label {
   gap: 5px;
 }
 
+.student-price-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.student-price-grid label {
+  min-width: 0;
+}
+
+.student-price-grid label.hidden {
+  display: none;
+}
+
 .hidden {
   display: none;
 }
