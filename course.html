@@ -127,7 +127,7 @@
             <div class="summary">
               <span class="muted">Программа курса</span>
               <strong>7 уроков</strong>
-              <p class="muted">Первые два урока уже доступны. Новые уроки будут добавляться по мере записи.</p>
+              <p class="muted">Первые четыре урока уже доступны. Новые уроки будут добавляться по мере записи.</p>
             </div>
           </div>
 
@@ -141,12 +141,12 @@
                 <span class="lesson-meta">Урок 2 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Ученики и карточка ученика</strong>
               </button>
-              <button class="lesson-button locked" type="button">
-                <span class="lesson-meta">Урок 3 <span class="lesson-status wait">Готовится</span></span>
+              <button class="lesson-button" type="button" data-lesson="lesson-03">
+                <span class="lesson-meta">Урок 3 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Постоянное расписание</strong>
               </button>
-              <button class="lesson-button locked" type="button">
-                <span class="lesson-meta">Урок 4 <span class="lesson-status wait">Готовится</span></span>
+              <button class="lesson-button" type="button" data-lesson="lesson-04">
+                <span class="lesson-meta">Урок 4 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Группы и смешанный формат</strong>
               </button>
               <button class="lesson-button locked" type="button">
@@ -226,6 +226,22 @@
           result: "в CRM добавлен первый ученик с корректной стоимостью и длительностью занятия.",
           video: "./assets/course/videos/lesson-02-web.mp4",
           poster: "./assets/course/images/lesson-02-intro.png"
+        },
+        "lesson-03": {
+          number: "Урок 3",
+          title: "Постоянное расписание",
+          description: "Настройте расписание ученика: даты, количество занятий в неделю, время уроков и длительность. После урока вы сможете быстро создавать регулярные занятия без ручной путаницы.",
+          result: "у ученика настроено постоянное расписание, по которому удобно вести занятия.",
+          video: "./assets/course/videos/lesson-03-web.mp4",
+          poster: "./assets/course/images/lesson-03-intro.jpg"
+        },
+        "lesson-04": {
+          number: "Урок 4",
+          title: "Группы и смешанный формат",
+          description: "Разберите работу с группами и форматом «индивидуально + группа»: как привязать учеников, не смешать цены и сохранить понятный баланс.",
+          result: "вы понимаете, как вести группы и учеников со смешанным форматом занятий.",
+          video: "./assets/course/videos/lesson-04-web.mp4",
+          poster: "./assets/course/images/lesson-04-intro.jpg"
         }
       };
       let currentLessonId = "lesson-01";

@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/png" sizes="32x32" href="./icon-32.png?v=1555.1bk" />
-    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=1555.1bk" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png?v=1555.1bk" />
+    <link rel="manifest" href="./site.webmanifest?v=1555.1bj" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./icon-32.png?v=1555.1bj" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=1555.1bj" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png?v=1555.1bj" />
     <title>Обучение Репетитор AI — как репетитору вести CRM</title>
     <meta
       name="description"
@@ -67,9 +68,14 @@
       }
 
       .logo {
+        background: var(--brand);
         border-radius: 18px;
+        color: #fff;
+        display: grid;
+        font-size: 22px;
+        font-weight: 800;
         height: 54px;
-        object-fit: cover;
+        place-items: center;
         width: 54px;
       }
 
@@ -147,7 +153,7 @@
       }
 
       h1 {
-        font-size: clamp(32px, 5vw, 52px);
+        font-size: clamp(34px, 6vw, 58px);
         letter-spacing: 0;
         line-height: 1;
         margin: 0 0 18px;
@@ -208,6 +214,7 @@
 
       .course-card,
       .card,
+      .video-slot,
       .note {
         background: var(--panel);
         border: 1px solid var(--line);
@@ -252,40 +259,27 @@
         padding: 18px;
       }
 
-      .service-card {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+      .video-grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .service-card .button {
-        align-self: flex-start;
-        margin-top: auto;
+      .video-slot {
+        background: var(--soft);
+        min-height: 180px;
+        padding: 18px;
       }
 
-      .service-price {
+      .video-badge {
+        background: #dff1ff;
+        border-radius: 999px;
         color: var(--brand-dark);
-        font-size: 26px;
-        font-weight: 900;
-      }
-
-      .service-list {
-        color: var(--muted);
-        line-height: 1.45;
-        margin: 0;
-        padding-left: 20px;
-      }
-
-      .service-list li + li {
-        margin-top: 6px;
-      }
-
-      .section-visual {
-        border-radius: 14px;
-        display: block;
-        height: auto;
-        margin-bottom: 14px;
-        width: 100%;
+        display: inline-flex;
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 12px;
+        padding: 7px 10px;
       }
 
       .note {
@@ -314,7 +308,8 @@
         }
 
         .hero,
-        .grid {
+        .grid,
+        .video-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -339,7 +334,7 @@
     <div class="page">
       <header>
         <a class="brand" href="./index.html" aria-label="На главную">
-          <img class="logo" src="./icon-192.png?v=brand-1" alt="" />
+          <div class="logo">AI</div>
           <div>
             <strong>Репетитор AI</strong>
             <span>CRM и обучение для репетитора</span>
@@ -348,7 +343,7 @@
         <div class="header-actions">
           <nav class="header-links" aria-label="Быстрые ссылки">
             <a href="./index.html">Главная</a>
-            <a href="./app/">Открыть веб-версию</a>
+            <a href="./web/">Открыть веб-версию</a>
             <a href="./course.html">Войти в курс</a>
             <a href="https://www.rustore.ru/catalog/app/com.olesya.tutor">Скачать в RuStore</a>
           </nav>
@@ -361,15 +356,15 @@
       <main>
         <section class="hero">
           <div>
-            <p class="eyebrow">Обучение и настройка Репетитор AI</p>
-            <h1>Выстройте систему работы репетитора от А до Я</h1>
+            <p class="eyebrow">Обучение Репетитор AI</p>
+            <h1>Мини-курс для системной работы репетитора</h1>
             <p class="lead">
-              Освойте CRM самостоятельно или закажите настройку под свою практику. Разберём учеников, группы, расписание,
-              оплаты, переносы и баланс так, чтобы работа стала понятной, спокойной и готовой к росту.
+              Разберём, как вести учеников, группы, расписание, оплаты, переносы и баланс так, чтобы работа стала понятной,
+              спокойной и готовой к росту.
             </p>
             <div class="actions">
-              <a class="button" href="#formats">Выбрать формат</a>
-              <a class="button secondary" href="./app/">Открыть веб-версию CRM</a>
+              <a class="button" href="./course.html">Войти в мини-курс</a>
+              <a class="button secondary" href="./web/">Открыть CRM</a>
             </div>
           </div>
 
@@ -390,7 +385,7 @@
         </section>
 
         <section>
-          <h2>Что можно привести в порядок</h2>
+          <h2>Что будет в курсе</h2>
           <div class="grid">
             <article class="card">
               <h3>База учеников</h3>
@@ -419,45 +414,46 @@
           </div>
         </section>
 
-        <section id="formats">
-          <h2>Выберите свой формат</h2>
+        <section id="lessons">
+          <h2>Видеоуроки</h2>
+          <div class="video-grid">
+            <article class="video-slot">
+              <span class="video-badge">Урок 1</span>
+              <h3>Первый запуск и пустая база</h3>
+              <p class="muted">Что видно в приложении после установки и с чего начать заполнение.</p>
+            </article>
+            <article class="video-slot">
+              <span class="video-badge">Урок 2</span>
+              <h3>Ученики и группы</h3>
+              <p class="muted">Как добавить ученика, выбрать формат занятий и создать группу.</p>
+            </article>
+            <article class="video-slot">
+              <span class="video-badge">Урок 3</span>
+              <h3>Постоянное расписание</h3>
+              <p class="muted">Как настроить регулярные занятия ученика и не собирать расписание вручную каждый раз.</p>
+            </article>
+            <article class="video-slot">
+              <span class="video-badge">Урок 4</span>
+              <h3>Группы и смешанный формат</h3>
+              <p class="muted">Как вести группы и учеников, у которых есть индивидуальные и групповые занятия.</p>
+            </article>
+          </div>
+        </section>
+
+        <section>
+          <h2>Бонусы платного обучения</h2>
           <div class="grid">
-            <article class="card service-card">
-              <img class="section-visual" src="./assets/site-images/marketing-templates.png" alt="Курс по работе с CRM для репетитора" />
-              <h3>Разобраться самостоятельно</h3>
-              <div class="service-price">999 ₽</div>
-              <ul class="service-list">
-                <li>практический курс из семи коротких уроков;</li>
-                <li>обзор CRM, ученики, карточки, группы, расписание, оплаты и ежедневная работа;</li>
-                <li>бонус — чек-лист «Настройка CRM за один вечер».</li>
-              </ul>
-              <p class="muted">Сама CRM остаётся бесплатной.</p>
-              <a class="button" href="https://t.me/repiq_ru">Записаться на курс</a>
-              <a class="button secondary" href="./course.html">Уже купили? Войти по коду</a>
+            <article class="card">
+              <h3>Репетитор-Аналитик</h3>
+              <p class="muted">Идея будущего инструмента для анализа рынка: конкуренты по предмету и городу, средние цены, подсказки для анкеты и описания профиля.</p>
             </article>
-            <article class="card service-card">
-              <img class="section-visual" src="./assets/site-images/training-setup.png" alt="Настройка CRM для репетитора" />
-              <h3>Настроить CRM вместе</h3>
-              <div class="service-price">2500 ₽</div>
-              <ul class="service-list">
-                <li>курс «Разобраться самостоятельно» в подарок;</li>
-                <li>одна индивидуальная встреча до 60 минут;</li>
-                <li>настройка учеников, расписания, оплат и резервной копии под вашу практику.</li>
-              </ul>
-              <a class="button" href="https://t.me/repiq_ru">Заказать настройку</a>
+            <article class="card">
+              <h3>Поиск заявок</h3>
+              <p class="muted">Разбор, где искать открытые запросы на преподавателей: школы, онлайн-школы, родительские заявки и образовательные проекты.</p>
             </article>
-            <article class="card service-card">
-              <img class="section-visual" src="./assets/site-images/training-system.png" alt="Индивидуальная система работы репетитора" />
-              <h3>Выстроить систему для роста</h3>
-              <div class="service-price">от 9900 ₽</div>
-              <ul class="service-list">
-                <li>курс «Разобраться самостоятельно» в подарок;</li>
-                <li>индивидуальная настройка CRM до 60 минут;</li>
-                <li>разбор текущей практики и план развития;</li>
-                <li>настройка критериев поиска заявок и шаблонов откликов;</li>
-                <li>три встречи сопровождения с корректировкой по первым откликам.</li>
-              </ul>
-              <a class="button" href="https://t.me/repiq_ru">Обсудить систему</a>
+            <article class="card">
+              <h3>Шаблоны роста</h3>
+              <p class="muted">Заготовки для описания услуг, сообщений родителям, повышения цены и спокойного перехода от хаоса к системе.</p>
             </article>
           </div>
         </section>
@@ -470,24 +466,12 @@
             этот порядок в ежедневную работу.
           </p>
         </section>
-
-        <section class="note">
-          <h2>Для авторов курсов и сообществ</h2>
-          <p class="muted">
-            Репетитор AI можно включить в программу обучения как практический инструмент для организации работы частного преподавателя.
-          </p>
-          <div class="actions" style="margin-top: 14px">
-            <a class="button secondary" href="./partners.html">Обсудить партнёрство</a>
-          </div>
-        </section>
       </main>
 
       <footer>
         <span>© 2026 Репетитор AI</span>
         <span>
-          <a href="./about.html">О проекте</a>
-          · <a href="./privacy.html">Политика конфиденциальности</a>
-          · <a href="./partners.html">Для партнёров</a>
+          <a href="./privacy.html">Политика конфиденциальности</a>
         </span>
       </footer>
     </div>
