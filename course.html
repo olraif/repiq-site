@@ -63,8 +63,10 @@
       .lesson-status.ready { background: var(--green); color: #267446; }
       .lesson-status.wait { background: var(--yellow); color: #826218; }
       .lesson-view { overflow: hidden; }
-      .video-wrap { background: #dfeef7; aspect-ratio: 9 / 16; max-height: 680px; width: 100%; }
+      .video-wrap { background: #dfeef7; aspect-ratio: 9 / 16; max-height: 680px; position: relative; width: 100%; }
       video { background: #dfeef7; display: block; height: 100%; object-fit: contain; width: 100%; }
+      .lesson-poster { background: #dfeef7; cursor: pointer; display: block; height: 100%; inset: 0; object-fit: contain; position: absolute; width: 100%; z-index: 2; }
+      .lesson-poster.hidden { display: none; }
       .lesson-copy { padding: 20px; }
       .lesson-copy .muted { line-height: 1.45; }
       .lesson-result { background: var(--green); border-radius: 11px; margin-top: 14px; padding: 13px; }
@@ -165,6 +167,7 @@
 
             <article class="lesson-view panel">
               <div class="video-wrap">
+                <img class="lesson-poster" id="lessonPoster" src="./assets/course/images/lesson-01-intro.png?v=course-posters-20260603b" alt="Обложка урока" />
                 <video id="lessonVideo" controls preload="metadata" poster="./assets/course/images/lesson-01-intro.png">
                   <source src="./assets/course/videos/lesson-01-web.mp4" type="video/mp4" />
                 </video>
@@ -210,6 +213,7 @@
       const accessMessage = document.getElementById("accessMessage");
       const completeLesson = document.getElementById("completeLesson");
       const lessonVideo = document.getElementById("lessonVideo");
+      const lessonPoster = document.getElementById("lessonPoster");
       const lessons = {
         "lesson-01": {
           number: "Урок 1",
@@ -263,7 +267,10 @@
         lessonVideo.pause();
         lessonVideo.currentTime = 0;
         lessonVideo.removeAttribute("src");
-        lessonVideo.poster = `${lesson.poster}?v=course-posters-20260603`;
+        const posterUrl = `${lesson.poster}?v=course-posters-20260603b`;
+        lessonPoster.src = posterUrl;
+        lessonPoster.classList.remove("hidden");
+        lessonVideo.poster = posterUrl;
         lessonVideo.querySelector("source").src = `${lesson.video}?v=course-lessons-20260603`;
         lessonVideo.load();
         document.getElementById("lessonNumber").textContent = lesson.number;
@@ -306,6 +313,15 @@
 
       document.querySelectorAll(".lesson-button[data-lesson]").forEach((button) => {
         button.addEventListener("click", () => openLesson(button.dataset.lesson));
+      });
+
+      lessonPoster.addEventListener("click", () => {
+        lessonPoster.classList.add("hidden");
+        lessonVideo.play();
+      });
+
+      lessonVideo.addEventListener("play", () => {
+        lessonPoster.classList.add("hidden");
       });
 
       document.getElementById("logout").addEventListener("click", () => {
