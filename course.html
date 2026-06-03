@@ -260,8 +260,11 @@
         if (!lesson) return;
         currentLessonId = lessonId;
         document.querySelectorAll(".lesson-button[data-lesson]").forEach((button) => button.classList.toggle("current", button.dataset.lesson === lessonId));
-        lessonVideo.poster = lesson.poster;
-        lessonVideo.querySelector("source").src = lesson.video;
+        lessonVideo.pause();
+        lessonVideo.currentTime = 0;
+        lessonVideo.removeAttribute("src");
+        lessonVideo.poster = `${lesson.poster}?v=course-posters-20260603`;
+        lessonVideo.querySelector("source").src = `${lesson.video}?v=course-lessons-20260603`;
         lessonVideo.load();
         document.getElementById("lessonNumber").textContent = lesson.number;
         document.getElementById("lessonTitle").textContent = lesson.title;
