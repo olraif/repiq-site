@@ -17,7 +17,7 @@
         <div>
           <button type="button" class="date-ai-trigger" id="dayAiBtn"><span>AI</span><strong id="todayTitle">Сегодня</strong></button>
           <a class="site-title-link" href="https://repiq.ru/" target="_blank" rel="noopener" title="Сайт Репетитор AI"><h1>Репетитор AI</h1></a>
-          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1bp</button>
+          <button type="button" class="app-version" id="helpBtn" aria-label="Открыть инструкцию">v1555.1bt</button>
         </div>
         <div class="header-actions">
           <button class="header-icon-btn header-settings-btn" id="settingsBtn" aria-label="Настройки" title="Настройки">
@@ -26,9 +26,9 @@
           <button type="button" class="header-icon-btn" id="shareAppBtn" aria-label="Поделиться приложением" title="Поделиться приложением">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 12.5 15.5 16.5M15.5 7.5 8.5 11.5M18 5.2a2.8 2.8 0 1 1-5.6 0 2.8 2.8 0 0 1 5.6 0ZM8.8 12a2.8 2.8 0 1 1-5.6 0 2.8 2.8 0 0 1 5.6 0ZM18 18.8a2.8 2.8 0 1 1-5.6 0 2.8 2.8 0 0 1 5.6 0Z"/></svg>
           </button>
-          <a class="header-icon-btn header-training-btn" href="https://repiq.ru/training.html?utm_source=web_crm&amp;utm_medium=header" target="_blank" rel="noopener" aria-label="Обучение по CRM" title="Обучение по CRM">
+          <button type="button" class="header-icon-btn header-training-btn" id="trainingBtn" aria-label="Обучение" title="Обучение">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 5.5v16"/><path d="M8 7h8M8 11h8"/></svg>
-          </a>
+          </button>
           <button type="button" class="header-icon-btn header-support-btn" id="supportProjectBtn" aria-label="Угостить кофе" title="Угостить кофе">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h11v5.5A4.5 4.5 0 0 1 11.5 18h-2A4.5 4.5 0 0 1 5 13.5V8Z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M4 20h15"/><path d="M8 4v1.5M12 4v1.5"/></svg>
           </button>
@@ -156,10 +156,6 @@
           <button type="button" class="clear-data-btn" id="clearLocalDataBtn">Очистить базу на этом устройстве</button>
           <input class="hidden" id="importDataInput" type="file" accept="application/json,.json" />
         </div>
-        <a class="training-link" href="https://repiq.ru/training.html?utm_source=crm&amp;utm_medium=settings" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 5.5v16"/><path d="M8 7h8M8 11h8"/></svg>
-          <span><strong>Подробное обучение по CRM</strong><small>Семь коротких уроков и настройка системы шаг за шагом</small></span>
-        </a>
         <a class="settings-link" href="https://repiq.ru/" target="_blank" rel="noopener">Сайт Репетитор AI</a>
         <a class="settings-link" href="https://repiq.ru/privacy.html" target="_blank" rel="noopener">Политика конфиденциальности</a>
         <div class="dialog-actions">
@@ -222,8 +218,9 @@
         <div class="help-content">
           <section class="training-promo">
             <h3>Хотите настроить CRM шаг за шагом?</h3>
-            <p>В мини-курсе подробно разобраны ученики, расписание, группы, оплаты, ежедневная работа и резервная копия.</p>
-            <a href="https://repiq.ru/training.html?utm_source=crm&amp;utm_medium=instruction" target="_blank" rel="noopener">Открыть страницу обучения</a>
+            <a class="training-book-link" href="https://repiq.ru/training.html?utm_source=crm&amp;utm_medium=instruction" target="_blank" rel="noopener" aria-label="Открыть обучение">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 5.5v16"/><path d="M8 7h8M8 11h8"/></svg>
+            </a>
           </section>
           <section>
             <h3>Быстрый старт</h3>
@@ -624,6 +621,6 @@
       </form>
     </dialog>
 
-    <script src="./app.js?v=1555.1bp"></script>
+    <script src="./app.js?v=1555.1bt"></script>
   </body>
 </html>

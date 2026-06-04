@@ -27,9 +27,10 @@ let calcCache = null;
 let reminderTimer = null;
 let undoSnapshot = null;
 const maxRegularSlots = 7;
-const appVersion = "1555.1bp";
+const appVersion = "1555.1bt";
 const RUSTORE_APP_URL = "https://www.rustore.ru/catalog/app/com.olesya.tutor?utm_source=app&utm_medium=rate&utm_campaign=organic_launch";
 const REPIQ_SITE_URL = "https://www.repiq.ru/?utm_source=app&utm_medium=share&utm_campaign=organic_launch";
+const TRAINING_SITE_URL = "https://repiq.ru/training.html?utm_source=crm&utm_medium=header_training";
 const SUPPORT_PROJECT_URL = "https://pay.cloudtips.ru/p/36494679";
 const reviewStateKey = "repiq-review-request-v1";
 const appConfig = {
@@ -752,6 +753,7 @@ function bindDialogs() {
   el("generateDayAiBtn").addEventListener("click", generateDayAi);
   el("checkAiAccessBtn").addEventListener("click", checkAiAccessFromPaywall);
   el("openPaymentSiteBtn").addEventListener("click", openPaymentSite);
+  el("trainingBtn").addEventListener("click", openTrainingPage);
   el("shareAppBtn").addEventListener("click", shareApp);
   el("rateAppBtn").addEventListener("click", openRustoreReview);
   el("supportProjectBtn").addEventListener("click", openSupportProject);
@@ -928,6 +930,16 @@ function openPaymentSite() {
 
 function openSupportProject() {
   window.open(SUPPORT_PROJECT_URL, "_blank", "noopener");
+}
+
+function openTrainingPage() {
+  trackMarketingEvent("training_header_click");
+  if (window.AndroidBackup?.openExternalUrl) {
+    window.AndroidBackup.openExternalUrl(TRAINING_SITE_URL);
+    showToast("Открываю обучение");
+    return;
+  }
+  window.open(TRAINING_SITE_URL, "_blank", "noopener");
 }
 
 async function shareApp() {
