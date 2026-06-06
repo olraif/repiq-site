@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./icon-32.png" />
+    <title>RepIQ Board - онлайн-доска для уроков</title>
+    <meta name="description" content="RepIQ Board - веб-доска для учителей и репетиторов: презентация, лист разбора, комментарии по слайдам и сохранение материалов после урока." />
+    <style>
+      :root {
+        --bg: #eaf8ff;
+        --panel: #ffffff;
+        --text: #172b3a;
+        --muted: #657887;
+        --brand: #2f99d1;
+        --brand-dark: #187eb7;
+        --line: #d7e6ef;
+        --soft: #f3fbff;
+        --green: #d9f8e3;
+      }
+      * { box-sizing: border-box; }
+      body { background: var(--bg); color: var(--text); font-family: Arial, "Segoe UI", sans-serif; margin: 0; }
+      a { color: var(--brand-dark); text-decoration: none; }
+      .page { margin: 0 auto; max-width: 1100px; padding: 24px 18px 54px; }
+      header { align-items: center; display: flex; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+      .brand { align-items: center; color: var(--text); display: flex; gap: 12px; }
+      .brand img { border-radius: 18px; height: 54px; width: 54px; }
+      .brand strong { display: block; font-size: 22px; }
+      .brand span { color: var(--muted); font-size: 14px; }
+      nav { display: flex; gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
+      .hero { align-items: center; background: linear-gradient(135deg, #fff, #f6fcff); border: 1px solid var(--line); border-radius: 8px; display: grid; gap: 28px; grid-template-columns: 1fr 0.95fr; padding: 34px; box-shadow: 0 14px 36px rgba(47,153,209,.12); }
+      h1 { font-size: clamp(42px, 7vw, 72px); letter-spacing: 0; line-height: .98; margin: 0 0 18px; }
+      .lead { color: var(--muted); font-size: 20px; line-height: 1.45; margin: 0 0 24px; }
+      .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+      .button { align-items: center; background: var(--brand); border-radius: 8px; color: #fff; display: inline-flex; font-weight: 800; min-height: 52px; padding: 14px 20px; }
+      .button.secondary { background: #fff; border: 1px solid var(--line); color: var(--brand-dark); }
+      .preview { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; display: grid; gap: 12px; padding: 14px; }
+      .preview-grid { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+      .mock-pane { background: var(--soft); border: 1px dashed rgba(47,153,209,.28); border-radius: 8px; min-height: 210px; padding: 18px; }
+      .mock-pane h3 { margin: 0 0 12px; }
+      .line { background: #cfe8f6; border-radius: 999px; height: 12px; margin: 12px 0; }
+      .line.short { width: 62%; }
+      .ink { color: #187eb7; font-size: 46px; font-weight: 900; transform: rotate(-4deg); }
+      .sections { display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); margin-top: 22px; }
+      .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+      .card h2 { font-size: 20px; margin: 0 0 10px; }
+      .card p { color: var(--muted); line-height: 1.45; margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <a class="brand" href="./index.html">
+          <img src="./icon-192.png" alt="" />
+          <span><strong>RepIQ Board</strong><span>доска для урока</span></span>
+        </a>
+        <nav>
+          <a href="./training.html">Обучение</a>
+          <a href="./web.html">CRM</a>
+          <a href="./support.html">Настройка</a>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <div>
+          <h1>Урок за 60 секунд</h1>
+          <p class="lead">RepIQ Board помогает учителю открыть презентацию или PDF, вести разбор рядом со слайдом и сохранить ученику только те материалы, которые реально появились на уроке.</p>
+          <div class="actions">
+            <a class="button" href="./board-v2/index.html">Открыть RepIQ Board</a>
+            <a class="button secondary" href="./ai-pro.html">AI Pro для материалов</a>
+          </div>
+        </div>
+        <div class="preview">
+          <div class="preview-grid">
+            <div class="mock-pane">
+              <h3>Слайд</h3>
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line short"></div>
+            </div>
+            <div class="mock-pane">
+              <h3>Лист разбора</h3>
+              <div class="ink">x = 12</div>
+              <div class="line"></div>
+              <div class="line short"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="sections">
+        <article class="card">
+          <h2>Презентация или PDF</h2>
+          <p>Открываем готовые материалы, показываем слайды и работаем с ними во время урока.</p>
+        </article>
+        <article class="card">
+          <h2>Разбор по слайду</h2>
+          <p>К каждому слайду можно оставить комментарий, решение, конспект и пометки на доске.</p>
+        </article>
+        <article class="card">
+          <h2>Сохранение после урока</h2>
+          <p>Пустые слайды не попадают в итог. Сохраняются только слайды с записями и их листы разбора.</p>
+        </article>
+      </div>
+    </div>
+  </body>
+</html>

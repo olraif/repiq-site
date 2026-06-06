@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RepIQ Board</title>
+  <link rel="icon" href="./static/repiq_board_icon.png" />
+  <link rel="stylesheet" href="./static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../">
+      <img src="./static/repiq_board_icon.png" alt="" />
+      <span>RepIQ Board</span>
+    </a>
+    <nav class="top-actions" aria-label="Действия доски">
+      <label class="action primary" for="fileInput">Открыть</label>
+      <input id="fileInput" type="file" accept=".pdf,.ppt,.pptx" hidden />
+      <button id="aiBtn" class="action">Создать AI-презентацию</button>
+      <button id="exportPdfBtn" class="action">Сохранить PDF</button>
+    </nav>
+  </header>
+
+  <main class="board-shell">
+    <section class="board-surface" aria-label="Рабочая доска">
+      <div class="floating-tools" aria-label="Инструменты">
+        <button class="tool select-tool" data-tool="select" title="Выделить и перенести"><span class="select-icon" aria-hidden="true"></span></button>
+        <button class="tool active" data-tool="pen" title="Карандаш">✎</button>
+        <button class="tool marker-tool" data-tool="marker" title="Маркер"><span class="marker-icon" aria-hidden="true"></span></button>
+        <button class="tool eraser-tool" data-tool="eraser" title="Ластик"><span class="eraser-icon" aria-hidden="true"></span></button>
+        <button id="undoBtn" class="tool" title="Отменить">↶</button>
+        <button id="redoBtn" class="tool" title="Вернуть">↷</button>
+        <button id="clearBtn" class="tool danger" title="Очистить текущую область">×</button>
+        <input id="colorInput" class="color" type="color" value="#2f91d5" title="Цвет карандаша" />
+        <input id="sizeInput" class="size" type="range" min="2" max="26" value="5" title="Толщина" />
+      </div>
+
+      <div class="canvas-layout">
+        <article class="slide-object" data-surface="slide">
+          <div class="slide-top">
+            <button id="prevBtn" class="page-btn" title="Предыдущая страница">‹</button>
+            <span id="pageCounter">0 / 0</span>
+            <button id="nextBtn" class="page-btn" title="Следующая страница">›</button>
+          </div>
+          <div id="slideFrame" class="slide-frame active-zone">
+            <canvas id="slideBase"></canvas>
+            <canvas id="slideInk"></canvas>
+          </div>
+        </article>
+
+        <aside class="notes-column" aria-label="Комментарии к слайду">
+          <div id="notesTools" class="notes-tools" aria-label="Материалы и листы" hidden>
+            <button id="libraryBtn" class="note-tool" type="button" title="Библиотека материалов" aria-label="Библиотека материалов"><span class="book-icon" aria-hidden="true"></span></button>
+            <button id="addSheetBtn" class="note-tool add-note-sheet" type="button" title="Добавить лист" aria-label="Добавить лист">+</button>
+            <div class="sheet-switcher" aria-label="Листы комментариев">
+              <button id="prevSheetBtn" class="sheet-arrow" type="button" title="Предыдущий лист" aria-label="Предыдущий лист">‹</button>
+              <span id="sheetCounter">1 / 1</span>
+              <button id="nextSheetBtn" class="sheet-arrow" type="button" title="Следующий лист" aria-label="Следующий лист">›</button>
+            </div>
+          </div>
+          <div id="notesStack" class="notes-stack"></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="libraryDialog" class="modal">
+    <form method="dialog">
+      <div class="modal-head">
+        <h2 id="libraryTitle">Библиотека</h2>
+        <button id="libraryBackBtn" class="soft-link" type="button" hidden>Назад</button>
+        <button class="icon-close" value="close" aria-label="Закрыть">×</button>
+      </div>
+      <div class="library-grid">
+        <button type="button" data-library-category="Мои материалы">Мои материалы</button>
+        <button type="button" data-library-category="Графики">Графики</button>
+        <button type="button" data-library-category="Формулы">Формулы</button>
+        <button type="button" data-library-category="Чертежи">Чертежи</button>
+        <button type="button" data-library-category="Картинки">Картинки</button>
+        <button type="button" data-library-category="PDF">PDF</button>
+      </div>
+      <div id="libraryItems" class="library-items" hidden></div>
+      <div id="libraryUpload" class="library-upload" hidden>
+        <label class="action primary" for="libraryUploadInput">Загрузить</label>
+        <input id="libraryUploadInput" type="file" accept=".png,.jpg,.jpeg,.webp,.bmp,.pdf" hidden />
+        <p>Файл добавится в выбранную папку. Двойной клик по миниатюре вставит его на лист.</p>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="aiDialog" class="modal ai-modal">
+    <form id="aiForm">
+      <div class="modal-head">
+        <h2>AI-презентация</h2>
+        <button class="icon-close" value="close" type="button" data-close-ai aria-label="Закрыть">×</button>
+      </div>
+      <div class="ai-grid">
+        <label>Тема<input id="aiTopic" name="topic" required placeholder="Например: квадратные уравнения" /></label>
+        <label>Предмет<input id="aiSubject" name="subject" placeholder="Математика" /></label>
+        <label>Класс<input id="aiGrade" name="grade" placeholder="8 класс" /></label>
+        <label>Количество слайдов<input id="aiSlides" name="slides" type="number" min="3" max="12" value="6" /></label>
+        <label>Длительность<input id="aiDuration" name="duration" placeholder="45 минут" /></label>
+        <label class="ai-notes-field">Описание / комментарий<textarea id="aiNotes" name="notes" placeholder="Например: учебник Мерзляк, 8 класс, стр. 42, задания 123-126; сделать акцент на типичных ошибках"></textarea></label>
+      </div>
+      <fieldset class="checks">
+        <label><input type="checkbox" name="blocks" value="theory" checked /> теория</label>
+        <label><input type="checkbox" name="blocks" value="examples" checked /> примеры</label>
+        <label><input type="checkbox" name="blocks" value="practice" checked /> практика</label>
+        <label><input type="checkbox" name="blocks" value="homework" /> домашнее</label>
+        <label><input type="checkbox" name="blocks" value="answers" /> ответы</label>
+      </fieldset>
+      <div class="ai-footer">
+        <button class="action primary" type="submit">Подготовить урок</button>
+      </div>
+      <p id="aiStatus" class="ai-status"></p>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="./static/vendor/pdf.min.js"></script>
+  <script src="./static/vendor/jspdf.umd.min.js"></script>
+  <script src="./static/app.js"></script>
+</body>
+</html>
