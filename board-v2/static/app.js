@@ -241,11 +241,18 @@ function resizeInkCanvasToBase() {
   setCanvasSize(els.slideInk, els.slideBase.width, els.slideBase.height);
 }
 
+function setBoardAspect(width, height) {
+  const safeWidth = Math.max(1, Number(width) || 16);
+  const safeHeight = Math.max(1, Number(height) || 9);
+  document.documentElement.style.setProperty('--slide-ratio', `${safeWidth} / ${safeHeight}`);
+}
+
 async function renderPage(index) {
   saveCurrentSurface();
   state.index = Math.max(0, Math.min(index, state.pages.length - 1));
   const page = currentPage();
   if (!page) {
+    setBoardAspect(16, 9);
     setCanvasSize(els.slideBase, 1280, 720);
     resizeInkCanvasToBase();
     clearCanvas(els.slideBase);
@@ -259,6 +266,7 @@ async function renderPage(index) {
   }
   els.notesTools.hidden = false;
   els.addSheetBtn.hidden = false;
+  setBoardAspect(page.width, page.height);
   setCanvasSize(els.slideBase, page.width, page.height);
   resizeInkCanvasToBase();
   ctx(els.slideBase).drawImage(page.bitmap, 0, 0, page.width, page.height);
@@ -414,7 +422,7 @@ function preparePresentationConversion(file) {
     inputType: file.type || 'presentation',
     output: 'pdf',
   };
-  toast('Презентации PPT/PPTX будут открываться через конвертацию в PDF. Backend подключим отдельно.');
+  toast('PPTX требует серверной конвертации. Пока сохраните презентацию как PDF или запустите backend доски.');
   console.info('Presentation conversion request', window.lastPresentationConversionRequest);
 }
 
@@ -1046,21 +1054,6 @@ function drawImageUrl(targetCanvas, url) {
 
 async function savePdfBlob(pdf, fileName) {
   const blob = pdf.output('blob');
-  if (window.showSaveFilePicker) {
-    const handle = await window.showSaveFilePicker({
-      suggestedName: fileName,
-      types: [{
-        description: 'PDF',
-        accept: { 'application/pdf': ['.pdf'] },
-      }],
-    });
-    const writable = await handle.createWritable();
-    await writable.write(blob);
-    await writable.close();
-    toast('PDF сохранен.');
-    return;
-  }
-
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
