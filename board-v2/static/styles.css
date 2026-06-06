@@ -117,12 +117,12 @@ button { cursor: pointer; }
 }
 
 .canvas-layout {
-  min-width: 1180px;
+  min-width: 1480px;
   min-height: 720px;
   height: 100%;
   padding: 64px clamp(24px, 3vw, 54px) 94px;
   display: grid;
-  grid-template-columns: minmax(700px, 1.14fr) minmax(540px, .86fr);
+  grid-template-columns: minmax(680px, 1fr) minmax(680px, 1fr);
   align-items: start;
   justify-content: stretch;
   gap: clamp(24px, 3.2vw, 52px);
@@ -357,7 +357,7 @@ button { cursor: pointer; }
   align-items: center;
   justify-content: center;
   gap: 10px;
-  width: min(100%, 720px);
+  width: min(100%, 980px);
   margin: 0 auto 10px;
 }
 
@@ -467,7 +467,7 @@ button { cursor: pointer; }
 
 .notes-stack {
   position: relative;
-  width: min(100%, 720px);
+  width: min(100%, 980px);
   aspect-ratio: var(--slide-ratio, 16 / 9);
   height: auto;
 }

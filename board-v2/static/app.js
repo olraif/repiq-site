@@ -392,14 +392,8 @@ async function handleFile(file) {
   if (!file) return;
   const name = file.name.toLowerCase();
   if (name.endsWith('.ppt') || name.endsWith('.pptx')) {
-    try {
-      toast('Конвертирую презентацию в PDF...');
-      const data = await uploadToBoardBackend(file);
-      await loadServerSlides(data.slides, data.name || file.name);
-    } catch (error) {
-      console.error(error);
-      preparePresentationConversion(file);
-    }
+    toast('Пока загрузите презентацию как PDF. Конвертацию PPTX подключим позже.');
+    preparePresentationConversion(file, true);
     els.fileInput.value = '';
     return;
   }
@@ -414,7 +408,7 @@ async function handleFile(file) {
   });
 }
 
-function preparePresentationConversion(file) {
+function preparePresentationConversion(file, silent = false) {
   window.lastPresentationConversionRequest = {
     endpoint: '/api/board/convert-to-pdf',
     method: 'POST',
@@ -422,7 +416,9 @@ function preparePresentationConversion(file) {
     inputType: file.type || 'presentation',
     output: 'pdf',
   };
-  toast('PPTX требует серверной конвертации. Пока сохраните презентацию как PDF или запустите backend доски.');
+  if (!silent) {
+    toast('PPTX требует серверной конвертации. Пока сохраните презентацию как PDF или запустите backend доски.');
+  }
   console.info('Presentation conversion request', window.lastPresentationConversionRequest);
 }
 
@@ -961,7 +957,6 @@ async function exportPdf() {
         await drawImageUrl(merged, page.slideInk);
       }
       pdf.addImage(dataUrl(merged), 'PNG', 0, 0, page.width, page.height);
-      addPdfBrandLink(pdf, page.width, page.height);
 
       for (const sheet of page.sheets) {
         if (!sheet.data) continue;
