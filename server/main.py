@@ -35,6 +35,11 @@ app = FastAPI(title="RepIQ Board AI API")
 app.mount("/api/generated", StaticFiles(directory=str(GENERATED_DIR)), name="generated")
 
 
+@app.get("/health")
+def health() -> dict[str, bool]:
+    return {"ok": True}
+
+
 def register_font(name: str, candidates: list[str]) -> str:
     for candidate in candidates:
         path = Path(candidate)
