@@ -14,6 +14,7 @@
   aiForm: document.getElementById('aiForm'),
   aiSlides: document.getElementById('aiSlides'),
   aiStatus: document.getElementById('aiStatus'),
+  creditsLabel: document.getElementById('creditsLabel'),
   toast: document.getElementById('toast'),
   tools: Array.from(document.querySelectorAll('.tool[data-tool]')),
   undoBtn: document.getElementById('undoBtn'),
@@ -331,6 +332,18 @@ async function loadPdf(file) {
   state.index = 0;
   await renderPage(0);
   toast(`PDF открыт: ${pages.length} стр.`);
+}
+
+async function openGeneratedPdf(pdfUrl, title = 'AI-презентация') {
+  els.aiStatus.textContent = 'Открываем на доске...';
+  const response = await fetch(pdfUrl);
+  if (!response.ok) {
+    throw new Error(`Не удалось скачать готовый PDF: ${response.status}`);
+  }
+  const blob = await response.blob();
+  const file = new File([blob], `${title}.pdf`, { type: 'application/pdf' });
+  await loadPdf(file);
+  els.aiDialog.close();
 }
 
 async function loadServerSlides(slides, name = 'материал') {
@@ -1061,7 +1074,11 @@ async function savePdfBlob(pdf, fileName) {
 }
 
 function updateCredits() {
-  return;
+  const slides = Math.max(3, Number(els.aiSlides?.value || 6));
+  const credits = Math.ceil(slides * 1.5);
+  if (els.creditsLabel) {
+    els.creditsLabel.textContent = `Стоимость: ${credits} кредитов`;
+  }
 }
 
 function updateSizeTrack() {
@@ -1075,25 +1092,50 @@ function updateSizeTrack() {
 async function submitAi(event) {
   event.preventDefault();
   const form = new FormData(els.aiForm);
+  const blocks = form.getAll('blocks');
   const payload = {
     topic: form.get('topic'),
     subject: form.get('subject'),
     grade: form.get('grade'),
-    slides: Number(form.get('slides')),
     duration: form.get('duration'),
+    slidesCount: Number(form.get('slides')),
     notes: form.get('notes'),
-    blocks: form.getAll('blocks'),
-    output: 'pdf',
-    style: 'repiq',
+    includeTheory: blocks.includes('theory'),
+    includeExamples: blocks.includes('examples'),
+    includePractice: blocks.includes('practice'),
+    includeHomework: blocks.includes('homework'),
+    includeAnswers: blocks.includes('answers'),
   };
-  window.lastAiPresentationRequest = {
-    endpoint: '/api/ai/presentation/create',
-    method: 'POST',
-    payload,
-  };
-  els.aiStatus.textContent = 'Урок подготовлен. Backend подключим отдельно, ключ во frontend не передается.';
-  toast('Урок подготовлен.');
-  console.info('AI presentation request payload', window.lastAiPresentationRequest);
+  try {
+    els.aiStatus.textContent = 'Готовим структуру...';
+    toast('Готовим структуру презентации...');
+    const response = await fetch('/api/ai/presentation/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      let message = `API недоступен: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        message = errorData.detail || errorData.error || message;
+      } catch (_) {
+        // Ответ может быть не JSON, тогда оставляем короткую понятную ошибку.
+      }
+      throw new Error(message);
+    }
+    els.aiStatus.textContent = 'Собираем PDF...';
+    const data = await response.json();
+    if (!data.ok || !data.pdfUrl) {
+      throw new Error('Backend не вернул ссылку на готовый PDF.');
+    }
+    await openGeneratedPdf(data.pdfUrl, data.title || payload.topic || 'AI-презентация');
+    toast('AI-презентация открыта на доске.');
+  } catch (error) {
+    console.error(error);
+    els.aiStatus.textContent = `Не удалось создать презентацию. ${error.message || 'Проверьте API на сервере.'}`;
+    toast('Не удалось создать AI-презентацию.');
+  }
 }
 
 els.fileInput.addEventListener('change', event => handleFile(event.target.files[0]));

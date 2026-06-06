@@ -98,8 +98,8 @@
         <label>Тема<input id="aiTopic" name="topic" required placeholder="Например: квадратные уравнения" /></label>
         <label>Предмет<input id="aiSubject" name="subject" placeholder="Математика" /></label>
         <label>Класс<input id="aiGrade" name="grade" placeholder="8 класс" /></label>
-        <label>Количество слайдов<input id="aiSlides" name="slides" type="number" min="3" max="12" value="6" /></label>
-        <label>Длительность<input id="aiDuration" name="duration" placeholder="45 минут" /></label>
+        <label>Количество слайдов<input id="aiSlides" name="slides" type="number" min="3" max="12" value="10" /></label>
+        <label>Длительность<input id="aiDuration" name="duration" type="number" min="10" max="180" value="60" /></label>
         <label class="ai-notes-field">Описание / комментарий<textarea id="aiNotes" name="notes" placeholder="Например: учебник Мерзляк, 8 класс, стр. 42, задания 123-126; сделать акцент на типичных ошибках"></textarea></label>
       </div>
       <fieldset class="checks">
@@ -107,10 +107,11 @@
         <label><input type="checkbox" name="blocks" value="examples" checked /> примеры</label>
         <label><input type="checkbox" name="blocks" value="practice" checked /> практика</label>
         <label><input type="checkbox" name="blocks" value="homework" /> домашнее</label>
-        <label><input type="checkbox" name="blocks" value="answers" /> ответы</label>
+        <label><input type="checkbox" name="blocks" value="answers" checked /> ответы</label>
       </fieldset>
       <div class="ai-footer">
-        <button class="action primary" type="submit">Подготовить урок</button>
+        <span id="creditsLabel">Стоимость: 15 кредитов</span>
+        <button class="action primary" type="submit">Создать</button>
       </div>
       <p id="aiStatus" class="ai-status"></p>
     </form>

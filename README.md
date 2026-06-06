@@ -16,6 +16,28 @@
 
 Конвертация PPT/PPTX в PDF подготовлена в `board-v2/app.py`. Для нее нужен отдельный Python-сервис с зависимостями из `board-v2/requirements.txt` и установленным LibreOffice на сервере.
 
+## AI-генерация презентаций
+
+Backend для AI-презентаций лежит в `server/`.
+
+Переменные окружения на TimeWeb:
+
+- `OPENAI_API_KEY` — ключ OpenAI Platform.
+- `AI_MODEL` — модель для текстовой структуры презентации. Если не указать, используется `gpt-4.1-mini`.
+
+Запуск backend:
+
+```bash
+pip install -r server/requirements.txt
+uvicorn server.main:app --host 0.0.0.0 --port 8000
+```
+
+Endpoint:
+
+- `POST /api/ai/presentation/create`
+
+Backend не использует генерацию картинок, видео, realtime или web search. Он получает строгий JSON со структурой слайдов и собирает PDF в стиле RepIQ.
+
 ## Как загрузить на хостинг
 
 1. Открыть панель хостинга.
