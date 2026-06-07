@@ -62,6 +62,15 @@ def health() -> dict[str, bool]:
     return {"ok": True}
 
 
+@app.get("/api/ai/status")
+def ai_status() -> dict[str, Any]:
+    return {
+        "ok": True,
+        "model": ai_model(),
+        "openaiKeyConfigured": bool(os.getenv("OPENAI_API_KEY", "").strip()),
+    }
+
+
 def register_font(name: str, candidates: list[str]) -> str:
     for candidate in candidates:
         path = Path(candidate)
@@ -223,9 +232,11 @@ def call_openai(payload: PresentationRequest) -> dict[str, Any]:
             raw = response.read().decode("utf-8")
     except HTTPError as exc:
         message = exc.read().decode("utf-8", errors="ignore")
-        raise HTTPException(status_code=502, detail=f"OpenAI API error: {message[:800]}") from exc
+        raise HTTPException(status_code=424, detail=f"OpenAI API error: {message[:800]}") from exc
     except URLError as exc:
-        raise HTTPException(status_code=502, detail=f"OpenAI API недоступен: {exc.reason}") from exc
+        raise HTTPException(status_code=424, detail=f"OpenAI API недоступен: {exc.reason}") from exc
+    except TimeoutError as exc:
+        raise HTTPException(status_code=424, detail="OpenAI API не ответил за отведённое время.") from exc
 
     data = json.loads(raw)
     content = data["choices"][0]["message"]["content"]
