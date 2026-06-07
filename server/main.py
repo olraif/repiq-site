@@ -10,6 +10,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 from reportlab.lib import colors
@@ -32,6 +33,27 @@ OPENAI_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions"
 REPIQ_URL = "https://repiq.ru"
 
 app = FastAPI(title="RepIQ Board AI API")
+
+
+def cors_origins() -> list[str]:
+    raw = os.getenv(
+        "CORS_ORIGINS",
+        os.getenv(
+            "CORS_ORIGIN",
+            "https://repiq.ru,https://www.repiq.ru,http://127.0.0.1:8782,http://localhost:8782",
+        ),
+    )
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins(),
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
 app.mount("/api/generated", StaticFiles(directory=str(GENERATED_DIR)), name="generated")
 
 

@@ -59,6 +59,7 @@ const libraryState = {
 
 const BRAND_URL = 'https://repiq.ru';
 const BRAND_LABEL = 'RepIQ Board';
+const AI_API_BASE = 'https://olraif-repiq-site-38e0.twc1.net';
 
 if (window.pdfjsLib) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = './static/vendor/pdf.worker.min.js';
@@ -1109,7 +1110,7 @@ async function submitAi(event) {
   try {
     els.aiStatus.textContent = 'Готовим структуру...';
     toast('Готовим структуру презентации...');
-    const response = await fetch('/api/ai/presentation/create', {
+    const response = await fetch(`${AI_API_BASE}/api/ai/presentation/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -1129,7 +1130,8 @@ async function submitAi(event) {
     if (!data.ok || !data.pdfUrl) {
       throw new Error('Backend не вернул ссылку на готовый PDF.');
     }
-    await openGeneratedPdf(data.pdfUrl, data.title || payload.topic || 'AI-презентация');
+    const pdfUrl = new URL(data.pdfUrl, AI_API_BASE).href;
+    await openGeneratedPdf(pdfUrl, data.title || payload.topic || 'AI-презентация');
     toast('AI-презентация открыта на доске.');
   } catch (error) {
     console.error(error);
