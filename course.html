@@ -127,7 +127,7 @@
             <div class="summary">
               <span class="muted">Программа курса</span>
               <strong>7 уроков</strong>
-              <p class="muted">Первые пять уроков уже доступны. Новые уроки будут добавляться по мере записи.</p>
+              <p class="muted">Все семь уроков доступны.</p>
             </div>
           </div>
 
@@ -153,12 +153,12 @@
                 <span class="lesson-meta">Урок 5 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Сетка и разовые уроки</strong>
               </button>
-              <button class="lesson-button locked" type="button">
-                <span class="lesson-meta">Урок 6 <span class="lesson-status wait">Готовится</span></span>
+              <button class="lesson-button" type="button" data-lesson="lesson-06">
+                <span class="lesson-meta">Урок 6 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Оплаты и баланс</strong>
               </button>
-              <button class="lesson-button locked" type="button">
-                <span class="lesson-meta">Урок 7 <span class="lesson-status wait">Готовится</span></span>
+              <button class="lesson-button" type="button" data-lesson="lesson-07">
+                <span class="lesson-meta">Урок 7 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Настройки и резервная копия</strong>
               </button>
             </aside>
@@ -250,6 +250,22 @@
           result: "вы умеете работать с недельной сеткой и добавлять разовые занятия в свободные слоты.",
           video: "./assets/course/videos/lesson-05-web.mp4",
           poster: "./assets/course/images/lesson-05-intro.png"
+        },
+        "lesson-06": {
+          number: "Урок 6",
+          title: "Оплаты, баланс и проведённые занятия",
+          description: "Добавьте оплату ученика, посмотрите резерв занятий и баланс, затем отметьте проведённый урок и проследите, как меняются списание и остаток.",
+          result: "вы умеете учитывать оплаты, контролировать баланс и отмечать проведённые занятия.",
+          video: "./assets/course/videos/lesson-06-web.mp4",
+          poster: "./assets/course/images/lesson-06-intro.png"
+        },
+        "lesson-07": {
+          number: "Урок 7",
+          title: "Настройки, архив и резервная копия",
+          description: "Настройте регион, границы расписания и напоминания, затем сохраните резервную копию базы, чтобы данные можно было восстановить на устройстве.",
+          result: "основные параметры CRM настроены, а резервная копия данных сохранена.",
+          video: "./assets/course/videos/lesson-07-web.mp4",
+          poster: "./assets/course/images/lesson-07-intro.png"
         }
       };
       let currentLessonId = "lesson-01";
