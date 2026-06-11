@@ -127,7 +127,7 @@
             <div class="summary">
               <span class="muted">Программа курса</span>
               <strong>7 уроков</strong>
-              <p class="muted">Первые четыре урока уже доступны. Новые уроки будут добавляться по мере записи.</p>
+              <p class="muted">Первые пять уроков уже доступны. Новые уроки будут добавляться по мере записи.</p>
             </div>
           </div>
 
@@ -149,8 +149,8 @@
                 <span class="lesson-meta">Урок 4 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Группы и смешанный формат</strong>
               </button>
-              <button class="lesson-button locked" type="button">
-                <span class="lesson-meta">Урок 5 <span class="lesson-status wait">Готовится</span></span>
+              <button class="lesson-button" type="button" data-lesson="lesson-05">
+                <span class="lesson-meta">Урок 5 <span class="lesson-status ready">Доступен</span></span>
                 <strong>Сетка и разовые уроки</strong>
               </button>
               <button class="lesson-button locked" type="button">
@@ -242,6 +242,14 @@
           result: "вы понимаете, как вести группы и учеников со смешанным форматом занятий.",
           video: "./assets/course/videos/lesson-04-web.mp4",
           poster: "./assets/course/images/lesson-04-intro.png"
+        },
+        "lesson-05": {
+          number: "Урок 5",
+          title: "Сетка расписания, разовые уроки и личные дела",
+          description: "Разберите недельную сетку расписания: найдите свободный слот, создайте разовое занятие или личное дело и сохраните его в нужное время.",
+          result: "вы умеете работать с недельной сеткой и добавлять разовые занятия в свободные слоты.",
+          video: "./assets/course/videos/lesson-05-web.mp4",
+          poster: "./assets/course/images/lesson-05-intro.png"
         }
       };
       let currentLessonId = "lesson-01";
