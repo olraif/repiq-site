@@ -721,13 +721,15 @@ button { cursor: pointer; }
   font-weight: 750;
 }
 .ai-grid input,
-.ai-grid textarea {
+.ai-grid textarea,
+.ai-grid select {
   min-height: 42px;
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 10px 12px;
   color: var(--ink);
   background: #fff;
+  font: inherit;
 }
 .ai-grid textarea {
   min-height: 92px;
@@ -762,9 +764,10 @@ button { cursor: pointer; }
   justify-content: space-between;
   gap: 12px;
 }
-#creditsLabel {
+.ai-free-note {
   color: var(--blue-dark);
-  font-weight: 850;
+  font-weight: 800;
+  font-size: 13px;
 }
 .ai-status {
   min-height: 20px;

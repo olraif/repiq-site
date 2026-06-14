@@ -98,6 +98,18 @@
         <label>Тема<input id="aiTopic" name="topic" required placeholder="Например: квадратные уравнения" /></label>
         <label>Предмет<input id="aiSubject" name="subject" placeholder="Математика" /></label>
         <label>Класс<input id="aiGrade" name="grade" placeholder="8 класс" /></label>
+        <label>Оформление
+          <select id="aiTemplate" name="template">
+            <option value="auto">Подобрать по предмету</option>
+            <option value="math">Математика и физика</option>
+            <option value="languages">Языки и литература</option>
+            <option value="geography">География и окружающий мир</option>
+            <option value="science">Биология и химия</option>
+            <option value="history">История и обществознание</option>
+            <option value="informatics">Информатика и программирование</option>
+            <option value="universal">Универсальный RepIQ</option>
+          </select>
+        </label>
         <label>Количество слайдов<input id="aiSlides" name="slides" type="number" min="3" max="12" value="10" /></label>
         <label>Длительность<input id="aiDuration" name="duration" type="number" min="10" max="180" value="60" /></label>
         <label class="ai-notes-field">Описание / комментарий<textarea id="aiNotes" name="notes" placeholder="Например: учебник Мерзляк, 8 класс, стр. 42, задания 123-126; сделать акцент на типичных ошибках"></textarea></label>
@@ -110,8 +122,8 @@
         <label><input type="checkbox" name="blocks" value="answers" checked /> ответы</label>
       </fieldset>
       <div class="ai-footer">
-        <span id="creditsLabel">Стоимость: 15 кредитов</span>
-        <button class="action primary" type="submit">Создать</button>
+        <span class="ai-free-note">Бесплатный режим · без изображений из платных сервисов</span>
+        <button class="action primary" type="submit">Подготовить урок</button>
       </div>
       <p id="aiStatus" class="ai-status"></p>
     </form>
@@ -121,6 +133,8 @@
 
   <script src="./static/vendor/pdf.min.js"></script>
   <script src="./static/vendor/jspdf.umd.min.js"></script>
+  <script src="./static/ai-config.js"></script>
+  <script src="./static/ai-presentations.js"></script>
   <script src="./static/app.js"></script>
 </body>
 </html>

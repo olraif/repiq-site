@@ -14,7 +14,6 @@
   aiForm: document.getElementById('aiForm'),
   aiSlides: document.getElementById('aiSlides'),
   aiStatus: document.getElementById('aiStatus'),
-  creditsLabel: document.getElementById('creditsLabel'),
   toast: document.getElementById('toast'),
   tools: Array.from(document.querySelectorAll('.tool[data-tool]')),
   undoBtn: document.getElementById('undoBtn'),
@@ -59,7 +58,7 @@ const libraryState = {
 
 const BRAND_URL = 'https://repiq.ru';
 const BRAND_LABEL = 'RepIQ Board';
-const AI_API_BASE = 'https://olraif-repiq-site-38e0.twc1.net';
+const AI_API_BASE = String(window.REPIQ_AI_ENDPOINT || '').replace(/\/$/, '');
 
 if (window.pdfjsLib) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = './static/vendor/pdf.worker.min.js';
@@ -345,6 +344,21 @@ async function openGeneratedPdf(pdfUrl, title = 'AI-презентация') {
   const file = new File([blob], `${title}.pdf`, { type: 'application/pdf' });
   await loadPdf(file);
   els.aiDialog.close();
+}
+
+async function loadGeneratedCanvases(canvases, name = 'AI-презентация') {
+  saveCurrentSurface();
+  const pages = canvases.map(bitmap => ({
+    ...newPage(),
+    width: bitmap.width,
+    height: bitmap.height,
+    bitmap,
+  }));
+  state.pages = pages;
+  state.index = 0;
+  await renderPage(0);
+  els.aiDialog.close();
+  toast(`${name} открыта: ${pages.length} слайдов.`);
 }
 
 async function loadServerSlides(slides, name = 'материал') {
@@ -1074,14 +1088,6 @@ async function savePdfBlob(pdf, fileName) {
   toast('PDF отправлен в папку загрузок.');
 }
 
-function updateCredits() {
-  const slides = Math.max(3, Number(els.aiSlides?.value || 6));
-  const credits = Math.ceil(slides * 1.5);
-  if (els.creditsLabel) {
-    els.creditsLabel.textContent = `Стоимость: ${credits} кредитов`;
-  }
-}
-
 function updateSizeTrack() {
   const min = Number(els.sizeInput.min || 0);
   const max = Number(els.sizeInput.max || 100);
@@ -1098,6 +1104,7 @@ async function submitAi(event) {
     topic: form.get('topic'),
     subject: form.get('subject'),
     grade: form.get('grade'),
+    template: form.get('template'),
     duration: form.get('duration'),
     slidesCount: Number(form.get('slides')),
     notes: form.get('notes'),
@@ -1108,6 +1115,12 @@ async function submitAi(event) {
     includeAnswers: blocks.includes('answers'),
   };
   try {
+    if (!AI_API_BASE) {
+      throw new Error('Бесплатный AI ещё не подключён к сайту. Сначала опубликуйте Cloudflare Worker.');
+    }
+    if (!window.RepIQPresentations) {
+      throw new Error('Модуль оформления презентаций не загрузился. Обновите страницу.');
+    }
     els.aiStatus.textContent = 'Готовим структуру...';
     toast('Готовим структуру презентации...');
     const response = await fetch(`${AI_API_BASE}/api/ai/presentation/create`, {
@@ -1125,13 +1138,15 @@ async function submitAi(event) {
       }
       throw new Error(message);
     }
-    els.aiStatus.textContent = 'Собираем PDF...';
+    els.aiStatus.textContent = 'Оформляем слайды в стиле RepIQ...';
     const data = await response.json();
-    if (!data.ok || !data.pdfUrl) {
-      throw new Error('Backend не вернул ссылку на готовый PDF.');
+    if (!data.ok || !data.presentation?.slides?.length) {
+      throw new Error(data.error || 'AI не вернул структуру презентации.');
     }
-    const pdfUrl = new URL(data.pdfUrl, AI_API_BASE).href;
-    await openGeneratedPdf(pdfUrl, data.title || payload.topic || 'AI-презентация');
+    const canvases = window.RepIQPresentations.buildSlides(data.presentation, payload);
+    if (!canvases.length) throw new Error('Не удалось оформить слайды.');
+    els.aiStatus.textContent = 'Открываем на доске...';
+    await loadGeneratedCanvases(canvases, data.title || payload.topic || 'AI-презентация');
     toast('AI-презентация открыта на доске.');
   } catch (error) {
     console.error(error);
@@ -1175,11 +1190,9 @@ document.querySelectorAll('.library-grid button:not([data-library-category])').f
   button.addEventListener('click', () => toast('Раздел библиотеки подготовлен как заглушка. Для вставки используйте кнопку "Загрузить".'));
 });
 els.aiBtn.addEventListener('click', () => {
-  updateCredits();
   els.aiDialog.showModal();
 });
 document.querySelector('[data-close-ai]').addEventListener('click', () => els.aiDialog.close());
-els.aiForm.addEventListener('input', updateCredits);
 els.aiForm.addEventListener('submit', submitAi);
 els.exportPdfBtn.addEventListener('click', () => exportPdf().catch(error => {
   console.error(error);
