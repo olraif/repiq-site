@@ -6,5 +6,6 @@ compatibility_date = "2026-06-14"
 binding = "AI"
 
 [vars]
-AI_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast"
+AI_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8"
+IMAGE_MODEL = "@cf/black-forest-labs/flux-1-schnell"
 ALLOWED_ORIGINS = "https://repiq.ru,https://www.repiq.ru,http://127.0.0.1:8782,http://localhost:8782"

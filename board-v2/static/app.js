@@ -1113,6 +1113,7 @@ async function submitAi(event) {
     includePractice: blocks.includes('practice'),
     includeHomework: blocks.includes('homework'),
     includeAnswers: blocks.includes('answers'),
+    includeIllustration: blocks.includes('illustration'),
   };
   try {
     if (!AI_API_BASE) {
@@ -1121,8 +1122,8 @@ async function submitAi(event) {
     if (!window.RepIQPresentations) {
       throw new Error('Модуль оформления презентаций не загрузился. Обновите страницу.');
     }
-    els.aiStatus.textContent = 'Готовим структуру...';
-    toast('Готовим структуру презентации...');
+    els.aiStatus.textContent = 'AI готовит содержание и визуальную идею...';
+    toast('Готовим содержательную презентацию...');
     const response = await fetch(`${AI_API_BASE}/api/ai/presentation/create`, {
       method: 'POST',
       // text/plain keeps the request simple and avoids a separate CORS preflight,
@@ -1140,12 +1141,12 @@ async function submitAi(event) {
       }
       throw new Error(message);
     }
-    els.aiStatus.textContent = 'Оформляем слайды в стиле RepIQ...';
+    els.aiStatus.textContent = 'Оформляем формулы, схемы и слайды в стиле RepIQ...';
     const data = await response.json();
     if (!data.ok || !data.presentation?.slides?.length) {
       throw new Error(data.error || 'AI не вернул структуру презентации.');
     }
-    const canvases = window.RepIQPresentations.buildSlides(data.presentation, payload);
+    const canvases = await window.RepIQPresentations.buildSlides(data.presentation, payload);
     if (!canvases.length) throw new Error('Не удалось оформить слайды.');
     els.aiStatus.textContent = 'Открываем на доске...';
     await loadGeneratedCanvases(canvases, data.title || payload.topic || 'AI-презентация');

@@ -4,74 +4,32 @@
 
   const themes = {
     universal: {
-      key: 'universal',
-      accent: '#3A97D8',
-      accentDark: '#216B9F',
-      secondary: '#8B6FD6',
-      soft: '#EAF5FC',
-      softAlt: '#F2EEFC',
-      ink: '#203247',
-      visual: 'cards',
+      key: 'universal', accent: '#3A97D8', accentDark: '#216B9F', secondary: '#8B6FD6',
+      soft: '#EAF5FC', softAlt: '#F2EEFC', ink: '#203247', visual: 'subject',
     },
     math: {
-      key: 'math',
-      accent: '#4776E6',
-      accentDark: '#2B4FA8',
-      secondary: '#8E54E9',
-      soft: '#EAF0FF',
-      softAlt: '#F2EBFF',
-      ink: '#1F3157',
-      visual: 'math',
+      key: 'math', accent: '#4776E6', accentDark: '#2B4FA8', secondary: '#8E54E9',
+      soft: '#EAF0FF', softAlt: '#F2EBFF', ink: '#1F3157', visual: 'quadratic-graph',
     },
     languages: {
-      key: 'languages',
-      accent: '#EB6A75',
-      accentDark: '#B84457',
-      secondary: '#8B6FD6',
-      soft: '#FFF0F2',
-      softAlt: '#F4EEFF',
-      ink: '#492C3B',
-      visual: 'language',
+      key: 'languages', accent: '#EB6A75', accentDark: '#B84457', secondary: '#8B6FD6',
+      soft: '#FFF0F2', softAlt: '#F4EEFF', ink: '#492C3B', visual: 'vocabulary',
     },
     geography: {
-      key: 'geography',
-      accent: '#22A88A',
-      accentDark: '#11735F',
-      secondary: '#3A97D8',
-      soft: '#E7F8F3',
-      softAlt: '#EAF5FC',
-      ink: '#183D3A',
-      visual: 'globe',
+      key: 'geography', accent: '#22A88A', accentDark: '#11735F', secondary: '#3A97D8',
+      soft: '#E7F8F3', softAlt: '#EAF5FC', ink: '#183D3A', visual: 'map',
     },
     science: {
-      key: 'science',
-      accent: '#00A7A5',
-      accentDark: '#087170',
-      secondary: '#F29E4C',
-      soft: '#E4F8F7',
-      softAlt: '#FFF3E5',
-      ink: '#173C46',
-      visual: 'science',
+      key: 'science', accent: '#00A7A5', accentDark: '#087170', secondary: '#F29E4C',
+      soft: '#E4F8F7', softAlt: '#FFF3E5', ink: '#173C46', visual: 'atom',
     },
     history: {
-      key: 'history',
-      accent: '#C4873A',
-      accentDark: '#895A20',
-      secondary: '#9D6B53',
-      soft: '#FAF1E4',
-      softAlt: '#F4EAE4',
-      ink: '#463528',
-      visual: 'timeline',
+      key: 'history', accent: '#C4873A', accentDark: '#895A20', secondary: '#9D6B53',
+      soft: '#FAF1E4', softAlt: '#F4EAE4', ink: '#463528', visual: 'timeline',
     },
     informatics: {
-      key: 'informatics',
-      accent: '#2F91D5',
-      accentDark: '#185E91',
-      secondary: '#27B69A',
-      soft: '#E8F5FC',
-      softAlt: '#E8F8F4',
-      ink: '#173549',
-      visual: 'code',
+      key: 'informatics', accent: '#2F91D5', accentDark: '#185E91', secondary: '#27B69A',
+      soft: '#E8F5FC', softAlt: '#E8F8F4', ink: '#173549', visual: 'code',
     },
   };
 
@@ -85,6 +43,24 @@
     if (/истор|обществ|право|эконом/.test(value)) return themes.history;
     if (/информ|программ|робот|компьют/.test(value)) return themes.informatics;
     return themes.universal;
+  }
+
+  function prettyText(value) {
+    return String(value || '')
+      .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '$1⁄$2')
+      .replace(/\\sqrt\{([^{}]+)\}/g, '√($1)')
+      .replace(/\\(?:cdot|times)/g, '×')
+      .replace(/\\div/g, '÷')
+      .replace(/\\pm/g, '±')
+      .replace(/\\leq?/g, '≤')
+      .replace(/\\geq?/g, '≥')
+      .replace(/\^\{?2\}?/g, '²')
+      .replace(/\^\{?3\}?/g, '³')
+      .replace(/_\{?1\}?/g, '₁')
+      .replace(/_\{?2\}?/g, '₂')
+      .replace(/[{}$]/g, '')
+      .replace(/\\/g, '')
+      .trim();
   }
 
   function roundedPath(context, x, y, width, height, radius) {
@@ -109,8 +85,9 @@
     }
   }
 
-  function wrapLines(context, text, maxWidth, maxLines = 5) {
-    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+  function wrapLines(context, value, maxWidth, maxLines = 5) {
+    const text = prettyText(value);
+    const words = text.split(/\s+/).filter(Boolean);
     const lines = [];
     let line = '';
     for (const word of words) {
@@ -140,253 +117,544 @@
     return y + lines.length * lineHeight;
   }
 
-  function drawBackground(context, theme) {
+  function drawBackground(context, theme, variant = 0) {
     const gradient = context.createLinearGradient(0, 0, WIDTH, HEIGHT);
-    gradient.addColorStop(0, '#F7FBFE');
-    gradient.addColorStop(0.58, '#FFFFFF');
+    gradient.addColorStop(0, variant % 2 ? '#FBFDFF' : '#F7FBFE');
+    gradient.addColorStop(0.62, '#FFFFFF');
     gradient.addColorStop(1, theme.soft);
     context.fillStyle = gradient;
     context.fillRect(0, 0, WIDTH, HEIGHT);
 
-    context.globalAlpha = 0.55;
+    context.globalAlpha = 0.48;
     context.fillStyle = theme.softAlt;
-    context.beginPath();
-    context.arc(1510, 40, 290, 0, Math.PI * 2);
-    context.fill();
+    context.beginPath(); context.arc(1530, 30, 260, 0, Math.PI * 2); context.fill();
     context.fillStyle = theme.soft;
-    context.beginPath();
-    context.arc(40, 880, 250, 0, Math.PI * 2);
-    context.fill();
+    context.beginPath(); context.arc(20, 900, 230, 0, Math.PI * 2); context.fill();
     context.globalAlpha = 1;
+
+    context.fillStyle = theme.accent;
+    context.fillRect(0, 0, WIDTH, 12);
   }
 
   function drawFooter(context, index, total, theme) {
-    context.font = '700 21px Segoe UI, Arial, sans-serif';
+    context.font = '700 20px Segoe UI, Arial, sans-serif';
     context.fillStyle = '#71879B';
     context.textAlign = 'left';
-    context.fillText('repiq.ru', 92, 838);
+    context.fillText('repiq.ru', 88, 846);
     context.textAlign = 'center';
-    context.fillStyle = theme.accent;
-    context.fillText(`${index + 1} / ${total}`, WIDTH / 2, 838);
+    fillRound(context, 748, 818, 104, 42, 21, '#FFFFFFCC', `${theme.accent}25`, 1);
+    context.fillStyle = theme.accentDark;
+    context.fillText(`${index + 1} / ${total}`, WIDTH / 2, 846);
     context.textAlign = 'right';
     context.fillStyle = '#71879B';
-    context.fillText('repiqboard · AI-автоматизация', 1508, 838);
+    context.fillText('RepIQ Board · AI-урок', 1512, 846);
     context.textAlign = 'left';
   }
 
   function drawBrandPill(context, theme, label) {
-    fillRound(context, 92, 76, 310, 48, 24, '#FFFFFF', `${theme.accent}33`, 2);
+    const text = prettyText(label || 'Учебная презентация');
+    context.font = '800 19px Segoe UI, Arial, sans-serif';
+    const width = Math.min(460, Math.max(260, context.measureText(text).width + 80));
+    fillRound(context, 88, 58, width, 48, 24, '#FFFFFFE8', `${theme.accent}35`, 2);
     context.fillStyle = theme.accent;
-    context.beginPath();
-    context.arc(122, 100, 10, 0, Math.PI * 2);
-    context.fill();
-    context.font = '800 20px Segoe UI, Arial, sans-serif';
+    context.beginPath(); context.arc(118, 82, 9, 0, Math.PI * 2); context.fill();
     context.fillStyle = theme.ink;
-    context.fillText(label || 'RepIQ Board', 145, 107);
+    context.fillText(text, 140, 89);
   }
 
-  function drawMath(context, theme, x, y, size) {
-    fillRound(context, x, y, size, size, 42, '#FFFFFFCC', `${theme.accent}30`, 3);
+  function drawSlideTitle(context, slide, theme, maxWidth = 1370) {
+    context.font = '900 49px Segoe UI, Arial, sans-serif';
+    const lines = wrapLines(context, slide.title, maxWidth, 2);
+    let y = drawLines(context, lines, 90, 172, 58, theme.ink);
+    if (slide.subtitle) {
+      context.font = '650 24px Segoe UI, Arial, sans-serif';
+      y = drawLines(context, wrapLines(context, slide.subtitle, maxWidth, 2), 92, y + 6, 33, '#71879B');
+    }
+    return y;
+  }
+
+  function drawCallout(context, text, x, y, width, theme, maxLines = 2) {
+    if (!text) return;
+    fillRound(context, x, y, width, 82, 24, theme.softAlt, null);
+    context.font = '800 23px Segoe UI, Arial, sans-serif';
+    drawLines(context, wrapLines(context, text, width - 58, maxLines), x + 29, y + 34, 30, theme.accentDark);
+  }
+
+  function drawBulletList(context, bullets, x, y, width, theme, options = {}) {
+    const size = options.size || 28;
+    const lineHeight = options.lineHeight || 38;
+    const maxLines = options.maxLines || 2;
+    context.font = `700 ${size}px Segoe UI, Arial, sans-serif`;
+    let cursor = y;
+    (bullets || []).slice(0, options.maxItems || 4).forEach((bullet, index) => {
+      context.fillStyle = index % 2 ? theme.secondary : theme.accent;
+      context.beginPath(); context.arc(x + 10, cursor - 8, 8, 0, Math.PI * 2); context.fill();
+      const lines = wrapLines(context, bullet, width - 50, maxLines);
+      drawLines(context, lines, x + 38, cursor, lineHeight, theme.ink);
+      cursor += lines.length * lineHeight + 18;
+    });
+    return cursor;
+  }
+
+  function drawImageCrop(context, image, x, y, width, height, radius) {
+    if (!image) return false;
+    const scale = Math.max(width / image.width, height / image.height);
+    const sourceWidth = width / scale;
+    const sourceHeight = height / scale;
+    const sourceX = (image.width - sourceWidth) / 2;
+    const sourceY = (image.height - sourceHeight) / 2;
     context.save();
-    context.translate(x + size * 0.12, y + size * 0.12);
-    const area = size * 0.76;
-    context.strokeStyle = `${theme.accent}25`;
+    roundedPath(context, x, y, width, height, radius);
+    context.clip();
+    context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+    const overlay = context.createLinearGradient(x, y, x, y + height);
+    overlay.addColorStop(0, 'rgba(10, 28, 48, 0.02)');
+    overlay.addColorStop(1, 'rgba(10, 28, 48, 0.16)');
+    context.fillStyle = overlay;
+    context.fillRect(x, y, width, height);
+    context.restore();
+    return true;
+  }
+
+  function drawAxes(context, x, y, width, height, theme) {
+    context.strokeStyle = `${theme.accent}24`;
     context.lineWidth = 2;
-    for (let i = 0; i <= 6; i += 1) {
-      const p = area * i / 6;
-      context.beginPath(); context.moveTo(p, 0); context.lineTo(p, area); context.stroke();
-      context.beginPath(); context.moveTo(0, p); context.lineTo(area, p); context.stroke();
+    for (let index = 0; index <= 8; index += 1) {
+      const px = x + width * index / 8;
+      context.beginPath(); context.moveTo(px, y); context.lineTo(px, y + height); context.stroke();
+    }
+    for (let index = 0; index <= 6; index += 1) {
+      const py = y + height * index / 6;
+      context.beginPath(); context.moveTo(x, py); context.lineTo(x + width, py); context.stroke();
     }
     context.strokeStyle = theme.accentDark;
-    context.lineWidth = 5;
+    context.lineWidth = 4;
+    context.beginPath(); context.moveTo(x, y + height / 2); context.lineTo(x + width, y + height / 2); context.stroke();
+    context.beginPath(); context.moveTo(x + width / 2, y); context.lineTo(x + width / 2, y + height); context.stroke();
+  }
+
+  function drawQuadraticGraph(context, visual, x, y, width, height, theme) {
+    fillRound(context, x, y, width, height, 34, '#FFFFFFDE', `${theme.accent}30`, 2);
+    const pad = 38;
+    const plotX = x + pad;
+    const plotY = y + pad;
+    const plotW = width - pad * 2;
+    const plotH = height - pad * 2;
+    drawAxes(context, plotX, plotY, plotW, plotH, theme);
+    const a = Number.isFinite(Number(visual?.a)) && Number(visual.a) !== 0 ? Number(visual.a) : 1;
+    const b = Number(visual?.b) || 0;
+    const c = Number(visual?.c) || 0;
+    const samples = [];
+    for (let index = 0; index <= 120; index += 1) {
+      const valueX = -5 + index / 12;
+      samples.push([valueX, a * valueX * valueX + b * valueX + c]);
+    }
+    const values = samples.map(point => point[1]).filter(Number.isFinite);
+    let minY = Math.min(-2, ...values);
+    let maxY = Math.max(2, ...values);
+    if (maxY - minY > 30) {
+      minY = Math.max(minY, -15);
+      maxY = Math.min(maxY, 15);
+    }
+    const mapX = value => plotX + (value + 5) / 10 * plotW;
+    const mapY = value => plotY + plotH - (value - minY) / (maxY - minY || 1) * plotH;
+    context.save();
+    roundedPath(context, plotX, plotY, plotW, plotH, 8);
+    context.clip();
+    context.strokeStyle = theme.secondary;
+    context.lineWidth = 7;
+    context.lineJoin = 'round';
     context.beginPath();
-    context.moveTo(0, area * 0.72);
-    context.bezierCurveTo(area * 0.24, area * 0.86, area * 0.45, area * 0.34, area * 0.72, area * 0.46);
-    context.bezierCurveTo(area * 0.84, area * 0.5, area * 0.9, area * 0.22, area, area * 0.18);
+    samples.forEach(([valueX, valueY], index) => {
+      const px = mapX(valueX);
+      const py = mapY(valueY);
+      if (index === 0) context.moveTo(px, py); else context.lineTo(px, py);
+    });
     context.stroke();
-    context.fillStyle = theme.secondary;
-    context.font = `900 ${Math.round(size * 0.12)}px Georgia, serif`;
-    context.fillText('x² + y²', area * 0.08, area * 0.22);
     context.restore();
-  }
-
-  function drawLanguage(context, theme, x, y, size) {
-    fillRound(context, x, y, size, size, 42, '#FFFFFFCC', `${theme.accent}30`, 3);
-    fillRound(context, x + size * 0.12, y + size * 0.18, size * 0.58, size * 0.27, 28, theme.soft, null);
-    fillRound(context, x + size * 0.3, y + size * 0.53, size * 0.57, size * 0.25, 28, theme.softAlt, null);
+    context.font = '800 22px Georgia, serif';
     context.fillStyle = theme.accentDark;
-    context.font = `900 ${Math.round(size * 0.105)}px Segoe UI, Arial`;
-    context.fillText('Hello!', x + size * 0.19, y + size * 0.36);
-    context.fillStyle = theme.secondary;
-    context.fillText('Let’s speak', x + size * 0.36, y + size * 0.69);
-    context.fillStyle = theme.accent;
-    context.beginPath();
-    context.moveTo(x + size * 0.2, y + size * 0.45);
-    context.lineTo(x + size * 0.3, y + size * 0.45);
-    context.lineTo(x + size * 0.22, y + size * 0.52);
-    context.fill();
+    context.fillText(`y = ${a === 1 ? '' : a}x² ${b ? `${b > 0 ? '+' : '−'} ${Math.abs(b)}x` : ''} ${c ? `${c > 0 ? '+' : '−'} ${Math.abs(c)}` : ''}`.trim(), x + 38, y + 32);
   }
 
-  function drawGlobe(context, theme, x, y, size) {
-    fillRound(context, x, y, size, size, 42, '#FFFFFFCC', `${theme.accent}30`, 3);
-    const cx = x + size / 2;
-    const cy = y + size * 0.48;
-    const r = size * 0.29;
+  function drawGeometry(context, visual, x, y, width, height, theme) {
+    fillRound(context, x, y, width, height, 34, '#FFFFFFDE', `${theme.accent}30`, 2);
+    const cx = x + width / 2;
+    const cy = y + height / 2 + 10;
+    context.strokeStyle = theme.accentDark;
+    context.fillStyle = `${theme.accent}20`;
+    context.lineWidth = 7;
+    context.beginPath();
+    if (visual?.shape === 'circle') {
+      context.arc(cx, cy, Math.min(width, height) * 0.3, 0, Math.PI * 2);
+    } else if (visual?.shape === 'rectangle') {
+      context.rect(cx - width * 0.3, cy - height * 0.22, width * 0.6, height * 0.44);
+    } else {
+      context.moveTo(cx, cy - height * 0.32);
+      context.lineTo(cx - width * 0.32, cy + height * 0.25);
+      context.lineTo(cx + width * 0.32, cy + height * 0.25);
+      context.closePath();
+    }
+    context.fill();
+    context.stroke();
+    context.font = '800 23px Segoe UI, Arial, sans-serif';
+    context.fillStyle = theme.secondary;
+    context.fillText(visual?.label || 'Чертёж по условию', x + 36, y + 42);
+  }
+
+  function drawTimeline(context, slide, x, y, width, height, theme) {
+    fillRound(context, x, y, width, height, 34, '#FFFFFFDE', `${theme.accent}30`, 2);
+    const items = (slide.steps?.length ? slide.steps : slide.bullets || []).slice(0, 4);
+    const start = x + 70;
+    const end = x + width - 70;
+    const cy = y + height * 0.46;
+    context.strokeStyle = theme.accentDark;
+    context.lineWidth = 7;
+    context.beginPath(); context.moveTo(start, cy); context.lineTo(end, cy); context.stroke();
+    const count = Math.max(2, items.length);
+    items.forEach((item, index) => {
+      const px = start + (end - start) * index / (count - 1);
+      context.fillStyle = index % 2 ? theme.secondary : theme.accent;
+      context.beginPath(); context.arc(px, cy, 14, 0, Math.PI * 2); context.fill();
+      context.font = '700 19px Segoe UI, Arial, sans-serif';
+      const lines = wrapLines(context, item, 180, 3);
+      const textY = index % 2 ? cy + 54 : cy - 88;
+      drawLines(context, lines, px - 90, textY, 25, theme.ink);
+    });
+  }
+
+  function drawMap(context, visual, x, y, width, height, theme) {
+    fillRound(context, x, y, width, height, 34, '#FFFFFFDE', `${theme.accent}30`, 2);
+    const cx = x + width / 2;
+    const cy = y + height / 2;
+    const radius = Math.min(width, height) * 0.31;
     context.strokeStyle = theme.accentDark;
     context.lineWidth = 5;
-    context.beginPath(); context.arc(cx, cy, r, 0, Math.PI * 2); context.stroke();
+    context.beginPath(); context.arc(cx, cy, radius, 0, Math.PI * 2); context.stroke();
     context.lineWidth = 3;
-    context.beginPath(); context.ellipse(cx, cy, r * 0.45, r, 0, 0, Math.PI * 2); context.stroke();
-    context.beginPath(); context.ellipse(cx, cy, r, r * 0.43, 0, 0, Math.PI * 2); context.stroke();
-    context.fillStyle = theme.secondary;
-    context.beginPath(); context.arc(cx + r * 0.62, cy - r * 0.55, r * 0.16, 0, Math.PI * 2); context.fill();
-    context.beginPath(); context.moveTo(cx + r * 0.52, cy - r * 0.48); context.lineTo(cx + r * 0.62, cy - r * 0.15); context.lineTo(cx + r * 0.73, cy - r * 0.48); context.fill();
+    context.beginPath(); context.ellipse(cx, cy, radius * 0.45, radius, 0, 0, Math.PI * 2); context.stroke();
+    context.beginPath(); context.ellipse(cx, cy, radius, radius * 0.45, 0, 0, Math.PI * 2); context.stroke();
+    [[0.58, -0.48], [-0.52, -0.1], [0.22, 0.55]].forEach(([dx, dy], index) => {
+      const px = cx + radius * dx;
+      const py = cy + radius * dy;
+      context.fillStyle = index === 1 ? theme.secondary : theme.accent;
+      context.beginPath(); context.arc(px, py, 13, 0, Math.PI * 2); context.fill();
+      context.beginPath(); context.moveTo(px - 10, py + 8); context.lineTo(px, py + 28); context.lineTo(px + 10, py + 8); context.fill();
+    });
+    context.font = '800 21px Segoe UI, Arial, sans-serif';
+    context.fillStyle = theme.accentDark;
+    context.fillText(visual?.label || 'На карте мира', x + 36, y + 42);
   }
 
-  function drawScience(context, theme, x, y, size) {
-    fillRound(context, x, y, size, size, 42, '#FFFFFFCC', `${theme.accent}30`, 3);
-    const cx = x + size * 0.5;
-    const cy = y + size * 0.38;
+  function drawProcess(context, slide, x, y, width, height, theme) {
+    fillRound(context, x, y, width, height, 34, '#FFFFFFDE', `${theme.accent}30`, 2);
+    const items = (slide.steps?.length ? slide.steps : slide.bullets || []).slice(0, 4);
+    const count = Math.max(1, items.length);
+    const cardHeight = Math.min(92, (height - 72) / count - 10);
+    items.forEach((item, index) => {
+      const py = y + 34 + index * (cardHeight + 12);
+      fillRound(context, x + 34, py, width - 68, cardHeight, 22, index % 2 ? theme.softAlt : theme.soft, null);
+      context.fillStyle = index % 2 ? theme.secondary : theme.accent;
+      context.beginPath(); context.arc(x + 70, py + cardHeight / 2, 20, 0, Math.PI * 2); context.fill();
+      context.font = '900 20px Segoe UI, Arial, sans-serif';
+      context.fillStyle = '#FFFFFF';
+      context.textAlign = 'center'; context.fillText(String(index + 1), x + 70, py + cardHeight / 2 + 7); context.textAlign = 'left';
+      context.font = '700 20px Segoe UI, Arial, sans-serif';
+      drawLines(context, wrapLines(context, item, width - 150, 2), x + 108, py + 34, 27, theme.ink);
+    });
+  }
+
+  function drawVocabulary(context, slide, x, y, width, height, theme) {
+    fillRound(context, x, y, width, height, 34, '#FFFFFFDE', `${theme.accent}30`, 2);
+    const items = (slide.bullets || []).slice(0, 4);
+    const cardWidth = (width - 90) / 2;
+    const cardHeight = (height - 90) / 2;
+    items.forEach((item, index) => {
+      const column = index % 2;
+      const row = Math.floor(index / 2);
+      const px = x + 30 + column * (cardWidth + 30);
+      const py = y + 30 + row * (cardHeight + 30);
+      fillRound(context, px, py, cardWidth, cardHeight, 26, index % 2 ? theme.softAlt : theme.soft, null);
+      context.font = '900 25px Segoe UI, Arial, sans-serif';
+      drawLines(context, wrapLines(context, item, cardWidth - 44, 4), px + 22, py + 44, 33, theme.ink);
+    });
+  }
+
+  function drawAtom(context, visual, x, y, width, height, theme) {
+    fillRound(context, x, y, width, height, 34, '#FFFFFFDE', `${theme.accent}30`, 2);
+    const cx = x + width / 2;
+    const cy = y + height / 2;
     context.strokeStyle = theme.accentDark;
     context.lineWidth = 4;
     [0, Math.PI / 3, -Math.PI / 3].forEach(angle => {
       context.save(); context.translate(cx, cy); context.rotate(angle);
-      context.beginPath(); context.ellipse(0, 0, size * 0.25, size * 0.09, 0, 0, Math.PI * 2); context.stroke();
+      context.beginPath(); context.ellipse(0, 0, width * 0.29, height * 0.1, 0, 0, Math.PI * 2); context.stroke();
       context.restore();
     });
     context.fillStyle = theme.secondary;
-    context.beginPath(); context.arc(cx, cy, size * 0.045, 0, Math.PI * 2); context.fill();
-    context.strokeStyle = theme.accentDark;
-    context.lineWidth = 6;
-    context.beginPath(); context.moveTo(cx - size * 0.07, y + size * 0.58); context.lineTo(cx - size * 0.07, y + size * 0.7); context.lineTo(cx - size * 0.2, y + size * 0.86); context.lineTo(cx + size * 0.2, y + size * 0.86); context.lineTo(cx + size * 0.07, y + size * 0.7); context.lineTo(cx + size * 0.07, y + size * 0.58); context.stroke();
-    context.fillStyle = `${theme.secondary}88`;
-    context.beginPath(); context.moveTo(cx - size * 0.14, y + size * 0.79); context.lineTo(cx + size * 0.14, y + size * 0.79); context.lineTo(cx + size * 0.2, y + size * 0.86); context.lineTo(cx - size * 0.2, y + size * 0.86); context.fill();
-  }
-
-  function drawTimeline(context, theme, x, y, size) {
-    fillRound(context, x, y, size, size, 42, '#FFFFFFCC', `${theme.accent}30`, 3);
-    const left = x + size * 0.16;
-    const right = x + size * 0.84;
-    const cy = y + size * 0.52;
-    context.strokeStyle = theme.accentDark;
-    context.lineWidth = 7;
-    context.beginPath(); context.moveTo(left, cy); context.lineTo(right, cy); context.stroke();
-    ['I', 'II', 'III', 'IV'].forEach((label, index) => {
-      const px = left + (right - left) * index / 3;
-      context.fillStyle = index % 2 ? theme.secondary : theme.accent;
-      context.beginPath(); context.arc(px, cy, size * 0.045, 0, Math.PI * 2); context.fill();
-      context.font = `800 ${Math.round(size * 0.07)}px Segoe UI, Arial`;
-      context.fillText(label, px - size * 0.035, cy + (index % 2 ? size * 0.17 : -size * 0.12));
-    });
-  }
-
-  function drawCode(context, theme, x, y, size) {
-    fillRound(context, x, y, size, size, 42, '#FFFFFFCC', `${theme.accent}30`, 3);
-    context.strokeStyle = theme.accentDark;
-    context.lineWidth = 12;
-    context.lineCap = 'round';
-    context.beginPath();
-    context.moveTo(x + size * 0.34, y + size * 0.28);
-    context.lineTo(x + size * 0.18, y + size * 0.5);
-    context.lineTo(x + size * 0.34, y + size * 0.72);
-    context.moveTo(x + size * 0.66, y + size * 0.28);
-    context.lineTo(x + size * 0.82, y + size * 0.5);
-    context.lineTo(x + size * 0.66, y + size * 0.72);
-    context.moveTo(x + size * 0.57, y + size * 0.2);
-    context.lineTo(x + size * 0.43, y + size * 0.8);
-    context.stroke();
-    context.fillStyle = theme.secondary;
-    [[0.22, 0.18], [0.78, 0.82], [0.8, 0.18]].forEach(([px, py]) => {
-      context.beginPath(); context.arc(x + size * px, y + size * py, size * 0.035, 0, Math.PI * 2); context.fill();
-    });
-  }
-
-  function drawCards(context, theme, x, y, size) {
-    fillRound(context, x, y, size, size, 42, '#FFFFFFCC', `${theme.accent}30`, 3);
-    for (let index = 0; index < 3; index += 1) {
-      const offset = index * size * 0.12;
-      fillRound(context, x + size * 0.15 + offset, y + size * 0.2 + offset, size * 0.52, size * 0.42, 28, index === 1 ? theme.softAlt : theme.soft, `${theme.accent}55`, 3);
-      context.fillStyle = index === 1 ? theme.secondary : theme.accent;
-      context.beginPath(); context.arc(x + size * 0.23 + offset, y + size * 0.29 + offset, size * 0.035, 0, Math.PI * 2); context.fill();
-      context.fillRect(x + size * 0.3 + offset, y + size * 0.27 + offset, size * 0.25, size * 0.035);
-      context.fillRect(x + size * 0.23 + offset, y + size * 0.38 + offset, size * 0.32, size * 0.025);
-    }
-  }
-
-  function drawVisual(context, theme, x, y, size) {
-    const drawers = {
-      math: drawMath,
-      language: drawLanguage,
-      globe: drawGlobe,
-      science: drawScience,
-      timeline: drawTimeline,
-      code: drawCode,
-      cards: drawCards,
-    };
-    (drawers[theme.visual] || drawCards)(context, theme, x, y, size);
-  }
-
-  function drawCover(context, slide, presentation, payload, theme) {
-    drawBrandPill(context, theme, payload.subject || 'Учебная презентация');
-    context.font = '900 70px Segoe UI, Arial, sans-serif';
-    const title = wrapLines(context, slide.title || presentation.title || payload.topic, 870, 4);
-    let y = drawLines(context, title, 100, 230, 80, theme.ink);
-    const subtitle = slide.subtitle || presentation.subtitle || [payload.grade, `${payload.duration} минут`].filter(Boolean).join(' · ');
-    context.font = '650 31px Segoe UI, Arial, sans-serif';
-    y = drawLines(context, wrapLines(context, subtitle, 820, 3), 104, y + 24, 43, '#61778C');
-    const meta = [payload.grade, `${payload.duration} минут`, `${payload.slidesCount} слайдов`].filter(Boolean).join('  ·  ');
-    fillRound(context, 102, Math.min(680, y + 42), 650, 58, 29, theme.soft, null);
-    context.font = '800 22px Segoe UI, Arial, sans-serif';
-    context.fillStyle = theme.accentDark;
-    context.fillText(meta, 132, Math.min(716, y + 78));
-    drawVisual(context, theme, 1070, 190, 430);
-  }
-
-  function drawContent(context, slide, payload, theme) {
-    drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
-    fillRound(context, 72, 142, 960, 620, 42, '#FFFFFFE8', `${theme.accent}25`, 2);
-    context.font = '900 51px Segoe UI, Arial, sans-serif';
-    let y = drawLines(context, wrapLines(context, slide.title, 820, 2), 116, 218, 60, theme.ink);
-    if (slide.subtitle) {
-      context.font = '650 25px Segoe UI, Arial, sans-serif';
-      y = drawLines(context, wrapLines(context, slide.subtitle, 800, 2), 118, y + 10, 35, '#71879B');
-    }
-
-    context.font = '700 29px Segoe UI, Arial, sans-serif';
-    const bullets = Array.isArray(slide.bullets) ? slide.bullets.slice(0, 5) : [];
-    y += 32;
-    for (const bullet of bullets) {
+    context.beginPath(); context.arc(cx, cy, 24, 0, Math.PI * 2); context.fill();
+    [[0.28, 0], [-0.15, 0.25], [-0.12, -0.27]].forEach(([dx, dy]) => {
       context.fillStyle = theme.accent;
-      context.beginPath(); context.arc(132, y - 9, 8, 0, Math.PI * 2); context.fill();
-      context.fillStyle = theme.ink;
-      const lines = wrapLines(context, bullet, 790, 2);
-      drawLines(context, lines, 162, y, 39, theme.ink);
-      y += lines.length * 39 + 17;
-      if (y > 625) break;
-    }
-
-    if (slide.callout) {
-      const calloutY = 650;
-      fillRound(context, 112, calloutY, 830, 82, 24, theme.softAlt, null);
-      context.font = '800 24px Segoe UI, Arial, sans-serif';
-      drawLines(context, wrapLines(context, slide.callout, 760, 2), 142, calloutY + 34, 31, theme.accentDark);
-    }
-    drawVisual(context, theme, 1090, 190, 410);
+      context.beginPath(); context.arc(cx + width * dx, cy + height * dy, 12, 0, Math.PI * 2); context.fill();
+    });
+    context.font = '800 21px Segoe UI, Arial, sans-serif';
+    context.fillStyle = theme.accentDark;
+    context.fillText(visual?.label || 'Модель строения', x + 36, y + 42);
   }
 
-  function buildSlides(presentation, payload) {
+  function drawCode(context, slide, x, y, width, height, theme) {
+    fillRound(context, x, y, width, height, 34, '#142637', null);
+    const items = (slide.steps?.length ? slide.steps : slide.bullets || []).slice(0, 6);
+    context.font = '700 21px Consolas, monospace';
+    items.forEach((item, index) => {
+      context.fillStyle = index % 2 ? '#8BE0C8' : '#8BCBFF';
+      context.fillText(`${String(index + 1).padStart(2, '0')}  ${prettyText(item)}`, x + 34, y + 54 + index * 50);
+    });
+    context.fillStyle = theme.secondary;
+    context.beginPath(); context.arc(x + width - 76, y + 36, 8, 0, Math.PI * 2); context.fill();
+    context.fillStyle = theme.accent;
+    context.beginPath(); context.arc(x + width - 48, y + 36, 8, 0, Math.PI * 2); context.fill();
+  }
+
+  function drawSubjectVisual(context, theme, x, y, width, height) {
+    fillRound(context, x, y, width, height, 34, '#FFFFFFDE', `${theme.accent}30`, 2);
+    const cardWidth = width * 0.54;
+    for (let index = 0; index < 3; index += 1) {
+      const offset = index * 42;
+      fillRound(context, x + 55 + offset, y + 72 + offset, cardWidth, height * 0.45, 28,
+        index === 1 ? theme.softAlt : theme.soft, `${theme.accent}40`, 2);
+      context.fillStyle = index === 1 ? theme.secondary : theme.accent;
+      context.beginPath(); context.arc(x + 92 + offset, y + 110 + offset, 11, 0, Math.PI * 2); context.fill();
+      context.fillRect(x + 122 + offset, y + 100 + offset, cardWidth * 0.5, 18);
+      context.fillRect(x + 88 + offset, y + 150 + offset, cardWidth * 0.68, 13);
+    }
+  }
+
+  function drawVisual(context, slide, x, y, width, height, theme) {
+    const visual = slide.visual || {};
+    const type = visual.type === 'none' ? theme.visual : visual.type || theme.visual;
+    if (type === 'quadratic-graph' || type === 'coordinate-plane') {
+      drawQuadraticGraph(context, visual, x, y, width, height, theme);
+    } else if (type === 'geometry') {
+      drawGeometry(context, visual, x, y, width, height, theme);
+    } else if (type === 'timeline') {
+      drawTimeline(context, slide, x, y, width, height, theme);
+    } else if (type === 'map') {
+      drawMap(context, visual, x, y, width, height, theme);
+    } else if (type === 'process') {
+      drawProcess(context, slide, x, y, width, height, theme);
+    } else if (type === 'vocabulary') {
+      drawVocabulary(context, slide, x, y, width, height, theme);
+    } else if (type === 'atom') {
+      drawAtom(context, visual, x, y, width, height, theme);
+    } else if (type === 'code') {
+      drawCode(context, slide, x, y, width, height, theme);
+    } else {
+      drawSubjectVisual(context, theme, x, y, width, height);
+    }
+  }
+
+  function drawCover(context, slide, presentation, payload, theme, coverImage) {
+    drawBrandPill(context, theme, payload.subject || 'Учебная презентация');
+    const hasImage = drawImageCrop(context, coverImage, 1000, 120, 510, 620, 50);
+    context.font = '900 68px Segoe UI, Arial, sans-serif';
+    const maxWidth = hasImage ? 800 : 870;
+    const title = wrapLines(context, slide.title || presentation.title || payload.topic, maxWidth, 4);
+    let y = drawLines(context, title, 94, 232, 78, theme.ink);
+    const subtitle = slide.subtitle || presentation.subtitle
+      || [payload.grade, `${payload.duration} минут`].filter(Boolean).join(' · ');
+    context.font = '650 29px Segoe UI, Arial, sans-serif';
+    y = drawLines(context, wrapLines(context, subtitle, maxWidth, 3), 98, y + 24, 41, '#61778C');
+
+    if (presentation.learningGoal) {
+      fillRound(context, 96, Math.min(592, y + 34), 780, 126, 28, '#FFFFFFD9', `${theme.accent}28`, 2);
+      context.font = '800 19px Segoe UI, Arial, sans-serif';
+      context.fillStyle = theme.accent;
+      context.fillText('ЦЕЛЬ УРОКА', 126, Math.min(628, y + 70));
+      context.font = '700 21px Segoe UI, Arial, sans-serif';
+      drawLines(context, wrapLines(context, presentation.learningGoal, 700, 3), 126, Math.min(662, y + 104), 28, theme.ink);
+    }
+
+    if (!hasImage) drawVisual(context, slide, 1045, 170, 455, 520, theme);
+    const meta = [payload.grade, `${payload.duration} мин`, `${payload.slidesCount} слайдов`]
+      .filter(Boolean).join('  ·  ');
+    fillRound(context, 98, 730, 630, 54, 27, theme.soft, null);
+    context.font = '800 21px Segoe UI, Arial, sans-serif';
+    context.fillStyle = theme.accentDark;
+    context.fillText(meta, 128, 765);
+  }
+
+  function drawSplit(context, slide, payload, theme) {
+    drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    const y = drawSlideTitle(context, slide, theme, 1370);
+    fillRound(context, 72, y + 20, 900, 490, 36, '#FFFFFFE2', `${theme.accent}25`, 2);
+    drawBulletList(context, slide.bullets, 112, y + 82, 820, theme);
+    drawCallout(context, slide.callout, 110, y + 398, 825, theme);
+    drawVisual(context, slide, 1020, y + 20, 500, 490, theme);
+  }
+
+  function drawFormula(context, slide, payload, theme) {
+    drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    const y = drawSlideTitle(context, slide, theme);
+    fillRound(context, 94, y + 22, 1412, 170, 38, '#FFFFFFE8', `${theme.accent}35`, 3);
+    context.font = '800 53px Georgia, Cambria Math, serif';
+    context.fillStyle = theme.accentDark;
+    context.textAlign = 'center';
+    const formula = prettyText(slide.formula || slide.callout || 'Ключевая формула');
+    drawLines(context, wrapLines(context, formula, 1280, 2), WIDTH / 2, y + 105, 63, theme.accentDark);
+    context.textAlign = 'left';
+
+    const steps = (slide.steps?.length ? slide.steps : slide.bullets || []).slice(0, 4);
+    const cardWidth = (1412 - 54) / Math.max(1, Math.min(4, steps.length));
+    steps.forEach((step, index) => {
+      const px = 94 + index * (cardWidth + 18);
+      fillRound(context, px, y + 220, cardWidth, 245, 28, index % 2 ? theme.softAlt : theme.soft, null);
+      context.fillStyle = index % 2 ? theme.secondary : theme.accent;
+      context.beginPath(); context.arc(px + 42, y + 262, 22, 0, Math.PI * 2); context.fill();
+      context.font = '900 21px Segoe UI, Arial, sans-serif';
+      context.fillStyle = '#FFFFFF';
+      context.textAlign = 'center'; context.fillText(String(index + 1), px + 42, y + 269); context.textAlign = 'left';
+      context.font = '700 23px Segoe UI, Arial, sans-serif';
+      drawLines(context, wrapLines(context, step, cardWidth - 48, 5), px + 24, y + 318, 31, theme.ink);
+    });
+  }
+
+  function drawSteps(context, slide, payload, theme) {
+    drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    const y = drawSlideTitle(context, slide, theme);
+    const steps = (slide.steps?.length ? slide.steps : slide.bullets || []).slice(0, 4);
+    const cardWidth = 680;
+    const cardHeight = 220;
+    steps.forEach((step, index) => {
+      const column = index % 2;
+      const row = Math.floor(index / 2);
+      const px = 88 + column * 720;
+      const py = y + 24 + row * 244;
+      fillRound(context, px, py, cardWidth, cardHeight, 34, '#FFFFFFE2', `${theme.accent}25`, 2);
+      fillRound(context, px + 24, py + 24, 66, 66, 22, index % 2 ? theme.secondary : theme.accent, null);
+      context.font = '900 28px Segoe UI, Arial, sans-serif';
+      context.fillStyle = '#FFFFFF';
+      context.textAlign = 'center'; context.fillText(String(index + 1), px + 57, py + 67); context.textAlign = 'left';
+      context.font = '800 26px Segoe UI, Arial, sans-serif';
+      drawLines(context, wrapLines(context, step, cardWidth - 138, 4), px + 112, py + 58, 35, theme.ink);
+    });
+  }
+
+  function drawCards(context, slide, payload, theme, comparison = false) {
+    drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    const y = drawSlideTitle(context, slide, theme);
+    const bullets = (slide.bullets || []).slice(0, 4);
+    const columns = comparison ? 2 : Math.min(3, Math.max(1, bullets.length));
+    const cardWidth = (1424 - (columns - 1) * 24) / columns;
+    bullets.forEach((bullet, index) => {
+      const column = index % columns;
+      const row = Math.floor(index / columns);
+      const rows = Math.ceil(bullets.length / columns);
+      const cardHeight = rows > 1 ? 220 : 410;
+      const px = 88 + column * (cardWidth + 24);
+      const py = y + 30 + row * (cardHeight + 24);
+      fillRound(context, px, py, cardWidth, cardHeight, 34, index % 2 ? theme.softAlt : theme.soft, `${theme.accent}20`, 2);
+      context.fillStyle = index % 2 ? theme.secondary : theme.accent;
+      context.beginPath(); context.arc(px + 44, py + 46, 15, 0, Math.PI * 2); context.fill();
+      context.font = '800 27px Segoe UI, Arial, sans-serif';
+      drawLines(context, wrapLines(context, bullet, cardWidth - 56, rows > 1 ? 5 : 8), px + 28, py + 98, 37, theme.ink);
+    });
+    if (slide.callout) drawCallout(context, slide.callout, 188, 708, 1224, theme);
+  }
+
+  function drawPractice(context, slide, payload, theme) {
+    drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    const y = drawSlideTitle(context, slide, theme);
+    fillRound(context, 76, y + 22, 940, 480, 40, '#FFFFFFE5', `${theme.accent}30`, 2);
+    context.font = '800 34px Segoe UI, Arial, sans-serif';
+    const question = slide.question || slide.bullets?.[0] || 'Выполните задание самостоятельно.';
+    drawLines(context, wrapLines(context, question, 840, 6), 122, y + 100, 47, theme.ink);
+    if (slide.formula) {
+      fillRound(context, 118, y + 326, 850, 104, 26, theme.soft, null);
+      context.font = '800 37px Georgia, Cambria Math, serif';
+      context.fillStyle = theme.accentDark;
+      context.textAlign = 'center'; context.fillText(prettyText(slide.formula), 543, y + 391); context.textAlign = 'left';
+    } else {
+      drawCallout(context, slide.callout || 'Запишите ход решения и проверьте ответ.', 118, y + 362, 850, theme);
+    }
+
+    if (slide.kind === 'answers' && slide.answer) {
+      fillRound(context, 1054, y + 22, 466, 480, 40, theme.softAlt, null);
+      context.font = '900 22px Segoe UI, Arial, sans-serif';
+      context.fillStyle = theme.secondary;
+      context.fillText('ОТВЕТ', 1094, y + 76);
+      context.font = '800 30px Segoe UI, Arial, sans-serif';
+      drawLines(context, wrapLines(context, slide.answer, 390, 8), 1094, y + 132, 42, theme.ink);
+    } else {
+      drawVisual(context, slide, 1054, y + 22, 466, 480, theme);
+    }
+  }
+
+  function drawSummary(context, slide, presentation, payload, theme) {
+    drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    const y = drawSlideTitle(context, slide, theme);
+    const items = (slide.bullets?.length ? slide.bullets : slide.steps || []).slice(0, 4);
+    const count = Math.max(1, items.length);
+    const cardWidth = (1416 - (count - 1) * 20) / count;
+    items.forEach((item, index) => {
+      const px = 92 + index * (cardWidth + 20);
+      fillRound(context, px, y + 34, cardWidth, 330, 36, index % 2 ? theme.softAlt : theme.soft, null);
+      context.font = '900 52px Segoe UI, Arial, sans-serif';
+      context.fillStyle = index % 2 ? theme.secondary : theme.accent;
+      context.fillText(String(index + 1).padStart(2, '0'), px + 28, y + 104);
+      context.font = '800 25px Segoe UI, Arial, sans-serif';
+      drawLines(context, wrapLines(context, item, cardWidth - 56, 6), px + 28, y + 158, 35, theme.ink);
+    });
+    drawCallout(context, slide.callout || presentation.learningGoal, 232, y + 404, 1136, theme);
+  }
+
+  function selectLayout(slide, index) {
+    if (index === 0 || slide.kind === 'cover') return 'cover';
+    if (slide.layout) return slide.layout;
+    if (slide.formula) return 'formula';
+    if (slide.steps?.length) return 'steps';
+    if (slide.kind === 'practice') return 'practice';
+    if (slide.kind === 'summary' || slide.kind === 'answers') return 'summary';
+    return 'split';
+  }
+
+  function loadImage(source) {
+    if (!source) return Promise.resolve(null);
+    return new Promise(resolve => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => resolve(null);
+      image.src = source;
+    });
+  }
+
+  async function buildSlides(presentation, payload) {
     const theme = detectTheme(payload.subject, payload.template);
     const slides = Array.isArray(presentation?.slides) ? presentation.slides : [];
+    const coverImage = await loadImage(presentation?.coverImage);
     return slides.map((slide, index) => {
       const canvas = document.createElement('canvas');
       canvas.width = WIDTH;
       canvas.height = HEIGHT;
       const context = canvas.getContext('2d');
-      drawBackground(context, theme);
-      if (index === 0 || slide.kind === 'cover') {
-        drawCover(context, slide, presentation, payload, theme);
+      drawBackground(context, theme, index);
+      const layout = selectLayout(slide, index);
+      if (layout === 'cover') {
+        drawCover(context, slide, presentation, payload, theme, coverImage);
+      } else if (layout === 'formula') {
+        drawFormula(context, slide, payload, theme);
+      } else if (layout === 'steps') {
+        drawSteps(context, slide, payload, theme);
+      } else if (layout === 'cards') {
+        drawCards(context, slide, payload, theme);
+      } else if (layout === 'comparison') {
+        drawCards(context, slide, payload, theme, true);
+      } else if (layout === 'practice') {
+        drawPractice(context, slide, payload, theme);
+      } else if (layout === 'summary') {
+        drawSummary(context, slide, presentation, payload, theme);
       } else {
-        drawContent(context, slide, payload, theme);
+        drawSplit(context, slide, payload, theme);
       }
       drawFooter(context, index, slides.length, theme);
       return canvas;
