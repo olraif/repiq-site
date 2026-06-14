@@ -9,9 +9,9 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="../">
+    <a class="brand" href="https://repiq.ru" target="_blank" rel="noopener" title="Открыть repiq.ru">
       <img src="./static/repiq_board_icon.png" alt="" />
-      <span>RepIQ Board</span>
+      <span class="brand-copy"><strong>RepIQ Board</strong><small>repiq.ru</small></span>
     </a>
     <nav class="top-actions" aria-label="Действия доски">
       <label class="action primary" for="fileInput">Открыть</label>
@@ -110,7 +110,7 @@
             <option value="universal">Универсальный RepIQ</option>
           </select>
         </label>
-        <label>Количество слайдов<input id="aiSlides" name="slides" type="number" min="3" max="12" value="10" /></label>
+        <label>Количество слайдов<input id="aiSlides" name="slides" type="number" min="10" max="16" value="12" /></label>
         <label>Длительность<input id="aiDuration" name="duration" type="number" min="10" max="180" value="60" /></label>
         <label class="ai-notes-field">Описание / комментарий<textarea id="aiNotes" name="notes" placeholder="Например: учебник Мерзляк, 8 класс, стр. 42, задания 123-126; сделать акцент на типичных ошибках"></textarea></label>
       </div>
@@ -118,12 +118,12 @@
         <label><input type="checkbox" name="blocks" value="theory" checked /> теория</label>
         <label><input type="checkbox" name="blocks" value="examples" checked /> примеры</label>
         <label><input type="checkbox" name="blocks" value="practice" checked /> практика</label>
-        <label><input type="checkbox" name="blocks" value="homework" /> домашнее</label>
+        <label><input type="checkbox" name="blocks" value="homework" checked disabled /> домашнее · финальный слайд</label>
         <label><input type="checkbox" name="blocks" value="answers" checked /> ответы</label>
         <label><input type="checkbox" name="blocks" value="illustration" checked /> AI-обложка</label>
       </fieldset>
       <div class="ai-footer">
-        <span class="ai-free-note">Бесплатный режим · тематическая обложка, формулы, графики и схемы</span>
+        <span class="ai-mode-note">Тематическая обложка, формулы, графики и схемы</span>
         <button class="action primary" type="submit">Подготовить урок</button>
       </div>
       <p id="aiStatus" class="ai-status"></p>

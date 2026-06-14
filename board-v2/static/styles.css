@@ -65,6 +65,19 @@ button { cursor: pointer; }
   font-weight: 850;
 }
 
+.brand-copy {
+  display: grid;
+  line-height: 1.05;
+}
+
+.brand-copy strong { font-size: 15px; }
+.brand-copy small {
+  color: var(--blue-dark);
+  font-size: 11px;
+  font-weight: 750;
+  margin-top: 4px;
+}
+
 .brand img {
   width: 34px;
   height: 34px;
@@ -764,7 +777,7 @@ button { cursor: pointer; }
   justify-content: space-between;
   gap: 12px;
 }
-.ai-free-note {
+.ai-mode-note {
   color: var(--blue-dark);
   font-weight: 800;
   font-size: 13px;

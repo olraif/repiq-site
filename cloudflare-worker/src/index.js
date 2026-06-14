@@ -65,12 +65,12 @@ function normalizeRequest(input = {}) {
     grade: cleanText(input.grade, 80),
     template: cleanText(input.template, 30) || 'auto',
     notes: cleanText(input.notes),
-    slidesCount: Math.max(3, Math.min(12, Number(input.slidesCount) || 8)),
+    slidesCount: Math.max(10, Math.min(16, Number(input.slidesCount) || 12)),
     duration: Math.max(10, Math.min(180, Number(input.duration) || 60)),
     includeTheory: input.includeTheory !== false,
     includeExamples: input.includeExamples !== false,
     includePractice: input.includePractice !== false,
-    includeHomework: input.includeHomework === true,
+    includeHomework: true,
     includeAnswers: input.includeAnswers !== false,
     includeIllustration: input.includeIllustration !== false,
   };
@@ -130,7 +130,7 @@ function buildPrompt(payload) {
   if (payload.includeTheory) blocks.push('теория');
   if (payload.includeExamples) blocks.push('примеры с разбором');
   if (payload.includePractice) blocks.push('практика');
-  if (payload.includeHomework) blocks.push('домашнее задание');
+  blocks.push('домашнее задание последним слайдом');
   if (payload.includeAnswers) blocks.push('ответы');
 
   return `Создай содержательную учебную презентацию на русском языке.
@@ -153,8 +153,8 @@ ${subjectRules(payload)}
   "imagePrompt": "English prompt for one clean educational cover illustration, no text, no letters, no watermark",
   "slides": [
     {
-      "kind": "cover|theory|example|practice|summary|homework|answers",
-      "layout": "cover|split|formula|steps|cards|comparison|practice|summary",
+      "kind": "cover|warmup|theory|example|collaboration|differentiation|game|practice|summary|homework|answers",
+      "layout": "cover|split|formula|steps|cards|comparison|levels|game|practice|summary",
       "title": "Заголовок",
       "subtitle": "Необязательная строка",
       "bullets": ["Конкретный короткий пункт"],
@@ -164,6 +164,16 @@ ${subjectRules(payload)}
       "answer": "Короткий проверенный ответ",
       "callout": "Ключевая мысль или типичная ошибка",
       "teacherNote": "Короткая заметка учителю",
+      "activityMode": "учитель|пары|группы|самостоятельно|игра",
+      "timeMinutes": 5,
+      "points": 3,
+      "levels": [
+        {
+          "label": "База",
+          "audience": "Тем, кому нужна опора",
+          "tasks": ["Задание 1", "Задание 2", "Задание 3", "Задание 4", "Задание 5"]
+        }
+      ],
       "visual": {
         "type": "subject|quadratic-graph|coordinate-plane|geometry|timeline|map|process|vocabulary|atom|code|none",
         "label": "Короткая подпись",
@@ -177,10 +187,27 @@ ${subjectRules(payload)}
 }
 
 Общие правила:
-- Ровно ${payload.slidesCount} слайдов. Первый cover, последний summary или answers.
+- Ровно ${payload.slidesCount} слайдов.
+- Используй единую методическую последовательность:
+  1. Обложка и тема.
+  2. Цель урока, проблемный вопрос или короткая разминка.
+  3. Объяснение нового материала простым языком с опорой на схему, правило или формулу.
+  4. Разобранный пример базового уровня с подробными шагами.
+  5. Разобранный пример стандартного уровня.
+  6. Более сложный пример или типичная ошибка с объяснением.
+  7. Парная или групповая работа с конкретной инструкцией и временем.
+  8. Самостоятельная дифференцированная работа: три уровня «База», «Стандарт», «Вызов». Для уровня «База» дай 5 коротких заданий с опорой; для «Стандарта» 3–4 задания; для «Вызова» 1–2 усложнённых задания.
+  9. Игровая механика: баллы, мини-квест, выбор карточки, найди ошибку, собери цепочку или командный раунд. Она должна проверять тему, а не быть просто развлечением.
+  10. Предпоследний слайд — kind summary, layout summary, заголовок «Конспект урока: главное». На нём правило, алгоритм, типичные ошибки и короткая самопроверка.
+  11. Последний слайд — kind homework, заголовок «Домашнее задание». Дай обязательную часть и необязательный уровень «Вызов». Не ставь ответы на последний слайд.
+- Если слайдов больше 11, добавляй дополнительные объяснения и разобранные примеры между пунктами 3 и 7. Если слайдов 10, объедини два соседних примера, но сохрани все формы работы и последние два слайда.
 - Чередуй макеты. Не делай все слайды одинаковыми.
 - На слайде одна учебная мысль: до 4 пунктов или до 4 шагов.
-- Начни с цели и опорного вопроса, затем объяснение, пример, самостоятельная практика и итог.
+- Объяснение должно быть живым: сначала интуитивная идея, затем точное правило, затем применение.
+- Примеры должны отличаться по сложности и содержать полный разбор, а не только ответ.
+- Для collaboration укажи activityMode «пары» или «группы», конкретную инструкцию и 4–8 минут.
+- Для differentiation обязательно верни три объекта levels: «База», «Стандарт», «Вызов».
+- Для game укажи activityMode «игра», points и понятное условие получения баллов.
 - Текст должен быть понятен ученику ${payload.grade || 'указанного уровня'}, без канцелярита и фраз вроде «рассмотрим тему подробнее».
 - Примеры и задания должны содержать реальные данные по теме, а ответы должны быть проверены.
 - Не выдумывай содержание конкретной страницы учебника, если оно не приведено в комментарии.
@@ -234,6 +261,8 @@ function normalizeVisual(value, fallback = 'subject') {
 
 function defaultLayout(slide, kind) {
   if (kind === 'cover') return 'cover';
+  if (kind === 'differentiation' || kind === 'homework') return 'levels';
+  if (kind === 'game') return 'game';
   if (kind === 'practice') return 'practice';
   if (kind === 'summary' || kind === 'answers') return 'summary';
   if (slide?.formula) return 'formula';
@@ -243,10 +272,12 @@ function defaultLayout(slide, kind) {
 
 function normalizeSlide(slide, index) {
   const kinds = new Set([
-    'cover', 'theory', 'example', 'practice', 'summary', 'homework', 'answers',
+    'cover', 'warmup', 'theory', 'example', 'collaboration', 'differentiation',
+    'game', 'practice', 'summary', 'homework', 'answers',
   ]);
   const layouts = new Set([
-    'cover', 'split', 'formula', 'steps', 'cards', 'comparison', 'practice', 'summary',
+    'cover', 'split', 'formula', 'steps', 'cards', 'comparison', 'levels',
+    'game', 'practice', 'summary',
   ]);
   const kind = kinds.has(slide?.kind) ? slide.kind : index === 0 ? 'cover' : 'theory';
   const layout = layouts.has(slide?.layout) ? slide.layout : defaultLayout(slide, kind);
@@ -262,8 +293,141 @@ function normalizeSlide(slide, index) {
     answer: cleanText(slide?.answer, 220),
     callout: cleanText(slide?.callout, 240),
     teacherNote: cleanText(slide?.teacherNote, 220),
+    activityMode: cleanText(slide?.activityMode, 40),
+    timeMinutes: Math.max(0, Math.min(30, Number(slide?.timeMinutes) || 0)),
+    points: Math.max(0, Math.min(20, Number(slide?.points) || 0)),
+    levels: normalizeLevels(slide?.levels),
     visual: normalizeVisual(slide?.visual, index === 0 ? 'subject' : 'none'),
   };
+}
+
+function normalizeLevels(value) {
+  return Array.isArray(value)
+    ? value.slice(0, 3).map((level, index) => ({
+      label: cleanText(level?.label, 40) || ['База', 'Стандарт', 'Вызов'][index],
+      audience: cleanText(level?.audience, 100),
+      tasks: cleanList(level?.tasks, index === 0 ? 5 : 4, 150),
+    }))
+    : [];
+}
+
+function defaultLevels(topic, homework = false) {
+  const suffix = homework ? 'дома' : 'самостоятельно';
+  return [
+    {
+      label: 'База',
+      audience: 'Тем, кому нужна опора',
+      tasks: [
+        `Задание 1: повторите правило по теме «${topic}»`,
+        'Задание 2: выполните по готовому образцу',
+        'Задание 3: выполните с одной подсказкой',
+        'Задание 4: выполните без подсказки',
+        `Задание 5: проверьте решение ${suffix}`,
+      ],
+    },
+    {
+      label: 'Стандарт',
+      audience: 'Основной уровень',
+      tasks: [
+        `Задание 1: примените правило по теме «${topic}»`,
+        'Задание 2: выберите способ решения самостоятельно',
+        'Задание 3: найдите и исправьте ошибку',
+        'Задание 4: проверьте результат другим способом',
+      ],
+    },
+    {
+      label: 'Вызов',
+      audience: 'Для готовых идти дальше',
+      tasks: [
+        `Решите усложнённое задание по теме «${topic}»`,
+        'Придумайте похожее задание и объясните решение',
+      ],
+    },
+  ];
+}
+
+function ensureMethodicalStructure(slides, payload) {
+  const lastIndex = slides.length - 1;
+  const summaryIndex = lastIndex - 1;
+  const gameIndex = lastIndex - 2;
+  const differentiationIndex = lastIndex - 3;
+  const collaborationIndex = lastIndex - 4;
+
+  slides[0].kind = 'cover';
+  slides[0].layout = 'cover';
+
+  if (slides[1]) {
+    slides[1].kind = 'warmup';
+    slides[1].layout = slides[1].layout === 'cover' ? 'cards' : slides[1].layout;
+    slides[1].title = slides[1].title || 'Разминка и цель урока';
+  }
+  if (slides[2]) {
+    slides[2].kind = 'theory';
+    slides[2].title = slides[2].title || 'Объясняем новую идею';
+  }
+  for (let index = 3; index < collaborationIndex; index += 1) {
+    slides[index].kind = 'example';
+    if (!['formula', 'steps', 'comparison'].includes(slides[index].layout)) {
+      slides[index].layout = index % 2 ? 'steps' : 'split';
+    }
+  }
+
+  if (collaborationIndex > 1) {
+    const slide = slides[collaborationIndex];
+    slide.kind = 'collaboration';
+    slide.layout = 'cards';
+    slide.title = slide.title || 'Работаем вместе';
+    slide.activityMode = /пар|груп/i.test(slide.activityMode) ? slide.activityMode : 'пары или группы';
+    slide.timeMinutes = slide.timeMinutes || 6;
+    slide.question = slide.question || `Обсудите тему «${payload.topic}» и подготовьте общее решение.`;
+  }
+
+  if (differentiationIndex > collaborationIndex) {
+    const slide = slides[differentiationIndex];
+    slide.kind = 'differentiation';
+    slide.layout = 'levels';
+    slide.title = 'Самостоятельная работа: выбери уровень';
+    slide.activityMode = 'самостоятельно';
+    slide.timeMinutes = slide.timeMinutes || 10;
+    if (slide.levels.length < 3) slide.levels = defaultLevels(payload.topic, false);
+  }
+
+  if (gameIndex > differentiationIndex) {
+    const slide = slides[gameIndex];
+    slide.kind = 'game';
+    slide.layout = 'game';
+    slide.title = slide.title || 'Игровой раунд';
+    slide.activityMode = 'игра';
+    slide.timeMinutes = slide.timeMinutes || 6;
+    slide.points = slide.points || 3;
+    slide.question = slide.question || `Найдите ошибку или соберите правильную цепочку по теме «${payload.topic}».`;
+    if (!slide.bullets.length) {
+      slide.bullets = ['1 балл — верный ответ', '1 балл — объяснение', '1 балл — проверка другой команды'];
+    }
+  }
+
+  const summary = slides[summaryIndex];
+  summary.kind = 'summary';
+  summary.layout = 'summary';
+  summary.title = 'Конспект урока: главное';
+  if (!summary.bullets.length) {
+    summary.bullets = [
+      `Главная идея темы «${payload.topic}»`,
+      'Алгоритм применения по шагам',
+      'Типичная ошибка и способ проверки',
+      'Что я теперь умею объяснить',
+    ];
+  }
+  summary.callout = summary.callout || 'Самопроверка: могу ли я объяснить правило и применить его без подсказки?';
+
+  const homework = slides[lastIndex];
+  homework.kind = 'homework';
+  homework.layout = 'levels';
+  homework.title = 'Домашнее задание';
+  homework.activityMode = 'самостоятельно';
+  homework.timeMinutes = 0;
+  if (homework.levels.length < 2) homework.levels = defaultLevels(payload.topic, true);
+  homework.callout = homework.callout || 'Обязательная часть — «База» или «Стандарт». «Вызов» выполняется по желанию.';
 }
 
 function normalizePresentation(value, payload) {
@@ -281,9 +445,7 @@ function normalizePresentation(value, payload) {
       callout: 'Что получилось? Что осталось непонятно?',
     }, slides.length));
   }
-
-  slides[0].kind = 'cover';
-  slides[0].layout = 'cover';
+  ensureMethodicalStructure(slides, payload);
   return {
     title: cleanText(value?.title, 160) || payload.topic,
     subtitle: cleanText(value?.subtitle, 220)
@@ -338,7 +500,7 @@ async function generatePresentation(env, payload) {
     ],
     response_format: { type: 'json_object' },
     temperature: 0.25,
-    max_tokens: 5200,
+    max_tokens: 6500,
   };
 
   const primaryModel = env.AI_MODEL || DEFAULT_MODEL;
@@ -418,7 +580,7 @@ export default {
       console.error('RepIQ AI error', error);
       return reply(request, env, {
         ok: false,
-        error: 'Бесплатная AI-модель временно не ответила. Попробуйте ещё раз через минуту.',
+        error: 'AI-модель временно не ответила. Попробуйте ещё раз через минуту.',
       }, 503);
     }
   },

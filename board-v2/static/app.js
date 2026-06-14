@@ -353,6 +353,7 @@ async function loadGeneratedCanvases(canvases, name = 'AI-презентация
     width: bitmap.width,
     height: bitmap.height,
     bitmap,
+    isGenerated: true,
   }));
   state.pages = pages;
   state.index = 0;
@@ -985,6 +986,7 @@ async function exportPdf() {
         await drawImageUrl(merged, page.slideInk);
       }
       pdf.addImage(dataUrl(merged), 'PNG', 0, 0, page.width, page.height);
+      if (page.isGenerated) addPdfSlideBrandLink(pdf, page.width, page.height);
 
       for (const sheet of page.sheets) {
         if (!sheet.data) continue;
@@ -1003,7 +1005,7 @@ async function exportPdf() {
         noteCtx.strokeRect(18, 18, page.width - 36, page.height - 36);
         await drawImageUrl(note, sheet.data);
         pdf.addImage(dataUrl(note), 'PNG', 0, 0, page.width, page.height);
-        addPdfBrandLink(pdf, page.width, page.height);
+        if (page.isGenerated) addPdfBrandLink(pdf, page.width, page.height);
       }
     }
 
@@ -1020,6 +1022,14 @@ async function exportPdf() {
   }
 }
 
+function addPdfSlideBrandLink(pdf, width, height) {
+  const x = width * 0.045;
+  const y = height * 0.89;
+  const linkWidth = width * 0.23;
+  const linkHeight = height * 0.075;
+  pdf.link(x, y, linkWidth, linkHeight, { url: BRAND_URL });
+}
+
 function addPdfBrandLink(pdf, width, height) {
   const fontSize = Math.max(12, Math.min(22, width * 0.018));
   const padX = Math.round(fontSize * 0.65);
@@ -1029,10 +1039,11 @@ function addPdfBrandLink(pdf, width, height) {
   const gap = Math.round(fontSize * 0.55);
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(fontSize);
-  const textWidth = pdf.getTextWidth(BRAND_LABEL);
+  const brandText = `${BRAND_LABEL}  |  repiq.ru`;
+  const textWidth = pdf.getTextWidth(brandText);
   const boxWidth = iconSize + gap + textWidth + padX * 2;
   const boxHeight = Math.max(iconSize, fontSize) + padY * 2;
-  const x = width - margin - boxWidth;
+  const x = margin;
   const y = height - margin - boxHeight;
   pdf.setFillColor(255, 255, 255);
   pdf.setDrawColor(198, 227, 246);
@@ -1058,7 +1069,7 @@ function addPdfBrandLink(pdf, width, height) {
   pdf.setTextColor(31, 49, 66);
   const textX = iconX + iconSize + gap;
   const textY = y + boxHeight / 2 + fontSize * 0.34;
-  pdf.text(BRAND_LABEL, textX, textY);
+  pdf.text(brandText, textX, textY);
   pdf.link(x, y, boxWidth, boxHeight, { url: BRAND_URL });
   pdf.setTextColor(0, 0, 0);
 }
@@ -1117,7 +1128,7 @@ async function submitAi(event) {
   };
   try {
     if (!AI_API_BASE) {
-      throw new Error('Бесплатный AI ещё не подключён к сайту. Сначала опубликуйте Cloudflare Worker.');
+      throw new Error('AI-модуль ещё не подключён к сайту. Сначала опубликуйте Cloudflare Worker.');
     }
     if (!window.RepIQPresentations) {
       throw new Error('Модуль оформления презентаций не загрузился. Обновите страницу.');

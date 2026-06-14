@@ -4,32 +4,32 @@
 
   const themes = {
     universal: {
-      key: 'universal', accent: '#3A97D8', accentDark: '#216B9F', secondary: '#8B6FD6',
-      soft: '#EAF5FC', softAlt: '#F2EEFC', ink: '#203247', visual: 'subject',
+      key: 'universal', accent: '#168ED1', accentDark: '#145F96', secondary: '#7C4DFF',
+      soft: '#DDF3FF', softAlt: '#EEE7FF', ink: '#17334F', visual: 'subject',
     },
     math: {
-      key: 'math', accent: '#4776E6', accentDark: '#2B4FA8', secondary: '#8E54E9',
-      soft: '#EAF0FF', softAlt: '#F2EBFF', ink: '#1F3157', visual: 'quadratic-graph',
+      key: 'math', accent: '#356CF6', accentDark: '#244AA8', secondary: '#A24BE8',
+      soft: '#E3EAFF', softAlt: '#F1E2FF', ink: '#182E58', visual: 'quadratic-graph',
     },
     languages: {
-      key: 'languages', accent: '#EB6A75', accentDark: '#B84457', secondary: '#8B6FD6',
-      soft: '#FFF0F2', softAlt: '#F4EEFF', ink: '#492C3B', visual: 'vocabulary',
+      key: 'languages', accent: '#F0526D', accentDark: '#B52F4A', secondary: '#9B5DE5',
+      soft: '#FFE4EA', softAlt: '#F0E5FF', ink: '#4D2637', visual: 'vocabulary',
     },
     geography: {
-      key: 'geography', accent: '#22A88A', accentDark: '#11735F', secondary: '#3A97D8',
-      soft: '#E7F8F3', softAlt: '#EAF5FC', ink: '#183D3A', visual: 'map',
+      key: 'geography', accent: '#00A884', accentDark: '#08705E', secondary: '#2F86EB',
+      soft: '#DDF8EF', softAlt: '#E2F1FF', ink: '#123E39', visual: 'map',
     },
     science: {
-      key: 'science', accent: '#00A7A5', accentDark: '#087170', secondary: '#F29E4C',
-      soft: '#E4F8F7', softAlt: '#FFF3E5', ink: '#173C46', visual: 'atom',
+      key: 'science', accent: '#00A6A6', accentDark: '#08706F', secondary: '#FF9F43',
+      soft: '#DDF8F7', softAlt: '#FFEBD4', ink: '#133D47', visual: 'atom',
     },
     history: {
-      key: 'history', accent: '#C4873A', accentDark: '#895A20', secondary: '#9D6B53',
-      soft: '#FAF1E4', softAlt: '#F4EAE4', ink: '#463528', visual: 'timeline',
+      key: 'history', accent: '#D98524', accentDark: '#8D551B', secondary: '#A55D43',
+      soft: '#FFF0D9', softAlt: '#F6E2D8', ink: '#493225', visual: 'timeline',
     },
     informatics: {
-      key: 'informatics', accent: '#2F91D5', accentDark: '#185E91', secondary: '#27B69A',
-      soft: '#E8F5FC', softAlt: '#E8F8F4', ink: '#173549', visual: 'code',
+      key: 'informatics', accent: '#168FD8', accentDark: '#155E91', secondary: '#18B891',
+      soft: '#DDF2FF', softAlt: '#DDF8EF', ink: '#12364D', visual: 'code',
     },
   };
 
@@ -119,35 +119,48 @@
 
   function drawBackground(context, theme, variant = 0) {
     const gradient = context.createLinearGradient(0, 0, WIDTH, HEIGHT);
-    gradient.addColorStop(0, variant % 2 ? '#FBFDFF' : '#F7FBFE');
-    gradient.addColorStop(0.62, '#FFFFFF');
-    gradient.addColorStop(1, theme.soft);
+    gradient.addColorStop(0, variant % 2 ? theme.soft : '#F7FBFE');
+    gradient.addColorStop(0.48, '#FFFFFF');
+    gradient.addColorStop(1, variant % 2 ? theme.softAlt : theme.soft);
     context.fillStyle = gradient;
     context.fillRect(0, 0, WIDTH, HEIGHT);
 
-    context.globalAlpha = 0.48;
+    context.globalAlpha = 0.72;
     context.fillStyle = theme.softAlt;
-    context.beginPath(); context.arc(1530, 30, 260, 0, Math.PI * 2); context.fill();
+    context.beginPath(); context.arc(1530, 30, 290, 0, Math.PI * 2); context.fill();
     context.fillStyle = theme.soft;
-    context.beginPath(); context.arc(20, 900, 230, 0, Math.PI * 2); context.fill();
+    context.beginPath(); context.arc(20, 900, 260, 0, Math.PI * 2); context.fill();
     context.globalAlpha = 1;
 
-    context.fillStyle = theme.accent;
-    context.fillRect(0, 0, WIDTH, 12);
+    const ribbon = context.createLinearGradient(0, 0, WIDTH, 0);
+    ribbon.addColorStop(0, theme.accent);
+    ribbon.addColorStop(0.58, theme.secondary);
+    ribbon.addColorStop(1, theme.accent);
+    context.fillStyle = ribbon;
+    context.fillRect(0, 0, WIDTH, 14);
+
+    context.globalAlpha = 0.28;
+    [0, 1, 2].forEach(index => {
+      context.fillStyle = index % 2 ? theme.secondary : theme.accent;
+      context.beginPath();
+      context.arc(1370 + index * 58, 132 + index * 34, 12 - index * 2, 0, Math.PI * 2);
+      context.fill();
+    });
+    context.globalAlpha = 1;
   }
 
   function drawFooter(context, index, total, theme) {
-    context.font = '700 20px Segoe UI, Arial, sans-serif';
-    context.fillStyle = '#71879B';
+    context.font = '800 19px Segoe UI, Arial, sans-serif';
     context.textAlign = 'left';
-    context.fillText('repiq.ru', 88, 846);
+    fillRound(context, 74, 816, 300, 44, 22, '#FFFFFFD9', `${theme.accent}30`, 1);
+    context.fillStyle = theme.accent;
+    context.beginPath(); context.arc(100, 838, 8, 0, Math.PI * 2); context.fill();
+    context.fillStyle = theme.ink;
+    context.fillText('RepIQ Board · repiq.ru', 120, 845);
     context.textAlign = 'center';
     fillRound(context, 748, 818, 104, 42, 21, '#FFFFFFCC', `${theme.accent}25`, 1);
     context.fillStyle = theme.accentDark;
     context.fillText(`${index + 1} / ${total}`, WIDTH / 2, 846);
-    context.textAlign = 'right';
-    context.fillStyle = '#71879B';
-    context.fillText('RepIQ Board · AI-урок', 1512, 846);
     context.textAlign = 'left';
   }
 
@@ -178,6 +191,23 @@
     fillRound(context, x, y, width, 82, 24, theme.softAlt, null);
     context.font = '800 23px Segoe UI, Arial, sans-serif';
     drawLines(context, wrapLines(context, text, width - 58, maxLines), x + 29, y + 34, 30, theme.accentDark);
+  }
+
+  function drawActivityBadge(context, slide, theme) {
+    const details = [];
+    if (slide.activityMode) details.push(prettyText(slide.activityMode));
+    if (slide.timeMinutes) details.push(`${slide.timeMinutes} мин`);
+    if (slide.points) details.push(`${slide.points} балла`);
+    if (!details.length) return;
+    const text = details.join(' · ');
+    context.font = '800 18px Segoe UI, Arial, sans-serif';
+    const width = Math.min(420, Math.max(210, context.measureText(text).width + 58));
+    const x = WIDTH - 88 - width;
+    fillRound(context, x, 58, width, 48, 24, theme.softAlt, `${theme.secondary}45`, 2);
+    context.fillStyle = theme.secondary;
+    context.beginPath(); context.arc(x + 27, 82, 8, 0, Math.PI * 2); context.fill();
+    context.fillStyle = theme.ink;
+    context.fillText(text, x + 47, 89);
   }
 
   function drawBulletList(context, bullets, x, y, width, theme, options = {}) {
@@ -542,6 +572,7 @@
 
   function drawCards(context, slide, payload, theme, comparison = false) {
     drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    drawActivityBadge(context, slide, theme);
     const y = drawSlideTitle(context, slide, theme);
     const bullets = (slide.bullets || []).slice(0, 4);
     const columns = comparison ? 2 : Math.min(3, Math.max(1, bullets.length));
@@ -564,6 +595,7 @@
 
   function drawPractice(context, slide, payload, theme) {
     drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    drawActivityBadge(context, slide, theme);
     const y = drawSlideTitle(context, slide, theme);
     fillRound(context, 76, y + 22, 940, 480, 40, '#FFFFFFE5', `${theme.accent}30`, 2);
     context.font = '800 34px Segoe UI, Arial, sans-serif';
@@ -608,11 +640,83 @@
     drawCallout(context, slide.callout || presentation.learningGoal, 232, y + 404, 1136, theme);
   }
 
+  function drawLevels(context, slide, payload, theme) {
+    drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    drawActivityBadge(context, slide, theme);
+    const y = drawSlideTitle(context, slide, theme);
+    const fallback = [
+      { label: 'База', audience: 'С опорой на алгоритм', tasks: slide.bullets?.slice(0, 2) || [] },
+      { label: 'Стандарт', audience: 'Основной уровень', tasks: slide.bullets?.slice(1, 3) || [] },
+      { label: 'Вызов', audience: 'Для готовых идти дальше', tasks: slide.bullets?.slice(2, 4) || [] },
+    ];
+    const levels = slide.levels?.length ? slide.levels.slice(0, 3) : fallback;
+    const cardWidth = 444;
+    const colors = [theme.accent, theme.secondary, '#F29E4C'];
+    levels.forEach((level, index) => {
+      const x = 88 + index * 476;
+      const color = colors[index];
+      fillRound(context, x, y + 26, cardWidth, 478, 38, '#FFFFFFE8', `${color}45`, 3);
+      fillRound(context, x + 24, y + 50, cardWidth - 48, 68, 24, `${color}20`, null);
+      context.fillStyle = color;
+      context.font = '900 29px Segoe UI, Arial, sans-serif';
+      context.fillText(prettyText(level.label || ['База', 'Стандарт', 'Вызов'][index]), x + 48, y + 93);
+      context.font = '700 18px Segoe UI, Arial, sans-serif';
+      drawLines(context, wrapLines(context, level.audience, cardWidth - 82, 2), x + 42, y + 150, 25, '#71879B');
+
+      const tasks = (level.tasks || []).slice(0, index === 0 ? 5 : 4);
+      context.font = '750 18px Segoe UI, Arial, sans-serif';
+      let taskY = y + 205;
+      tasks.forEach(task => {
+        context.fillStyle = color;
+        context.beginPath(); context.arc(x + 48, taskY - 6, 7, 0, Math.PI * 2); context.fill();
+        const lines = wrapLines(context, task, cardWidth - 92, 2);
+        drawLines(context, lines, x + 70, taskY, 23, theme.ink);
+        taskY += lines.length * 23 + 8;
+      });
+    });
+  }
+
+  function drawGame(context, slide, payload, theme) {
+    drawBrandPill(context, theme, payload.subject || 'RepIQ Board');
+    drawActivityBadge(context, slide, theme);
+    const y = drawSlideTitle(context, slide, theme);
+
+    fillRound(context, 76, y + 24, 930, 480, 42, '#FFFFFFE8', `${theme.secondary}38`, 3);
+    context.font = '900 31px Segoe UI, Arial, sans-serif';
+    context.fillStyle = theme.secondary;
+    context.fillText('МИССИЯ', 120, y + 88);
+    context.font = '850 35px Segoe UI, Arial, sans-serif';
+    const question = slide.question || 'Найдите ошибку и объясните правильный ход решения.';
+    drawLines(context, wrapLines(context, question, 820, 5), 120, y + 148, 46, theme.ink);
+    drawCallout(context, slide.callout || 'Команда получает балл только после объяснения ответа.', 118, y + 392, 844, theme);
+
+    fillRound(context, 1048, y + 24, 472, 480, 42, theme.softAlt, null);
+    context.font = '900 25px Segoe UI, Arial, sans-serif';
+    context.fillStyle = theme.accentDark;
+    context.fillText('КАК НАБРАТЬ БАЛЛЫ', 1090, y + 86);
+    const rules = (slide.bullets?.length ? slide.bullets : [
+      '1 балл — верный ответ',
+      '1 балл — понятное объяснение',
+      '1 балл — проверка другой команды',
+    ]).slice(0, 4);
+    context.font = '800 23px Segoe UI, Arial, sans-serif';
+    let ruleY = y + 150;
+    rules.forEach((rule, index) => {
+      fillRound(context, 1086, ruleY - 30, 52, 52, 18, index % 2 ? theme.secondary : theme.accent, null);
+      context.fillStyle = '#FFFFFF';
+      context.textAlign = 'center'; context.fillText(String(index + 1), 1112, ruleY + 5); context.textAlign = 'left';
+      drawLines(context, wrapLines(context, rule, 320, 2), 1162, ruleY, 31, theme.ink);
+      ruleY += 88;
+    });
+  }
+
   function selectLayout(slide, index) {
     if (index === 0 || slide.kind === 'cover') return 'cover';
     if (slide.layout) return slide.layout;
     if (slide.formula) return 'formula';
     if (slide.steps?.length) return 'steps';
+    if (slide.kind === 'differentiation' || slide.kind === 'homework') return 'levels';
+    if (slide.kind === 'game') return 'game';
     if (slide.kind === 'practice') return 'practice';
     if (slide.kind === 'summary' || slide.kind === 'answers') return 'summary';
     return 'split';
@@ -649,6 +753,10 @@
         drawCards(context, slide, payload, theme);
       } else if (layout === 'comparison') {
         drawCards(context, slide, payload, theme, true);
+      } else if (layout === 'levels') {
+        drawLevels(context, slide, payload, theme);
+      } else if (layout === 'game') {
+        drawGame(context, slide, payload, theme);
       } else if (layout === 'practice') {
         drawPractice(context, slide, payload, theme);
       } else if (layout === 'summary') {
