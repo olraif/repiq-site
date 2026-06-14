@@ -1125,7 +1125,9 @@ async function submitAi(event) {
     toast('Готовим структуру презентации...');
     const response = await fetch(`${AI_API_BASE}/api/ai/presentation/create`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // text/plain keeps the request simple and avoids a separate CORS preflight,
+      // which is blocked by some browsers and network filters.
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
       body: JSON.stringify(payload),
     });
     if (!response.ok) {
