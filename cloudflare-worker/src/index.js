@@ -1,19 +1,28 @@
 const DEFAULT_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 
-const jsonHeaders = {
-  'content-type': 'application/json; charset=utf-8',
-  'cache-control': 'no-store',
-};
+const DEFAULT_ALLOWED_ORIGINS = [
+  'https://repiq.ru',
+  'https://www.repiq.ru',
+  'http://localhost',
+  'http://127.0.0.1',
+];
 
-function corsHeaders(request, env) {
-  const origin = request.headers.get('origin') || '';
-  const allowed = String(env.ALLOWED_ORIGINS || '')
+function isAllowedOrigin(origin, env) {
+  if (!origin) return false;
+  const configured = String(env.ALLOWED_ORIGINS || '')
     .split(',')
     .map(value => value.trim())
     .filter(Boolean);
-  const allowOrigin = allowed.includes(origin) ? origin : allowed[0] || 'https://repiq.ru';
+  const allowed = new Set([...DEFAULT_ALLOWED_ORIGINS, ...configured]);
+  return allowed.has(origin) || /^https:\/\/([a-z0-9-]+\.)*repiq\.ru$/i.test(origin);
+}
+
+function corsHeaders(request, env) {
+  const origin = request.headers.get('origin') || '';
   return {
-    'access-control-allow-origin': allowOrigin,
+    'access-control-allow-origin': isAllowedOrigin(origin, env)
+      ? origin
+      : 'https://www.repiq.ru',
     'access-control-allow-methods': 'POST,GET,OPTIONS',
     'access-control-allow-headers': 'content-type',
     'access-control-max-age': '86400',
@@ -24,7 +33,11 @@ function corsHeaders(request, env) {
 function reply(request, env, payload, status = 200) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { ...jsonHeaders, ...corsHeaders(request, env) },
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
+      ...corsHeaders(request, env),
+    },
   });
 }
 
@@ -32,17 +45,14 @@ function cleanText(value, maxLength = 1200) {
   return String(value || '').trim().slice(0, maxLength);
 }
 
-function normalizeRequest(input) {
-  const slidesCount = Math.max(3, Math.min(12, Number(input.slidesCount) || 8));
-  const duration = Math.max(10, Math.min(180, Number(input.duration) || 60));
+function normalizeRequest(input = {}) {
   return {
     topic: cleanText(input.topic, 180),
     subject: cleanText(input.subject, 80),
     grade: cleanText(input.grade, 80),
-    template: cleanText(input.template, 30) || 'auto',
     notes: cleanText(input.notes),
-    slidesCount,
-    duration,
+    slidesCount: Math.max(3, Math.min(12, Number(input.slidesCount) || 8)),
+    duration: Math.max(10, Math.min(180, Number(input.duration) || 60)),
     includeTheory: input.includeTheory !== false,
     includeExamples: input.includeExamples !== false,
     includePractice: input.includePractice !== false,
@@ -99,7 +109,8 @@ function buildPrompt(payload) {
 function parseModelJson(result) {
   const raw = result?.response ?? result?.result?.response ?? result;
   if (raw && typeof raw === 'object') return raw;
-  const text = String(raw || '').trim()
+  const text = String(raw || '')
+    .trim()
     .replace(/^```(?:json)?\s*/i, '')
     .replace(/\s*```$/, '');
   const start = text.indexOf('{');
@@ -109,10 +120,11 @@ function parseModelJson(result) {
 }
 
 function normalizeSlide(slide, index) {
-  const allowedKinds = new Set(['cover', 'theory', 'example', 'practice', 'summary', 'homework', 'answers']);
-  const kind = allowedKinds.has(slide?.kind) ? slide.kind : index === 0 ? 'cover' : 'theory';
+  const kinds = new Set([
+    'cover', 'theory', 'example', 'practice', 'summary', 'homework', 'answers',
+  ]);
   return {
-    kind,
+    kind: kinds.has(slide?.kind) ? slide.kind : index === 0 ? 'cover' : 'theory',
     title: cleanText(slide?.title, 120) || `Слайд ${index + 1}`,
     subtitle: cleanText(slide?.subtitle, 180),
     bullets: Array.isArray(slide?.bullets)
@@ -126,19 +138,26 @@ function normalizeSlide(slide, index) {
 function normalizePresentation(value, payload) {
   const sourceSlides = Array.isArray(value?.slides) ? value.slides : [];
   if (!sourceSlides.length) throw new Error('В ответе нет слайдов.');
+
   const slides = sourceSlides.slice(0, payload.slidesCount).map(normalizeSlide);
   while (slides.length < payload.slidesCount) {
     slides.push(normalizeSlide({
       kind: 'practice',
       title: 'Закрепляем материал',
-      bullets: ['Объясните правило своими словами', 'Выполните задание по образцу', 'Проверьте ответ'],
+      bullets: [
+        'Объясните правило своими словами',
+        'Выполните задание по образцу',
+        'Проверьте ответ',
+      ],
       callout: 'Что получилось? Что осталось непонятно?',
     }, slides.length));
   }
   slides[0].kind = 'cover';
+
   return {
     title: cleanText(value?.title, 160) || payload.topic,
-    subtitle: cleanText(value?.subtitle, 220) || [payload.subject, payload.grade].filter(Boolean).join(' · '),
+    subtitle: cleanText(value?.subtitle, 220)
+      || [payload.subject, payload.grade].filter(Boolean).join(' · '),
     slides,
   };
 }
@@ -151,7 +170,11 @@ export default {
 
     const url = new URL(request.url);
     if (request.method === 'GET' && url.pathname === '/health') {
-      return reply(request, env, { ok: true, service: 'RepIQ Board AI', model: env.AI_MODEL || DEFAULT_MODEL });
+      return reply(request, env, {
+        ok: true,
+        service: 'RepIQ Board AI',
+        model: env.AI_MODEL || DEFAULT_MODEL,
+      });
     }
 
     if (request.method !== 'POST' || url.pathname !== '/api/ai/presentation/create') {
@@ -161,7 +184,10 @@ export default {
     try {
       const payload = normalizeRequest(await request.json());
       if (payload.topic.length < 2) {
-        return reply(request, env, { ok: false, error: 'Укажите тему презентации.' }, 400);
+        return reply(request, env, {
+          ok: false,
+          error: 'Укажите тему презентации.',
+        }, 400);
       }
 
       const result = await env.AI.run(env.AI_MODEL || DEFAULT_MODEL, {
@@ -172,6 +198,7 @@ export default {
           },
           { role: 'user', content: buildPrompt(payload) },
         ],
+        response_format: { type: 'json_object' },
         temperature: 0.35,
         max_tokens: 4200,
       });
