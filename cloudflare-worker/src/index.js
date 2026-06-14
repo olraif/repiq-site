@@ -207,6 +207,9 @@ ${subjectRules(payload)}
 - Примеры должны отличаться по сложности и содержать полный разбор, а не только ответ.
 - Для collaboration укажи activityMode «пары» или «группы», конкретную инструкцию и 4–8 минут.
 - Для differentiation обязательно верни три объекта levels: «База», «Стандарт», «Вызов».
+- Каждое задание запиши полностью. Для математики обязательно указывай конкретное уравнение, выражение, числа или условие задачи. Нельзя писать «выполните задание по теме», «решите по образцу», «примените правило» или другие заготовки без самого задания.
+- В основной части урока должно быть не менее 15 конкретных заданий: 2 для разминки или парной работы, 5 уровня «База», 4 уровня «Стандарт», 2 уровня «Вызов» и не менее 2 заданий игрового раунда. Домашнее задание считается отдельно.
+- Разобранные примеры и самостоятельные задания не должны повторяться. Все математические ответы предварительно проверь.
 - Для game укажи activityMode «игра», points и понятное условие получения баллов.
 - Текст должен быть понятен ученику ${payload.grade || 'указанного уровня'}, без канцелярита и фраз вроде «рассмотрим тему подробнее».
 - Примеры и задания должны содержать реальные данные по теме, а ответы должны быть проверены.
@@ -311,39 +314,99 @@ function normalizeLevels(value) {
     : [];
 }
 
-function defaultLevels(topic, homework = false) {
-  const suffix = homework ? 'дома' : 'самостоятельно';
+function isGenericTask(value) {
+  const text = cleanText(value, 220).toLowerCase();
+  return !text || /по теме|по образцу|с подсказк|без подсказк|примените правило|выберите способ|похожее задание|усложн[её]нное задание|проверьте решение|задание\s*\d+\s*:?$/.test(text);
+}
+
+function mathLevelTasks(payload, homework = false) {
+  const topic = `${payload.topic} ${payload.subject}`.toLowerCase();
+  if (/квадратн|дискриминант/.test(topic)) {
+    return [
+      [
+        'Решите: x² - 5x + 6 = 0.',
+        'Решите: x² + 7x + 12 = 0.',
+        'Решите: x² - 9 = 0.',
+        'Решите: 2x² - 8x = 0.',
+        homework ? 'Решите и выполните проверку: x² - 8x + 15 = 0.' : 'Найдите сумму и произведение корней: x² - 6x + 8 = 0.',
+      ],
+      [
+        'Решите через дискриминант: 2x² - 7x + 3 = 0.',
+        'Решите: 3x² + x - 2 = 0.',
+        'Приведите к стандартному виду и решите: x(x - 5) = 14.',
+        homework ? 'Составьте квадратное уравнение с корнями 3 и -4.' : 'Найдите ошибку: для x² + 2x - 3 = 0 ученик получил D = 8.',
+      ],
+      [
+        'При каких значениях k уравнение x² - 6x + k = 0 имеет один корень?',
+        'Стороны прямоугольника отличаются на 3 см, площадь равна 40 см². Найдите стороны.',
+      ],
+    ];
+  }
+  if (/прямоугольн.*треуг|теорем.*пифагор/.test(topic)) {
+    return [
+      ['Найдите гипотенузу при катетах 3 см и 4 см.', 'Найдите гипотенузу при катетах 6 см и 8 см.', 'Найдите катет, если гипотенуза 13 см, другой катет 5 см.', 'Определите, прямоугольный ли треугольник со сторонами 5, 12 и 13.', 'Найдите площадь прямоугольного треугольника с катетами 7 см и 10 см.'],
+      ['Найдите катет, если гипотенуза 17 см, другой катет 8 см.', 'Диагональ прямоугольника 15 см, одна сторона 9 см. Найдите вторую сторону.', 'Лестница длиной 10 м стоит в 6 м от стены. На какой высоте её верхний конец?', 'Сравните диагонали прямоугольников 6 × 8 и 5 × 12.'],
+      ['Найдите высоту равнобедренного треугольника со сторонами 13, 13 и 10 см.', 'Составьте задачу, которая решается уравнением x² + 12² = 20², и решите её.'],
+    ];
+  }
+  return [
+    ['Выполните вычисление: 18 - 3 × 4.', 'Упростите: 3x + 5x - 7.', 'Найдите x: 4x - 9 = 19.', 'Подставьте x = -2 в выражение x² + 3x - 1.', 'Сравните значения выражений 2(a + 3) и 2a + 6 при a = 5.'],
+    ['Упростите: 4(2x - 3) - 5x.', 'Решите: 3(2x + 1) = 21.', 'Найдите ошибку в преобразовании: 2(x + 4) = 2x + 4.', 'Составьте выражение для числа, которое на 7 больше удвоенного x.'],
+    ['Решите: (x - 2)(x + 3) = 0.', 'Составьте и решите уравнение: после увеличения числа в 3 раза и вычитания 5 получили 16.'],
+  ];
+}
+
+function defaultLevels(payload, homework = false) {
+  const isMath = /матем|алгеб|геометр|физик|уравнен|функц|треуг/.test(`${payload.subject} ${payload.topic}`.toLowerCase());
+  const concrete = isMath ? mathLevelTasks(payload, homework) : null;
   return [
     {
       label: 'База',
       audience: 'Тем, кому нужна опора',
-      tasks: [
-        `Задание 1: повторите правило по теме «${topic}»`,
-        'Задание 2: выполните по готовому образцу',
-        'Задание 3: выполните с одной подсказкой',
-        'Задание 4: выполните без подсказки',
-        `Задание 5: проверьте решение ${suffix}`,
+      tasks: concrete?.[0] || [
+        `Назовите три ключевых понятия темы «${payload.topic}».`,
+        `Приведите конкретный пример по теме «${payload.topic}».`,
+        `Объясните один изученный факт по теме «${payload.topic}» своими словами.`,
+        `Сравните два объекта или случая из темы «${payload.topic}».`,
+        `Сформулируйте вывод по теме «${payload.topic}» в двух предложениях.`,
       ],
     },
     {
       label: 'Стандарт',
       audience: 'Основной уровень',
-      tasks: [
-        `Задание 1: примените правило по теме «${topic}»`,
-        'Задание 2: выберите способ решения самостоятельно',
-        'Задание 3: найдите и исправьте ошибку',
-        'Задание 4: проверьте результат другим способом',
+      tasks: concrete?.[1] || [
+        `Объясните причину и следствие одного явления из темы «${payload.topic}».`,
+        `Составьте таблицу из трёх признаков по теме «${payload.topic}».`,
+        `Найдите неточность в утверждении по теме «${payload.topic}» и исправьте её.`,
+        `Ответьте на проблемный вопрос урока, используя два аргумента.`,
       ],
     },
     {
       label: 'Вызов',
       audience: 'Для готовых идти дальше',
-      tasks: [
-        `Решите усложнённое задание по теме «${topic}»`,
-        'Придумайте похожее задание и объясните решение',
+      tasks: concrete?.[2] || [
+        `Предложите практическую ситуацию, где применяется тема «${payload.topic}», и объясните решение.`,
+        `Сформулируйте сложный вопрос по теме «${payload.topic}» и дайте развёрнутый ответ.`,
       ],
     },
   ];
+}
+
+function ensureConcreteLevels(levels, payload, homework = false) {
+  const fallback = defaultLevels(payload, homework);
+  return fallback.map((fallbackLevel, index) => {
+    const source = levels[index] || {};
+    const expected = index === 0 ? 5 : index === 1 ? 4 : 2;
+    const tasks = cleanList(source.tasks, expected, 180);
+    const concreteTasks = tasks.length >= expected && tasks.every(task => !isGenericTask(task))
+      ? tasks
+      : fallbackLevel.tasks;
+    return {
+      label: cleanText(source.label, 40) || fallbackLevel.label,
+      audience: cleanText(source.audience, 100) || fallbackLevel.audience,
+      tasks: concreteTasks,
+    };
+  });
 }
 
 function ensureMethodicalStructure(slides, payload) {
@@ -379,7 +442,9 @@ function ensureMethodicalStructure(slides, payload) {
     slide.title = slide.title || 'Работаем вместе';
     slide.activityMode = /пар|груп/i.test(slide.activityMode) ? slide.activityMode : 'пары или группы';
     slide.timeMinutes = slide.timeMinutes || 6;
-    slide.question = slide.question || `Обсудите тему «${payload.topic}» и подготовьте общее решение.`;
+    slide.question = isGenericTask(slide.question)
+      ? `В парах решите два задания с этого урока разными способами, сравните решения и подготовьте объяснение одного выбранного способа классу.`
+      : slide.question;
   }
 
   if (differentiationIndex > collaborationIndex) {
@@ -389,7 +454,7 @@ function ensureMethodicalStructure(slides, payload) {
     slide.title = 'Самостоятельная работа: выбери уровень';
     slide.activityMode = 'самостоятельно';
     slide.timeMinutes = slide.timeMinutes || 10;
-    if (slide.levels.length < 3) slide.levels = defaultLevels(payload.topic, false);
+    slide.levels = ensureConcreteLevels(slide.levels, payload, false);
   }
 
   if (gameIndex > differentiationIndex) {
@@ -400,7 +465,9 @@ function ensureMethodicalStructure(slides, payload) {
     slide.activityMode = 'игра';
     slide.timeMinutes = slide.timeMinutes || 6;
     slide.points = slide.points || 3;
-    slide.question = slide.question || `Найдите ошибку или соберите правильную цепочку по теме «${payload.topic}».`;
+    slide.question = isGenericTask(slide.question)
+      ? `Команды получают по два задания урока: найдите ошибку в предложенном решении, исправьте её и объясните проверку ответа.`
+      : slide.question;
     if (!slide.bullets.length) {
       slide.bullets = ['1 балл — верный ответ', '1 балл — объяснение', '1 балл — проверка другой команды'];
     }
@@ -426,7 +493,7 @@ function ensureMethodicalStructure(slides, payload) {
   homework.title = 'Домашнее задание';
   homework.activityMode = 'самостоятельно';
   homework.timeMinutes = 0;
-  if (homework.levels.length < 2) homework.levels = defaultLevels(payload.topic, true);
+  homework.levels = ensureConcreteLevels(homework.levels, payload, true);
   homework.callout = homework.callout || 'Обязательная часть — «База» или «Стандарт». «Вызов» выполняется по желанию.';
 }
 
