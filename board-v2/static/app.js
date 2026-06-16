@@ -56,6 +56,20 @@ const libraryState = {
   items: {},
 };
 
+function seedBuiltInLibrary() {
+  const groups = [window.RepIQMathLibrary || []];
+  for (const group of groups) {
+    for (const item of group) {
+      if (!item?.category || !item?.url) continue;
+      if (!libraryState.items[item.category]) libraryState.items[item.category] = [];
+      libraryState.items[item.category].push({
+        ...item,
+        builtIn: true,
+      });
+    }
+  }
+}
+
 const BRAND_URL = 'https://repiq.ru';
 const BRAND_LABEL = 'RepIQ Board';
 const AI_API_BASE = String(window.REPIQ_AI_ENDPOINT || '').replace(/\/$/, '');
@@ -79,6 +93,22 @@ function newSheet() {
     data: null,
     history: [],
     redo: [],
+  };
+}
+
+function createBlankPage(width = 1280, height = 720) {
+  const bitmap = document.createElement('canvas');
+  bitmap.width = width;
+  bitmap.height = height;
+  const context = ctx(bitmap);
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, width, height);
+  return {
+    ...newPage(),
+    width,
+    height,
+    bitmap,
+    title: 'Пустой слайд',
   };
 }
 
@@ -811,7 +841,7 @@ async function insertImageToActiveSheet(file) {
     return;
   }
   if (!file.type.startsWith('image/')) {
-    toast('Для вставки в комментарии загрузите картинку PNG, JPG или WEBP.');
+    toast('Для вставки в комментарии загрузите картинку SVG, PNG, JPG или WEBP.');
     return;
   }
 
@@ -887,14 +917,14 @@ function renderLibraryItems() {
     const card = document.createElement('button');
     card.className = 'library-card';
     card.type = 'button';
-    card.title = 'Двойной клик добавит материал на лист';
+    card.title = 'Нажмите, чтобы добавить материал на лист';
     const image = document.createElement('img');
     image.src = item.url;
     image.alt = '';
     const label = document.createElement('span');
     label.textContent = item.name;
     card.append(image, label);
-    card.addEventListener('dblclick', () => insertLibraryItem(item));
+    card.addEventListener('click', () => insertLibraryItem(item));
     els.libraryItems.appendChild(card);
   }
 }
@@ -926,7 +956,7 @@ function addFileToLibrary(file) {
     return;
   }
   if (!file.type.startsWith('image/')) {
-    toast('В папку пока можно загрузить картинку PNG, JPG или WEBP.');
+    toast('В папку пока можно загрузить картинку SVG, PNG, JPG или WEBP.');
     return;
   }
   const url = URL.createObjectURL(file);
@@ -1200,9 +1230,6 @@ els.libraryBackBtn.addEventListener('click', closeLibraryCategory);
 document.querySelectorAll('[data-library-category]').forEach(button => {
   button.addEventListener('click', () => openLibraryCategory(button.dataset.libraryCategory));
 });
-document.querySelectorAll('.library-grid button:not([data-library-category])').forEach(button => {
-  button.addEventListener('click', () => toast('Раздел библиотеки подготовлен как заглушка. Для вставки используйте кнопку "Загрузить".'));
-});
 els.aiBtn.addEventListener('click', () => {
   els.aiDialog.showModal();
 });
@@ -1237,6 +1264,8 @@ window.addEventListener('keydown', event => {
   if (event.key === 'ArrowRight') renderPage(state.index + 1);
 });
 
+seedBuiltInLibrary();
+if (!state.pages.length) state.pages.push(createBlankPage());
 renderPage(0);
 updateCredits();
 updateSizeTrack();

@@ -676,7 +676,14 @@ button { cursor: pointer; }
   width: 100%;
   height: 92px;
   object-fit: contain;
-  background: #fff;
+  background:
+    linear-gradient(45deg, #eef5fb 25%, transparent 25%),
+    linear-gradient(-45deg, #eef5fb 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #eef5fb 75%),
+    linear-gradient(-45deg, transparent 75%, #eef5fb 75%),
+    #ffffff;
+  background-size: 18px 18px;
+  background-position: 0 0, 0 9px, 9px -9px, -9px 0;
 }
 
 .library-card span {

@@ -73,6 +73,7 @@
       </div>
       <div class="library-grid">
         <button type="button" data-library-category="Мои материалы">Мои материалы</button>
+        <button type="button" data-library-category="Математика">Математика</button>
         <button type="button" data-library-category="Графики">Графики</button>
         <button type="button" data-library-category="Формулы">Формулы</button>
         <button type="button" data-library-category="Чертежи">Чертежи</button>
@@ -82,8 +83,8 @@
       <div id="libraryItems" class="library-items" hidden></div>
       <div id="libraryUpload" class="library-upload" hidden>
         <label class="action primary" for="libraryUploadInput">Загрузить</label>
-        <input id="libraryUploadInput" type="file" accept=".png,.jpg,.jpeg,.webp,.bmp,.pdf" hidden />
-        <p>Файл добавится в выбранную папку. Двойной клик по миниатюре вставит его на лист.</p>
+        <input id="libraryUploadInput" type="file" accept=".svg,.png,.jpg,.jpeg,.webp,.bmp,.pdf" hidden />
+        <p>Файл добавится в выбранную папку. Нажмите на миниатюру, чтобы вставить её на лист объяснения.</p>
       </div>
     </form>
   </dialog>
@@ -136,6 +137,7 @@
   <script src="./static/vendor/jspdf.umd.min.js"></script>
   <script src="./static/ai-config.js"></script>
   <script src="./static/ai-presentations.js"></script>
+  <script src="./static/math-library.js"></script>
   <script src="./static/app.js"></script>
 </body>
 </html>

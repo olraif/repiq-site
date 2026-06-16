@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520" viewBox="0 0 800 520" fill="none">
+  <g stroke="#dbe8f5" stroke-width="1">
+    <path d="M50 40v440M100 40v440M150 40v440M200 40v440M250 40v440M300 40v440M350 40v440M400 40v440M450 40v440M500 40v440M550 40v440M600 40v440M650 40v440M700 40v440M750 40v440"/>
+    <path d="M40 70h720M40 120h720M40 170h720M40 220h720M40 270h720M40 320h720M40 370h720M40 420h720M40 470h720"/>
+  </g>
+  <rect x="40" y="40" width="720" height="440" rx="22" stroke="#9ec9ee" stroke-width="4"/>
+</svg>
