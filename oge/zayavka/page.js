@@ -1,8 +1,8 @@
 (function(){
   const EMAIL='oge-na-5@mail.ru';
   const services={
-    trainer:{label:'Доступ к тренажёру',offer:'./legal/offer-trainer.html',consent:'./legal/consent-trainer.html',offerVersion:'trainer-2026-11-04',consentVersion:'trainer-2026-11-04'},
-    tutoring:{label:'Занятия с репетитором',offer:'./legal/offer-tutoring.html',consent:'./legal/consent-tutoring.html',offerVersion:'tutoring-2026-11-04',consentVersion:'tutoring-2026-11-04'}
+    trainer:{label:'Доступ к тренажёру',offer:'./legal/offer-trainer.html',consent:'./legal/consent-trainer.html',privacy:'./legal/privacy-trainer.html',offerVersion:'trainer-2026-11-04',consentVersion:'trainer-2026-11-04'},
+    tutoring:{label:'Занятия с репетитором',offer:'./legal/offer-tutoring.html',consent:'./legal/consent-tutoring.html',privacy:'./legal/privacy-tutoring.html',offerVersion:'tutoring-2026-11-04',consentVersion:'tutoring-2026-11-04'}
   };
   const form=document.getElementById('request-form');
   const choices=[...document.querySelectorAll('[data-service]')];
@@ -20,6 +20,7 @@
     form.elements.service.value=button.dataset.service;
     document.getElementById('offer-link').href=service.offer;
     document.getElementById('consent-link').href=service.consent;
+    document.getElementById('privacy-link').href=service.privacy;
     form.elements.offer_read.checked=false;
     form.elements.processing_consent.checked=false;
     showError('');
