@@ -41,8 +41,8 @@
           <label>Контакт<input name="contact_value" maxlength="120" required></label>
         </div>
         <div class="agreements">
-          <label><input name="offer_read" type="checkbox" required><span>Я ознакомился(ась) с <a id="offer-link" href="#" target="_blank" rel="noopener noreferrer">договором-офертой</a></span></label>
-          <label><input name="processing_consent" type="checkbox" required><span>Я даю согласие на <a id="consent-link" href="#" target="_blank" rel="noopener noreferrer">обработку персональных данных</a></span></label>
+          <div class="agreement-row"><input id="offer-read" name="offer_read" type="checkbox" required><label for="offer-read">Я ознакомился(ась) с</label> <a id="offer-link" href="#" target="_blank" rel="noopener noreferrer">договором-офертой</a></div>
+          <div class="agreement-row"><input id="processing-consent" name="processing_consent" type="checkbox" required><label for="processing-consent">Я даю согласие на</label> <a id="consent-link" href="#" target="_blank" rel="noopener noreferrer">обработку персональных данных</a><span class="agreement-divider" aria-hidden="true">·</span><a id="privacy-link" href="#" target="_blank" rel="noopener noreferrer">Политика конфиденциальности</a></div>
         </div>
         <input class="trap" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="error" id="form-error" role="alert" hidden></p>
