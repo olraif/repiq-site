@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#f3f6fd">
+  <title>Связаться с Олесей Сайфуллиной</title>
+  <meta name="description" content="Доступ к тренажёру по математике или индивидуальные занятия с Олесей Сайфуллиной.">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./page.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="head">
+      <span class="mark" aria-hidden="true">✦</span>
+      <h1>Сайфуллина Олеся Раифовна</h1>
+      <p>Плательщик налога на профессиональный доход (НПД)</p>
+    </header>
+
+    <form class="content" id="request-form" aria-labelledby="service-title" novalidate>
+      <h2 id="service-title">Выберите, по какому вопросу написать</h2>
+      <div class="choices" role="group" aria-label="Услуга">
+        <button class="choice" type="button" data-service="trainer" aria-pressed="false">
+          <span class="choice-icon" aria-hidden="true">▥</span>
+          <span>Доступ к тренажёру</span>
+        </button>
+        <button class="choice" type="button" data-service="tutoring" aria-pressed="false">
+          <span class="choice-icon" aria-hidden="true">✎</span>
+          <span>Занятия с репетитором</span>
+        </button>
+      </div>
+
+      <input id="service" name="service" type="hidden">
+      <div class="next" id="next" hidden>
+        <div class="fields">
+          <label>Имя заказчика<input name="payer_name" autocomplete="name" maxlength="80" required></label>
+          <label>Имя ученика<input name="student_name" maxlength="80" required></label>
+          <label>Как с вами связаться<select name="contact_kind" required><option value="">Выберите способ</option><option value="email">Электронная почта</option><option value="phone">Телефон</option><option value="messenger">Мессенджер</option></select></label>
+          <label>Контакт<input name="contact_value" maxlength="120" required></label>
+        </div>
+        <div class="agreements">
+          <label><input name="offer_read" type="checkbox" required><span>Я ознакомился(ась) с <a id="offer-link" href="#" target="_blank" rel="noopener noreferrer">договором-офертой</a></span></label>
+          <label><input name="processing_consent" type="checkbox" required><span>Я даю согласие на <a id="consent-link" href="#" target="_blank" rel="noopener noreferrer">обработку персональных данных</a></span></label>
+        </div>
+        <input class="trap" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="error" id="form-error" role="alert" hidden></p>
+        <button class="primary" id="submit-button" type="submit">Продолжить <span aria-hidden="true">→</span></button>
+        <div class="mail-step" id="mail-step" hidden aria-live="polite">
+          <p>Письмо подготовлено. Проверьте его и нажмите «Отправить» в своей почте — только тогда заявка поступит нам.</p>
+          <p>Почта не открылась? <button class="text-button" id="copy-request" type="button">Скопировать текст заявки</button> и отправьте его на <a href="mailto:oge-na-5@mail.ru">oge-na-5@mail.ru</a>.</p>
+          <textarea class="manual-copy" id="manual-copy" readonly hidden aria-label="Текст заявки для ручного копирования"></textarea>
+          <a class="max-link" id="max-link" href="https://max.ru/u/f9LHodD0cOJ-WhJxLmY8QmF0qkpfQyUtIpdxsmy0NXN-tXKcYjrT8ztesFg" target="_blank" rel="noopener noreferrer">Написать в MAX →</a>
+        </div>
+      </div>
+    </form>
+  </main>
+</body>
+</html>
+
