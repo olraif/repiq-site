@@ -1,8 +1,8 @@
 (function(){
   const EMAIL='oge-na-5@mail.ru';
   const services={
-    trainer:{label:'Доступ к тренажёру',offer:'./legal/offer-trainer.html',consent:'./legal/consent-trainer.html',privacy:'./legal/privacy-trainer.html',offerVersion:'trainer-2026-11-04',consentVersion:'trainer-2026-11-04'},
-    tutoring:{label:'Занятия с репетитором',offer:'./legal/offer-tutoring.html',consent:'./legal/consent-tutoring.html',privacy:'./legal/privacy-tutoring.html',offerVersion:'tutoring-2026-11-04',consentVersion:'tutoring-2026-11-04'}
+    trainer:{label:'Доступ к тренажёру',offer:'./legal/offer-trainer.html',consent:'./legal/consent-trainer.html',privacy:'./legal/privacy-trainer.html',offerVersion:'trainer-2026-11-04',consentVersion:'trainer-2026-11-04-v2'},
+    tutoring:{label:'Занятия с репетитором',offer:'./legal/offer-tutoring.html',consent:'./legal/consent-tutoring.html',privacy:'./legal/privacy-tutoring.html',offerVersion:'tutoring-2026-11-04-v2',consentVersion:'tutoring-2026-11-04-v2'}
   };
   const form=document.getElementById('request-form');
   const choices=[...document.querySelectorAll('[data-service]')];
